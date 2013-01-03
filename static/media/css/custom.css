@@ -3,6 +3,7 @@ body #comments {
     clear: both;
     float: left;
     overflow: hidden;
+    border-top: 8px solid #f6f6f6;
     padding: 15px 20px;
     width: 610px; }
 
