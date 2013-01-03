@@ -33,11 +33,10 @@ needs like "breathing," "food," and "water." At the peak, there are extremely
 high-level needs that are about being a happy and enlightened
 person—"creativity," "morality," "curiosity," and so on.
 
-<a
-href="http://codex.grimoire.ca/wp-content/uploads/2008/09/buildifesto-pyramid.png"><img
-src="http://codex.grimoire.ca/wp-content/uploads/2008/09/buildifesto-pyramid.png"
-alt="" title="The Pyramid" width="500" height="365" class="aligncenter
-size-full wp-image-4" /></a>
+![A three-tier pyramid. At the bottom: Automatable. Repeatable. Standardized.
+Extensible. Understood. In the middle tier: Simple. Fast. Unit tests. Part of
+the project. Environment independent. At the top: Metrics. Parallel builds.
+Acceptance tests. Product caching. IDE integration.](buildifesto-pyramid)
 
 Builds, and software engineering as a whole, can be described the same way: at
 the top of the hierarchy is a working system that solves a problem, and at the
@@ -187,8 +186,8 @@ Nothing here is new. The value of build systems has been
 [discussed](http://www.joelonsoftware.com/articles/fog0000000043.html)
 [in](http://www.gamesfromwithin.com/articles/0506/000092.html)
 [great](http://c2.com/cgi/wiki?BuildSystem)
-[detail](http://www.codinghorror.com/blog/archives/000988.html)
-[elsewhere](http://www.cc2e.com/). Much of the accumulated build wisdom of the
-software industry has already been incorporated to one degree or another into
-build tools. What matters is that you pick one, then use it with the
-discipline needed to get repeatable results without thinking.
+[detail](http://www.codinghorror.com/blog/archives/000988.html) elsewhere.
+Much of the accumulated build wisdom of the software industry has already been
+incorporated to one degree or another into build tools. What matters is that
+you pick one, then use it with the discipline needed to get repeatable results
+without thinking.
