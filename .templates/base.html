@@ -1,0 +1,5 @@
+{% extends 'markdoc-default/base.html' %}
+{% block css %}
+{{ super() }}
+{{ html.cssimport(make_relative("/media/css/comments.css")) }}
+{% endblock %}

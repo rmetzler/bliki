@@ -1,0 +1,7 @@
+body #comments {
+    background-color: white;
+    clear: both;
+    float: left;
+    overflow: hidden;
+    padding: 15px 20px;
+    width: 610px; }
