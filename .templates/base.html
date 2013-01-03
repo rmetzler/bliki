@@ -1,5 +1,17 @@
 {% extends 'markdoc-default/base.html' %}
 {% block css %}
 {{ super() }}
-{{ html.cssimport(make_relative("/media/css/comments.css")) }}
+{{ html.cssimport(make_relative("/media/css/custom.css")) }}
+{% endblock %}
+
+{% block body_footer %}
+<div id="footer">
+  <p>
+    {% if 'wiki-name' in config %}
+      {{ config['wiki-name']|e }} —
+    {% endif %}
+    Powered by <a href="http://markdoc.org/">Markdoc</a>.
+    <a href="https://github.com/ojacobson/grimoiredotca">See it on GitHub</a>.
+  </p>
+</div>
 {% endblock %}

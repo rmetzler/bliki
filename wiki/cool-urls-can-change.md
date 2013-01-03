@@ -19,10 +19,11 @@ The web is not, much, like print media. Something published may be amended;
 you don't even have to publish errata or a correction, since you can correct
 the original mistake "seamlessly". This has its good and its
 [bad](http://en.wikipedia.org/wiki/Memory_hole) parts, but with judicious use
-and a public history, amendment is more of a win than a loss. However, this
-plays havoc with the idea of a "publication" date, even for data that takes
-the form of an article: is the publication date the date it was first made
-public, the date of its most recent edit, or some other date?
+and [a public history](https://github.com/ojacobson/grimoiredotca), amendment
+is more of a win than a loss. However, this plays havoc with the idea of a
+"publication" date, even for data that takes the form of an article: is the
+publication date the date it was first made public, the date of its most
+recent edit, or some other date?
 
 Because the name - the URL - of an article was set when I first published it,
 the date in the name had to be its initial publication date. _This has

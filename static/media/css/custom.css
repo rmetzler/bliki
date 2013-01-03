@@ -5,3 +5,6 @@ body #comments {
     overflow: hidden;
     padding: 15px 20px;
     width: 610px; }
+
+a[href^="https:"] {
+    text-decoration: underline; }
