@@ -76,3 +76,10 @@ diagram above shows how [Mercurial](http://www.selenic.com/mercurial/) handles
 the same two tests. Since its changeset language does include an "object
 moved" primitive, it's able to take a content change for `dir-a/file` and
 apply it to `dir-b/file` if appropriate.
+
+## Git
+
+Git also gets this scenario right, _usually_. Unlike Mercurial, Git does not
+track file copies or renames in its commits at all, prefering to infer them by
+content comparison every time it performs a move-aware operation, such as a
+merge.
