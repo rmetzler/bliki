@@ -1,11 +1,11 @@
 # Merging Structural Changes
 
-Recently, a project I'm working on set out to reinvent their build process,
+In 2008, a project I was working on set out to reinvent their build process,
 migrating from a mass of poorly-written Ant scripts to Maven and reorganizing
-their source tree in the process. The development process is based on having a
-branch per client, so there is a lot of ongoing development on the original
-layout for clients that haven't been migrated yet. We discovered that our
-version control tool, [Subversion](http://subversion.tigris.org/), is unable
+their source tree in the process. The development process was based on having
+a branch per client, so there was a lot of ongoing development on the original
+layout for clients that hadn't been migrated yet. We discovered that our
+version control tool, [Subversion](http://subversion.tigris.org/), was unable
 to merge the changes between client branches on the old structure and the
 trunk on the new structure automatically.
 
