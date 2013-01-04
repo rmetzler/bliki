@@ -76,11 +76,3 @@ diagram above shows how [Mercurial](http://www.selenic.com/mercurial/) handles
 the same two tests. Since its changeset language does include an "object
 moved" primitive, it's able to take a content change for `dir-a/file` and
 apply it to `dir-b/file` if appropriate.
-
-## Further Resources
-
-If you feel like reproducing this yourself, or want to adapt my test scripts
-to work with your favourite version control system, the scripts are
-[available](http://alchemy.grimoire.ca/hg/tree-conflicts) from Mercurial or as
-a [zip](http://alchemy.grimoire.ca/hg/tree-conflicts/archive/tip.zip). Patches
-and suggestions welcome.
