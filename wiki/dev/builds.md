@@ -36,7 +36,8 @@ person—"creativity," "morality," "curiosity," and so on.
 ![A three-tier pyramid. At the bottom: Automatable. Repeatable. Standardized.
 Extensible. Understood. In the middle tier: Simple. Fast. Unit tests. Part of
 the project. Environment independent. At the top: Metrics. Parallel builds.
-Acceptance tests. Product caching. IDE integration.](buildifesto-pyramid)
+Acceptance tests. Product caching. IDE
+integration.](/media/dev/builds/buildifesto-pyramid)
 
 Builds, and software engineering as a whole, can be described the same way: at
 the top of the hierarchy is a working system that solves a problem, and at the
