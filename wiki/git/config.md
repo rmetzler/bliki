@@ -56,5 +56,3 @@ you no longer need them.
   checkout ...some detatched thing...` isn't helping anyone. This is also
   useful repositories used for deployment, where specific commits (from tags,
   for example) are regularly checked out.
-
-* 
