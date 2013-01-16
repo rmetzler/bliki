@@ -1,8 +1,9 @@
 # git-config Settings You Want
 
-Git comes with some fairly lkml-specific configuration defaults. You should
-fix this. All of the items below can be set either for your entire login
-account (`git config --global`) or for a specific repository (`git config`).
+Git comes with some fairly [lkml](http://www.tux.org/lkml/)-specific
+configuration defaults. You should fix this. All of the items below can be set
+either for your entire login account (`git config --global`) or for a specific
+repository (`git config`).
 
 Full documentation is under `git help config`, unless otherwise stated.
 
