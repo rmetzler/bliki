@@ -9,6 +9,9 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
   opposite operation is `git fetch`. (`git pull` is equivalent to `git fetch`
   followed by `git merge`, more or less).
 * [Git configuration values don't always have the best defaults](config).
+* The upstream branch of `foo` is `foo@{u}`. The upstream branch of your
+  checked-out branch is `HEAD@{u}` or `@{u}`. This is documented in `git help
+  revisions`.
 * You probably don't want to use a merge operation (such as `git pull`) to
   integrate upstream changes into topic branches. The resulting history can be
   very confusing to follow, especially if you integrate upstream changes
@@ -42,7 +45,7 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
         git fetch
         git checkout $(git merge-base origin/master foo) -b foo-cleaner-history
         git checkout -p foo -- paths/to/files
-        # pick out changes that form a coherent commit
+        # pick out changes from the presented patch that form a coherent commit
         # repeat 'git checkout -p foo --' steps for related files to build up
         # the new commit
         git commit
