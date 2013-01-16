@@ -8,6 +8,7 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
 * `git push` and `git pull` are **not symmetric**. `git push`'s
   opposite operation is `git fetch`. (`git pull` is equivalent to `git fetch`
   followed by `git merge`, more or less).
+* [Git configuration values don't always have the best defaults](config).
 * You probably don't want to use a merge operation (such as `git pull`) to
   integrate upstream changes into topic branches. The resulting history can be
   very confusing to follow, especially if you integrate upstream changes
