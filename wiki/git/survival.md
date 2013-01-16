@@ -3,6 +3,13 @@
 I think the `git` UI is pretty awful, and encourages using Git in ways that
 will screw you. Here are a few things I've picked up that have saved my bacon.
 
+* You will inevitably need to understand Git's "internals" to make use of it
+  as an SCM tool. Accept this early. If you think your SCM tool should not
+  expose you to so much plumbing, [don't](http://mercurial.selenic.com)
+  [use](http://bazaar.canonical.com) [Git](http://subversion.apache.org).
+    * Git weenies will claim that this plumbing is what gives Git all of its
+      extra power. This is true; it gives Git the power to get you out of
+      situations you wouldn't be in without Git.
 * `git log --graph --decorate --oneline --color --all`
 * Run `git fetch` habitually. Stale remote-tracking branches lead to sadness.
 * `git push` and `git pull` are **not symmetric**. `git push`'s
