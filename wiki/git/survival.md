@@ -39,6 +39,9 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
         git checkout foo
         git branch -D test-merge-foo
 
+    You can combine this with `git rerere` to save time resolving conflicts in
+    a later "real", permanent merge.
+
 * You can use `git checkout -p` to build new, tidy commits out of a branch
   laden with "wip" commits:
 
