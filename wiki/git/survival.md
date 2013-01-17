@@ -64,6 +64,11 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
     * Gotcha: `git checkout -p` will do nothing for files that are being
       created. Use `git checkout`, instead, and edit the file if necessary.
       Thanks, Git.
+    * Gotcha: The new, clean branch must diverge from its upstream branch
+      (`origin/master`, in the example above) at exactly the same point, or
+      the diffs presented by `git checkout -p foo` will include chunks that
+      revert changes on the upstream branch since the "dirty" branch was
+      created. The easiest way to find this point is with `git merge-base`.
 
 ## Useful Resources
 
