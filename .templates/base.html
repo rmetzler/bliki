@@ -11,7 +11,9 @@
       {{ config['wiki-name']|e }} —
     {% endif %}
     Powered by <a href="http://markdoc.org/">Markdoc</a>.
+    {% block github_info %}
     <a href="https://github.com/ojacobson/grimoiredotca">See it on GitHub</a>.
+    {% endblock %}
   </p>
 </div>
 {% endblock %}
