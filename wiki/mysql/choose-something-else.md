@@ -6,6 +6,12 @@ processing; MySQL is differently bad at both poles.
 (Real apps fall between these poles, and suffer variably from either set of
 MySQL flaws.)
 
+In the first section, I'll talk about [why MySQL is bad at storing
+data](#storage). In the second, I'll talk about [why MySQL is bad at
+processing data](#processing). In the third, I'll talk about why these
+problems are inherent in the way MySQL was built and are not likely to be
+fixed in the foreseeable future.
+
 ## Storage
 
 Storage systems have four properties:
@@ -51,3 +57,33 @@ familiar with other SQL implementations).
 
 ### Preserving Data
 
+... against unexpected changes: like most disk-backed storage systems, MySQL
+is as reliable as the disks and filesystems its data lives on.
+
+... against loss: hoo boy. MySQL's default approach to
+[backups](http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html) is to
+either dump data to SQL periodically (slow and an inefficient use of space,
+with little support for incremental backups) or to use binary logs (plus a
+base filesystem backup) for ongoing backups. (Binary logs are also the basis
+of MySQL's first-party replication system.) If neither of these are
+sufficient, you're left with purchasing [a backup tool from
+Oracle](http://dev.mysql.com/doc/refman/5.5/en/glossary.html#glos_mysql_enterprise_backup).
+
+Like many of MySQL's features, the binary logging feature is
+[too](http://dev.mysql.com/doc/refman/5.5/en/binary-log.html)
+[configurable](http://dev.mysql.com/doc/refman/5.5/en/replication-options-binary-log.html),
+while still, somehow, defaulting to modes that are hazardous or surprising:
+the
+[default](http://dev.mysql.com/doc/refman/5.5/en/replication-options-binary-log.html#sysvar_binlog_format)
+[behaviour](http://dev.mysql.com/doc/refman/5.5/en/replication-formats.html)
+is to log SQL statements, rather than logging their side effects. This has
+lead to numerous bugs over the years; MySQL now makes an effort to make common
+"non-deterministic" cases such as `NOW()` and `RANDOM()` act deterministically
+but these have been addressed using ad-hoc solutions. Restoring
+binary-log-based backups can easily lead to data that differs from the
+original system, and by the time you've noticed the problem, it's too late to
+do anything about it.
+
+(Seriously. The binlog contains the current time on the master and the random
+seed for every statement, just in case. If your non-deterministic query uses
+any other function, you're still fucked by default.)
