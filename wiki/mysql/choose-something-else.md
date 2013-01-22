@@ -1,4 +1,8 @@
-# Considering MySQL? Choose Something Else
+# Do Not Pass This Way Again
+
+Considering MySQL? Use something else. Already on MySQL? Migrate. For every
+successful project built on MySQL, you could uncover a history of time wasted
+mitigating MySQL's inadequacies.
 
 Thesis: databases fill roles ranging between pure storage and extensive data
 processing; MySQL is differently bad at both poles.
