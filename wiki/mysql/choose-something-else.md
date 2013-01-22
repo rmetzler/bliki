@@ -62,16 +62,26 @@ familiar with other SQL implementations).
 ### Preserving Data
 
 ... against unexpected changes: like most disk-backed storage systems, MySQL
-is as reliable as the disks and filesystems its data lives on.
+is as reliable as the disks and filesystems its data lives on. However, the
+implicit conversion rules that bite when storing data also bite when asking
+MySQL to modify data - my favourite example being a fat-fingered `UPDATE`
+query where a mistyped `=` (as `-`, off by a single key) caused 90% of the
+rows in the table to be affected, instead of one row, because of implicit
+string-to-integer conversions.
 
-... against loss: hoo boy. MySQL's default approach to
-[backups](http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html) is to
-either dump data to SQL periodically (slow and an inefficient use of space,
-with little support for incremental backups) or to use binary logs (plus a
-base filesystem backup) for ongoing backups. (Binary logs are also the basis
-of MySQL's first-party replication system.) If neither of these are
-sufficient, you're left with purchasing [a backup tool from
-Oracle](http://dev.mysql.com/doc/refman/5.5/en/glossary.html#glos_mysql_enterprise_backup).
+... against loss: hoo boy. MySQL, out of the box, gives you two approachesœ to
+[backups](http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html):
+
+* Dump to SQL with `mysqldump`: slow, relatively large backups, and
+  non-incremental, or
+* Archive binary logs: fragile, complex, over-configurable, and configured
+  badly by default. (Binary logging is also the basis of MySQL's replication
+  system.)
+
+If neither of these are sufficient, you're left with purchasing [a backup tool
+from
+Oracle](http://dev.mysql.com/doc/refman/5.5/en/glossary.html#glos_mysql_enterprise_backup)
+or from one of the third-party MySQL vendors.
 
 Like many of MySQL's features, the binary logging feature is
 [too](http://dev.mysql.com/doc/refman/5.5/en/binary-log.html)
