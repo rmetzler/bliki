@@ -11,6 +11,7 @@ all fall somewhere between these poles, and suffer variably from both sets of
 MySQL flaws.
 
 * MySQL is bad at [storage](#storage).
+* MySQL is bad at [data processing](#data-processing).
 
 ## Storage
 
@@ -177,3 +178,64 @@ experience, blog articles of varying quality, and consultants.
 * MySQL itself provides very few tools to manage storage; tasks like storing
   large or infrequently-accessed tables and databases on dedicated filesystems
   must be done on the filesystem, with MySQL shut down.
+
+## Data Processing
+
+Data processing encompasses tasks that require making decisions about data and
+tasks that derive new data from existing data. This is a huge range of topics:
+
+* Deciding (and enforcing) application-specific validity rules.
+* Summarizing and deriving data.
+* Providing and maintaining alternate representations and structures.
+* Hosting complex domain logic near the data it operates on.
+
+The further towards data processing tasks applications move, the more their
+SQL resembles tiny programs sent to the data. MySQL is totally unprepared for
+programs, and expects SQL to retrieve or modify simple rows.
+
+## Validity
+
+Good constraints are like `assert`s: in an ideal world, you can't tell if they
+work, because your code never violates them. Here in the real world,
+constraint violations happen for all sorts of reasons, ranging from buggy code
+to buggy human cognition. A good database gives you more places to describe
+your expectations and more tools for detecting and preventing surprises.
+MySQL, on the other hand, can't validate your data for you, beyond simple (and
+fixed) type constraints:
+
+* As with the data you store in it, MySQL feels free to change your table
+  definitions [implicitly and
+  silently](http://dev.mysql.com/doc/refman/5.5/en/silent-column-changes.html).
+  Many of these silent schema changes have important performance and
+  feature-availability implications.
+* Foreign keys, one of the most widely-used database validity checks, are an
+  engine-specific feature, restricting their availabilty in combination with
+  other engine-specific features. (For example, a table cannot have both
+  foreign key constraints and full-text indexes, as of MySQL 5.5.)
+    * Configurations that violate assumptions about foreign keys, such as a
+      foreign key pointing into a MyISAM or NDB table, do not cause warnings
+      or any other diagnostics. The foreign key is simply discarded. SURPRISE.
+      (MySQL is riddled with these sorts of surprises, and apologists lean
+      very heavily on the "that's documented" excuse for its bad behaviour.)
+* The MySQL parser recognizes `CHECK` clauses, which allow schema developers
+  to make complex declarative assertions about tuples in the database, but
+  [discards them without
+  warning](http://dev.mysql.com/doc/refman/5.5/en/create-table.html). If you
+  want `CHECK`-like constraints, you must implement them as triggers - but see
+  below...
+* MySQL's comprehension of the `DEFAULT` clause is, uh, limited: only
+  constants are permitted, except for the [special
+  case](https://dev.mysql.com/doc/refman/5.5/en/timestamp-initialization.html)
+  of at most one `TIMESTAMP` column per table. Who designed this mess?
+    * Furthermore, there's no way to say "no default" and raise an error when
+      an INSERT forgets to provide a value. The default `DEFAULT` is either
+      `NULL` or a zero-like constant (`0`, `''`, and so on). Even for types
+      with no meaningful zero-like values (`DATETIME`).
+* MySQL has no mechanism for introducing new types, which might otherwise
+  provide a route to enforcing validity. Counting the number of special cases
+  in MySQL's [existing type
+  system](http://dev.mysql.com/doc/refman/5.5/en/data-types.html) illustrates
+  why that's probably unfixable.
+
+I hope every client with write access to your data is absolutely perfect,
+because MySQL _cannot help you_ if you make a mistake.
