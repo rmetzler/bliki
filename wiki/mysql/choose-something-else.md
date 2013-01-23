@@ -157,16 +157,14 @@ experience, blog articles of varying quality, and consultants.
   considering every entry in the cache. This cache also uses MySQL's LRU
   implementation, which has its own performance problems during eviction that
   get worse with larger cache sizes.
-* Memory-management settings, including `key_buffer_size` and
-  `innodb_buffer_pool_size`, have non-linear relationships with performance.
-  The
-  [standard](http://www.mysqlperformanceblog.com/2006/09/29/what-to-tune-in-mysql-server-after-installation/)
-  [advice](http://www.mysqlperformanceblog.com/2007/11/01/innodb-performance-optimization-basics/)
-  advises making whichever value you care about more to a large value, but
-  this can be counterproductive if the related data is larger than the pool
-  can hold: MySQL is once again bad at discarding old buffer pages when the
-  buffer is exhausted, leading to dramatic slowdowns when query load reaches a
-  certain point.
+* Memory-management settings, including `key_buffer_size` and `innodb_buffer_pool_size`,
+  have non-linear relationships with performance. The [standard](http://www.mysqlperformanceblog.com/2006/09/29/what-to-tune-in-mysql-server-after-installation/)
+  [advice](http://www.mysqlperformanceblog.com/2007/11/01/innodb-performance-optimization-basics/) advises
+  making whichever value you care about more to a large value, but this can be
+  counterproductive if the related data is larger than the pool can hold:
+  MySQL is once again bad at discarding old buffer pages when the buffer is
+  exhausted, leading to dramatic slowdowns when query load reaches a certain
+  point.
     * This also affects filesystem tuning settings such as `table_open_cache`.
 * InnoDB, out of the box, comes configured to use one large (and automatically
   growing) tablespace file for all tables, complicating backups and storage
