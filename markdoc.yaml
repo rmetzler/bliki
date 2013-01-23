@@ -3,3 +3,4 @@ wiki-name: "The Codex"
 markdown:
     extensions:
         - extra
+        - headerid

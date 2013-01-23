@@ -2,19 +2,15 @@
 
 Considering MySQL? Use something else. Already on MySQL? Migrate. For every
 successful project built on MySQL, you could uncover a history of time wasted
-mitigating MySQL's inadequacies.
+mitigating MySQL's inadequacies, masked by a hard-won, but meaningless, sense
+of accomplishment over the effort spent making MySQL behave.
 
-Thesis: databases fill roles ranging between pure storage and extensive data
-processing; MySQL is differently bad at both poles.
+Thesis: databases fill roles ranging from pure storage to complex and
+interesting data processing; MySQL is differently bad at both tasks. Real apps
+all fall somewhere between these poles, and suffer variably from both sets of
+MySQL flaws.
 
-(Real apps fall between these poles, and suffer variably from either set of
-MySQL flaws.)
-
-In the first section, I'll talk about [why MySQL is bad at storing
-data](#storage). In the second, I'll talk about [why MySQL is bad at
-processing data](#processing). In the third, I'll talk about why these
-problems are inherent in the way MySQL was built and are not likely to be
-fixed in the foreseeable future.
+* MySQL is bad at [storage](#storage).
 
 ## Storage
 
@@ -55,25 +51,43 @@ familiar with other SQL implementations).
     * Sometimes this raises a warning; does your app check for those?
     * This behaviour is unlike many typed systems (but closely like PHP and
       remotely like Perl).
-* Conversion behaviour depends on a per-connection configuration value with a
-  large constellation of possible states, making it harder to carry
-  expectations from manual testing over to code.
+* Conversion behaviour depends on a per-connection configuration value
+  (`sql_mode`) that has [a large constellation of possible
+  states](http://dev.mysql.com/doc/refman/5.5/en/server-sql-mode.html), making
+  it harder to carry expectations from manual testing over to code or from
+  tool to tool.
+* MySQL uses non-standard and rather unique interpretations of several common
+  character encodings, including UTF-8 and Latin-1. Implementation details of
+  these encodings within MySQL, such as the `utf8` encoding's MySQL-specific
+  3-byte limit, tend to leak out into client applications. Data that does not
+  fit MySQL's understanding of the storage encoding will be transformed until
+  it does, by truncation or replacement, by default.
 
 ### Preserving Data
 
 ... against unexpected changes: like most disk-backed storage systems, MySQL
-is as reliable as the disks and filesystems its data lives on. However, the
-implicit conversion rules that bite when storing data also bite when asking
-MySQL to modify data - my favourite example being a fat-fingered `UPDATE`
-query where a mistyped `=` (as `-`, off by a single key) caused 90% of the
-rows in the table to be affected, instead of one row, because of implicit
-string-to-integer conversions.
+is as reliable as the disks and filesystems its data lives on. MySQL makes
+very little effort to do its own storage validation and error correction, but
+this is a limitation shared with many, _many_ other systems.
+
+The implicit conversion rules that bite when storing data also bite when
+asking MySQL to modify data - my favourite example being a fat-fingered
+`UPDATE` query where a mistyped `=` (as `-`, off by a single key) caused 90%
+of the rows in the table to be affected, instead of one row, because of
+implicit string-to-integer conversions.
 
 ... against loss: hoo boy. MySQL, out of the box, gives you two approachesœ to
 [backups](http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html):
 
+* Take "blind" filesystem backups with `tar` or `rsync`. Unless you
+  meticulously lock tables or make the database read-only for the duration,
+  this produces a backup that requires crash recovery before it will be
+  usable, and can produce an inconsistent database.
+    * This can bite quite hard if you use InnoDB, as InnoDB crash recovery
+      takes time proportional to both the number of InnoDB tables and the
+      total size of InnoDB tables, with a large constant.
 * Dump to SQL with `mysqldump`: slow, relatively large backups, and
-  non-incremental, or
+  non-incremental.
 * Archive binary logs: fragile, complex, over-configurable, and configured
   badly by default. (Binary logging is also the basis of MySQL's replication
   system.)
@@ -91,13 +105,75 @@ the
 [default](http://dev.mysql.com/doc/refman/5.5/en/replication-options-binary-log.html#sysvar_binlog_format)
 [behaviour](http://dev.mysql.com/doc/refman/5.5/en/replication-formats.html)
 is to log SQL statements, rather than logging their side effects. This has
-lead to numerous bugs over the years; MySQL now makes an effort to make common
-"non-deterministic" cases such as `NOW()` and `RANDOM()` act deterministically
-but these have been addressed using ad-hoc solutions. Restoring
-binary-log-based backups can easily lead to data that differs from the
-original system, and by the time you've noticed the problem, it's too late to
-do anything about it.
+lead to numerous bugs over the years; MySQL (now) makes an effort to make
+common "non-deterministic" cases such as `NOW()` and `RANDOM()` act
+deterministically but these have been addressed using ad-hoc solutions.
+Restoring binary-log-based backups can easily lead to data that differs from
+the original system, and by the time you've noticed the problem, it's too late
+to do anything about it.
 
-(Seriously. The binlog contains the current time on the master and the random
-seed for every statement, just in case. If your non-deterministic query uses
-any other function, you're still fucked by default.)
+(Seriously. The binary log entries for each statement contain the "current"
+time on the master and the random seed at the start of the statement, just in
+case. If your non-deterministic query uses any other function, you're still
+[fucked by
+default](http://dev.mysql.com/doc/refman/5.5/en/replication-sbr-rbr.html#replication-sbr-rbr-sbr-disadvantages).)
+
+### Retrieving Data
+
+This mostly works as expected. Most of the ways MySQL will screw you happen
+when you store data, not when you retrieve it. However, there are a few things
+that implicitly transform stored data before returning it:
+
+* `TIMESTAMP` columns (and _only_ `TIMESTAMP` columns) can return
+  apparently-differing values for the same stored value depending on
+  per-connection configuration even during read-only operation. This is done
+  silently and the default behaviour can change as a side effect of non-MySQL
+  configuration changes in the underlying OS.
+* String-typed columns are transformed for encoding on output if the
+  connection is not using the same encoding as the underlying storage, using
+  the same rules as the transformation on input.
+* Values that stricter `sql_mode` settings would reject during storage can
+  still be returned during retrieval; it is impossible to predict in advance
+  whether such data exists, since clients are free to set `sql_mode` to any
+  value at any time.
+
+### Efficiency
+
+For purely store-and-retrieve applications, MySQL's query planner (which
+transforms the miniature program contained in each SQL statement into a tree
+of disk access and data manipulation steps) is sufficient, but only barely.
+Queries that retrieve data from one table, or from one table and a small
+number of one-to-maybe-one related tables, produce relatively efficient plans.
+
+MySQL, however, offers a number of tuning options that can have dramatic and
+counterintuitive effects, and the documentation provides very little advice
+for choosing settings. Tuning relies on the administrator's personal
+experience, blog articles of varying quality, and consultants.
+
+* The MySQL query cache defaults to a non-zero size in some commonly-installed
+  configurations. However, the larger the cache, the slower writes proceed:
+  invalidating cache entries that include the tables modified by a query means
+  considering every entry in the cache. This cache also uses MySQL's LRU
+  implementation, which has its own performance problems during eviction that
+  get worse with larger cache sizes.
+* Memory-management settings, including `key_buffer_size` and
+  `innodb_buffer_pool_size`, have non-linear relationships with performance.
+  The
+  [standard](http://www.mysqlperformanceblog.com/2006/09/29/what-to-tune-in-mysql-server-after-installation/)
+  [advice](http://www.mysqlperformanceblog.com/2007/11/01/innodb-performance-optimization-basics/)
+  advises making whichever value you care about more to a large value, but
+  this can be counterproductive if the related data is larger than the pool
+  can hold: MySQL is once again bad at discarding old buffer pages when the
+  buffer is exhausted, leading to dramatic slowdowns when query load reaches a
+  certain point.
+    * This also affects filesystem tuning settings such as `table_open_cache`.
+* InnoDB, out of the box, comes configured to use one large (and automatically
+  growing) tablespace file for all tables, complicating backups and storage
+  management. This is fine for trivial databases, but MySQL provides no tools
+  (aside from `DROP TABLE` and reloading the data from an SQL dump) for
+  transplanting a table to another tablespace, and provides no tools (aside
+  from a filesystem-level `rm`, and reloading _all_ InnoDB data from an SQL
+  dump) for reclaiming empty space in a tablespace file.
+* MySQL itself provides very few tools to manage storage; tasks like storing
+  large or infrequently-accessed tables and databases on dedicated filesystems
+  must be done on the filesystem, with MySQL shut down.
