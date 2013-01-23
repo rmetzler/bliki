@@ -191,7 +191,7 @@ The further towards data processing tasks applications move, the more their
 SQL resembles tiny programs sent to the data. MySQL is totally unprepared for
 programs, and expects SQL to retrieve or modify simple rows.
 
-## Validity
+### Validity
 
 Good constraints are like `assert`s: in an ideal world, you can't tell if they
 work, because your code never violates them. Here in the real world,
@@ -237,3 +237,56 @@ fixed) type constraints:
 
 I hope every client with write access to your data is absolutely perfect,
 because MySQL _cannot help you_ if you make a mistake.
+
+### Summarizing and Deriving Data
+
+SQL databases generally provide features for doing "interesting" things with
+sets of tuples, and MySQL is no exception. However, MySQL's limitations mean
+that actually processing data in the database is fraught with wasted money,
+brains, and time:
+
+* Aggregate (`GROUP BY`) queries run up against limits in MySQL's query
+  planner: a query with both `WHERE` and `GROUP BY` clauses can only satisfy
+  one constraint or the other with indexes, unless there's an index that
+  covers all the relevant fields in both clauses, in the right order. (What
+  this order is depends on the complexity of the query and on the distribution
+  of the underlying data, but that's hardly MySQL-specific.)
+    * If you have all three of `WHERE`, `GROUP BY`, and `ORDER BY` in the same
+      query, you're more or less fucked. Good luck designing a single index
+      that satisfies all three.
+* Even though MySQL allows database administrators to [define normal functions
+  in a procedural SQL
+  dialect](http://dev.mysql.com/doc/refman/5.5/en/create-procedure.html),
+  [custom aggregate
+  functions](http://dev.mysql.com/doc/refman/5.5/en/create-function-udf.html)
+  can only be defined by native plugins. Good thing, too, because procedural
+  SQL in MySQL is its own kind of awful - more on that below.
+* Subqueries are often convenient and occasionally necessary for expressing
+  multi-step transformations on some underlying data. MySQL's query planner
+  has only one strategy for optimizing them: evaluate the innermost query as
+  written, into an in-memory table, then use a nested loop to satisfy joins or
+  `IN` clauses. For large subquery results or interestingly nested subqueries,
+  this is absurdly slow.
+    * MySQL's query planner can't fold constraints from outer queries into
+      subqueries.
+    * The generated in-memory table never has any indexes, ever, even when
+      appropriate indexes are "obvious" from the surrounding query; you cannot
+      even specify them.
+    * These limitations also affect views, which are evaluated as if they were
+      subqueries. In combination with the lack of constraint folding in the
+      planner, this makes filtering or aggregating over large views completely
+      impractical.
+    * MySQL lacks [common table
+      expressions](http://www.postgresql.org/docs/9.2/static/queries-with.html).
+      Even if subquery efficiency problems get fixed, the inability to give
+      meaningful names to subqueries makes them hard to read and comprehend.
+    * I hope you like `CREATE TEMPORARY TABLE AS SELECT`, because that's your
+      only real alternative.
+* [Window
+  functions](http://en.wikipedia.org/wiki/Select_(SQL)#Window_function) do not
+  exist at all in MySQL. This complicates many kinds of analysis, including
+  time series analyses and ranking analyses.
+    * Specific cases (for example, assigning rank numbers to rows) can be
+      implemented using [server-side variables and side effects during
+      `SELECT`](http://stackoverflow.com/questions/6473800/assigning-row-rank-numbers).
+      What? Good luck understanding that code in six months.
