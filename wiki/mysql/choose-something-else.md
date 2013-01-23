@@ -119,6 +119,22 @@ case. If your non-deterministic query uses any other function, you're still
 [fucked by
 default](http://dev.mysql.com/doc/refman/5.5/en/replication-sbr-rbr.html#replication-sbr-rbr-sbr-disadvantages).)
 
+Additionally, a number of apparently-harmless features can lead to backups or
+replicas wandering out of sync with the original database, in the default
+configuration:
+
+* `AUTO_INCREMENT` and `UPDATE` statements.
+* `AUTO_INCREMENT` and `INSERT` statements (sometimes). SURPRISE.
+* Triggers.
+* User-defined (native) functions.
+* Stored (procedural SQL) functions.
+* `DELETE ... LIMIT` and `UPDATE ... LIMIT` statements, though if you use
+  these, you've misunderstood how SQL is supposed to work.
+* `INSERT ... ON DUPLICATE KEY UPDATE` statements.
+* Bulk-loading data with `LOAD DATA` statements.
+* [Operations on floating-point
+  values](http://dev.mysql.com/doc/refman/5.5/en/replication-features-floatvalues.html).
+
 ### Retrieving Data
 
 This mostly works as expected. Most of the ways MySQL will screw you happen
@@ -206,6 +222,29 @@ fixed) type constraints:
   silently](http://dev.mysql.com/doc/refman/5.5/en/silent-column-changes.html).
   Many of these silent schema changes have important performance and
   feature-availability implications.
+    * Foreign keys are ignored if you spell them certain, common, ways:
+
+            CREATE TABLE foo (
+                -- ...,
+                parent INTEGER
+                    NOT NULL
+                    REFERENCES foo_parent (id)
+                -- , ...
+            )
+
+        silently ignores the foreign key specification, while
+
+            CREATE TABLE foo (
+                -- ...,
+                parent INTEGER
+                    NOT NULL,
+                FOREIGN KEY (parent)
+                    REFERENCES foo_parent (id)
+                -- , ...
+            )
+
+        preserves it.
+
 * Foreign keys, one of the most widely-used database validity checks, are an
   engine-specific feature, restricting their availabilty in combination with
   other engine-specific features. (For example, a table cannot have both
@@ -304,3 +343,48 @@ brains, and time:
 
 And now you know why MySQL advocates are such big fans of doing data
 _processing_ in "the client" or "the app".
+
+### Alternate Representations and Derived Tables
+
+Many databases let schema designers and administrators abstract the underlying
+"physical" table structure from the presentation given to clients, or to some
+specific clients, for any of a number of reasons. MySQL tries to let you do
+this, too! And fumbles it quite badly.
+
+* As mentioned above, non-trivial views are basically useless. Queries like
+  `SELECT some columns FROM a_view WHERE id = 53` are evaluated in the
+  stupidest -- and slowest -- possible way. Good luck hiding unusual
+  partitioning arrangements or a permissions check in a view if you want any
+  kind of performance.
+* The poor interactions between triggers and binary logging's default
+  configuration make it impractical to use triggers to maintain "materialized"
+  views to avoid the problems with "real" views.
+    * It also effectively means triggers can't be used to emulate `CHECK`
+      constraints and other consistency features.
+    * Code to maintain materialized views is also finnicky and hard to get
+      "right", especially if the view includes aggregates or interesting joins
+      over its source data. I hope you enjoy debugging MySQL's procedural
+      SQL…
+* For the relatively common case of wanting to abstract partitioned storage
+  away for clients, MySQL actually has [a
+  tool](http://dev.mysql.com/doc/refman/5.5/en/partitioning.html) for it! But
+  it comes with [enough caveats to strangle a
+  horse](http://dev.mysql.com/doc/refman/5.5/en/partitioning-limitations.html):
+    * It's a separate table engine wrapping a "real" storage engine, which
+      means it has its own, separate support for engine-specific features:
+      transactions, foreign keys, and index types, `AUTO_INCREMENT`, and
+      others. The syntax for configuring partitions makes selecting the wrong
+      underlying engine entirely too easy, too.
+    * Partitioned tables may not be the referrent of foreign keys: you can't
+      have both enforced relationships and this kind of storage management.
+    * MySQL doesn't actually know how to store partitions on separate disks or
+      filesystems. You still need to reach underneath of MySQL do to actual
+      storage management.
+        * Partitioning an InnoDB table under the default InnoDB configuration
+          stores all of the partitions in the global tablespace file anyways.
+          Helpful! For per-table configurations, they still all end up
+          together in the same file. Partitioning InnoDB tables is a waste of
+          time for managing storage.
+    * TL,DR: MySQL's partition support is so finnicky and limited that
+      MySQL-based apps tend to opt for multiple MySQL servers ("sharding")
+      instead.
