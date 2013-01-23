@@ -76,8 +76,8 @@ asking MySQL to modify data - my favourite example being a fat-fingered
 of the rows in the table to be affected, instead of one row, because of
 implicit string-to-integer conversions.
 
-... against loss: hoo boy. MySQL, out of the box, gives you two approachesœ to
-[backups](http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html):
+... against loss: hoo boy. MySQL, out of the box, gives you three approaches
+to [backups](http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html):
 
 * Take "blind" filesystem backups with `tar` or `rsync`. Unless you
   meticulously lock tables or make the database read-only for the duration,
