@@ -290,3 +290,17 @@ brains, and time:
       implemented using [server-side variables and side effects during
       `SELECT`](http://stackoverflow.com/questions/6473800/assigning-row-rank-numbers).
       What? Good luck understanding that code in six months.
+* Even interesting joins run into trouble. MySQL's query planner has trouble
+  with a number of cases that can easily arise in well-normalized data:
+    * Joining and ordering by rows from multiple tables often forces MySQL to
+      dump the whole join to a temporary table, then sort it -- awful,
+      especially if you then use `LIMIT BY` to paginate the results.
+    * `JOIN` clauses with non-trivial conditions, such as joins by range or
+      joins by similarity, generally cause the planner to revert to table
+      scans even if the same condition would be indexable outside of a join.
+    * Joins with `WHERE` clauses that span both tables, where the rows
+      selected by the `WHERE` clause are outliers relative to the table
+      statistics, often cause MySQL to access tables in suboptimal order.
+
+And now you know why MySQL advocates are such big fans of doing data
+_processing_ in "the client" or "the app".
