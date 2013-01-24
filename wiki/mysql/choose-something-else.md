@@ -263,7 +263,8 @@ fixed) type constraints:
 * MySQL's comprehension of the `DEFAULT` clause is, uh, limited: only
   constants are permitted, except for the [special
   case](https://dev.mysql.com/doc/refman/5.5/en/timestamp-initialization.html)
-  of at most one `TIMESTAMP` column per table. Who designed this mess?
+  of at most one `TIMESTAMP` column per table and at most one sequence-derived
+  column. Who designed this mess?
     * Furthermore, there's no way to say "no default" and raise an error when
       an INSERT forgets to provide a value. The default `DEFAULT` is either
       `NULL` or a zero-like constant (`0`, `''`, and so on). Even for types
@@ -340,6 +341,17 @@ brains, and time:
     * Joins with `WHERE` clauses that span both tables, where the rows
       selected by the `WHERE` clause are outliers relative to the table
       statistics, often cause MySQL to access tables in suboptimal order.
+* Ok, forget about interesting joins. Even interesting `WHERE` clauses can run
+  into trouble: MySQL can't index deterministic functions of a row, either.
+  While some deterministic functions can be eliminated from the `WHERE` clause
+  using simple algebra, many useful cases (whitespace-insensitive comparison,
+  hash-based comparisons, and so on) can't.
+    * You can fake these by storing the computed value in the row alongside
+      the "real" value. This leaves your schema with some ugly data repetition
+      and a chance for the two to fall out of sync, and clients must use the
+      "computed" column explicitly.
+    * Oh, and they must maintain the "computed" version explicitly.
+    * Or you can use triggers. Ha. See above.
 
 And now you know why MySQL advocates are such big fans of doing data
 _processing_ in "the client" or "the app".
@@ -388,3 +400,95 @@ this, too! And fumbles it quite badly.
     * TL,DR: MySQL's partition support is so finnicky and limited that
       MySQL-based apps tend to opt for multiple MySQL servers ("sharding")
       instead.
+
+### Hosting Logic In The Database
+
+Yeah, yeah, the usual reaction to stored procedures and in-DB code is "eww,
+yuck!" for some not-terrible reasons, but hear me out on two points:
+
+* Under the freestanding-database-server paradigm, there will usually be
+  network latency between database clients and the database itself. There are
+  two ways to minimize the impact of that: move the data to the code in bulk
+  to minimize round-trips, or move the code to the data.
+* Some database administration tasks are better implemented using in-database
+  code than as freestanding clients: complex data migrations that can't be
+  expressed as freestanding SQL queries, for example.
+
+MySQL, as of version
+[5.0](http://dev.mysql.com/doc/relnotes/mysql/5.0/en/news-5-0-0.html)
+(released in 2003 -- remember that date, I'll come back to it), has support
+for in-database code via a procedural SQL-like dialect, like many other SQL
+databases. This includes server-side procedures (blocks of stored code that
+are invoked outside of any other statements and return statement-like
+results), functions (blocks of stored code that compute a result, used in any
+expression context such as a `SELECT` list or `WHERE` clause), and triggers
+(blocks of stored code that run whenever a row is created, modified, or
+deleted).
+
+Given the examples of
+[other](http://www.postgresql.org/docs/7.3/static/plpgsql.html)
+[contemporaneous](http://msdn.microsoft.com/en-US/library/ms189826(v=sql.90).aspx)
+[procedural](http://docs.oracle.com/cd/B10501_01/appdev.920/a96624/toc.htm)
+[languages](http://www.firebirdsql.org/file/documentation/reference_manuals/reference_material/html/langrefupd15-psql.html),
+MySQL's procedural dialect contains some very strange and unfortunate design
+choices:
+
+* There is no language construct for looping over a query result. This seems
+  like a pretty fundamental feature for a database-hosted language, but no.
+* There is no language construct for looping while a condition holds. This
+  seems like a pretty fundamental feature for an imperative language designed
+  any time after about 1975, but no.
+* There is no language construct for looping over a range.
+* There is, in fact, one language construct for looping: the unconditional
+  loop. All other iteration control is done via conditional `LEAVE`
+  statements, as
+
+        BEGIN
+            DECLARE c CURSOR FOR
+                SELECT foo, bar, baz
+                FROM some_table
+                WHERE some_condition;
+            DECLARE done INT DEFAULT 0;
+            DECLARE CONTINUE HANDLER FOR NOT FOUND
+                SET done = 1;
+            
+            DECLARE c_foo INTEGER;
+            DECLARE c_bar INTEGER;
+            DECLARE c_baz INTEGER;
+            
+            OPEN c;
+            process_some_table: LOOP
+                FETCH c INTO c_foo, c_bar, c_baz;
+                IF done THEN
+                    LEAVE process_some_table;
+                END IF;
+                
+                -- do something with c_foo, c_bar, c_baz
+            END LOOP;
+        END;
+
+    The original "structured programming" revolution in the 1960s seems to
+    have passed the MySQL team by.
+
+* Okay, I lied. There are two looping constructs: there's also the `REPEAT ...
+  UNTIL condition END REPEAT` construct, analogous to C's `do {} while
+  (!condition);` loop. But you still can't loop over query results, and you
+  can't run zero iterations of the loop's main body this way.
+* There is nothing resembling a modern exception system with automatic scoping
+  of handlers or declarative exception management. Error handling is entirely
+  via Visual Basic-style "on condition X, do Y" instructions, which remain in
+  effect for the rest of the program's execution.
+    * In the language shipped with MySQL 5.0, there wasn't a way to signal
+      errors, either: programmers had to resort to stunts like [intentionally
+      issuing failing
+      queries](http://stackoverflow.com/questions/465727/raise-error-within-mysql-function),
+      instead. Later versions of the language addressed this with the
+      [`SIGNAL`
+      statement](http://dev.mysql.com/doc/refman/5.5/en/signal.html): see,
+      they _can_ learn from better langauges, eventually.
+* You can't escape to some other language, since MySQL doesn't have an
+  extension mechanism for server-side languages or a good way to call
+  out-of-process services during queries.
+
+The net result is that developing MySQL stored programs is unpleasant,
+uncomfortable, and far more error-prone than it could have been.
