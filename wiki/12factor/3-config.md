@@ -15,3 +15,8 @@ variables for everything.
 > the exceptional configuration mechanism :)
 >
 > [Kit L](https://twitter.com/wlonk): that's exactly the critique i have
+
+Frustratingly, the config section doesn't provide any guidance on sensible
+ways to _manage_ environment variables. In any real-world deployment, they're
+going to have to be stored somewhere; where's appropriate? `.bash_profile`?
+`httpd.con` as `SetEnv` directives? Per-release `rc` files? `/etc/init.d`?
