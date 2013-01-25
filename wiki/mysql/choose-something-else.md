@@ -373,7 +373,7 @@ this, too! And fumbles it quite badly.
   views to avoid the problems with "real" views.
     * It also effectively means triggers can't be used to emulate `CHECK`
       constraints and other consistency features.
-    * Code to maintain materialized views is also finnicky and hard to get
+    * Code to maintain materialized views is also finicky and hard to get
       "right", especially if the view includes aggregates or interesting joins
       over its source data. I hope you enjoy debugging MySQL's procedural
       SQL…
@@ -397,7 +397,7 @@ this, too! And fumbles it quite badly.
           Helpful! For per-table configurations, they still all end up
           together in the same file. Partitioning InnoDB tables is a waste of
           time for managing storage.
-    * TL,DR: MySQL's partition support is so finnicky and limited that
+    * TL,DR: MySQL's partition support is so finicky and limited that
       MySQL-based apps tend to opt for multiple MySQL servers ("sharding")
       instead.
 
