@@ -664,8 +664,15 @@ use MySQL:
 Unfortunately, these aren't the reasons people do give, generally. The
 following are much more common:
 
-* **It's good enough.** There are plenty of other equally-capable data storage
-  systems that don't come with MySQL's huge raft of edge cases and quirks.
+* **It's good enough.** No it ain't. There are plenty of other equally-capable
+  data storage systems that don't come with MySQL's huge raft of edge cases
+  and quirks.
+    * **We haven't run into these problems.** Actually, a lot of these
+      problems happen _silently_. Odds are, unless you write your queries and
+      schema statements with the manual open and refer back to it constantly,
+      or have been using MySQL since the 3.x era _daily_, at least some of
+      these issues have bitten you. The ones that prevent you from using your
+      database intelligently are very hard to notice in action.
 * **We already know how to use it.** MySQL development and administration
   causes brain damage, folks, the same way PHP does. Where PHP teaches
   programmers that "array" is the only structure you need, MySQL teaches
