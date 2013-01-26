@@ -341,7 +341,7 @@ fixed) type constraints:
         preserves it.
 
 * Foreign keys, one of the most widely-used database validity checks, are an
-  engine-specific feature, restricting their availabilty in combination with
+  engine-specific feature, restricting their availability in combination with
   other engine-specific features. (For example, a table cannot have both
   foreign key constraints and full-text indexes, as of MySQL 5.5.)
     * Configurations that violate assumptions about foreign keys, such as a
