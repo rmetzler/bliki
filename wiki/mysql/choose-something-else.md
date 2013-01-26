@@ -580,7 +580,7 @@ choices:
       instead. Later versions of the language addressed this with the
       [`SIGNAL`
       statement](http://dev.mysql.com/doc/refman/5.5/en/signal.html): see,
-      they _can_ learn from better langauges, eventually.
+      they _can_ learn from better languages, eventually.
 * You can't escape to some other language, since MySQL doesn't have an
   extension mechanism for server-side languages or a good way to call
   out-of-process services during queries.
