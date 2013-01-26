@@ -10,6 +10,7 @@ I have a few thoughts on it.
 -----
 
 * [III. Config](3-config)
+* [VII. Port Binding](7-port-binding)
 
 -----
 
