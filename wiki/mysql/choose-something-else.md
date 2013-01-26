@@ -680,10 +680,8 @@ following are much more common:
   constant attention. That doesn't have to be true; there are comfortable,
   fast, and easily-tuned systems out there that don't require daily care and
   feeding or the love of a specialist.
-* **It's the only thing our host supports.** [Get](http://linode.com/)
-  [a](http://www.heroku.com/) [better](http://gandi.net/)
-  [host](https://www.engineyard.com). It's not like they're expensive or hard
-  to find.
+* **It's the only thing our host supports.** [Get](http://linode.com/) [a](http://www.heroku.com/) [better](http://gandi.net/) [host](https://www.engineyard.com). It's
+  not like they're expensive or hard to find.
     * **We used it because it was there.** Please hire some fucking software
       developers and go back to writing elevator pitches and flirting with Y
       Combinator.
