@@ -628,7 +628,7 @@ table.
 Table manipulation -- creation, structural modification, and so on -- runs
 into similar problems. MySQL itself parses each `CREATE TABLE` statement, then
 hands off a parsed representation to the table engine so that it can manage
-storage. The parsed representation lossy: there are plenty of forms MySQL's
+storage. The parsed representation is lossy: there are plenty of forms MySQL's
 parser recognizes that aren't representable in a `TABLE` structure, preventing
 engines from implementing, say, column or tuple `CHECK` constraints without
 MySQL's help.
