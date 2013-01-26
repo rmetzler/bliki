@@ -12,6 +12,14 @@ MySQL flaws.
 
 * MySQL is bad at [storage](#storage).
 * MySQL is bad at [data processing](#data-processing).
+* MySQL is bad [by design](#by-design).
+* [Bad arguments](#bad-arguments) for using MySQL.
+
+Much of this is inspired by the principles behind [PHP: A Fractal of Bad
+Design](http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/). I
+suggest reading that article too -- it's got a lot of good thought in it even
+if you already know to stay well away from PHP. (If that article offends you,
+well, this page probably will too.)
 
 ## Storage
 
@@ -552,3 +560,144 @@ choices:
 
 The net result is that developing MySQL stored programs is unpleasant,
 uncomfortable, and far more error-prone than it could have been.
+
+## Why Is MySQL The Way It Is? { #by-design }
+
+MySQL's technology and history contain the seeds of all of these flaws.
+
+### Pluggable Storage Engines
+
+Very early in MySQL's life, the MySQL dev team realized that MyISAM was not
+the only way to store data, and opted to support other storage backends within
+MySQL. This is basically an alright idea; while I personally prefer storage
+systems that focus their effort on making one backend work very well,
+supporting multiple backends and letting third-party developers write their
+own is a pretty good approach too.
+
+Unfortunately, MySQL's storage backend interface puts a very low ceiling on
+the ways storage backends can make MySQL behave better.
+
+MySQL's data access paths through table engines are very simple: MySQL asks
+the engine to open a table, asks the engine to iterate through the table
+returning rows, filters the rows itself (outside of the storage engine), then
+asks the engine to close the table. Alternately, MySQL asks the engine to open
+a table, asks the engine to retrieve rows in range or for a single value over
+a specific index, filters the rows itself, and asks the engine to close the
+table.
+
+This simplistic interface frees table engines from having to worry about query
+optimisation - in theory. Unfortunately, engine-specific features have a large
+impact on the performance of various query plans, but the channels back to the
+query planner provide very little granularity for estimating cost and prevent
+the planner from making good use of the engine in unusual cases. Conversely,
+the table engine system is totally isolated from the actual query, and can't
+make query-dependent performance choices "on its own". There's no third path;
+the query planner itself is not pluggable.
+
+Similar consequences apply to type checking, support for new types, or even
+something as "obvious" as multiple automatic `TIMESTAMP` columns in the same
+table.
+
+Table manipulation -- creation, structural modification, and so on -- runs
+into similar problems. MySQL itself parses each `CREATE TABLE` statement, then
+hands off a parsed representation to the table engine so that it can manage
+storage. The parsed representation lossy: there are plenty of forms MySQL's
+parser recognizes that aren't representable in a `TABLE` structure, preventing
+engines from implementing, say, column or tuple `CHECK` constraints without
+MySQL's help.
+
+The [sheer number of table
+engines](http://dev.mysql.com/doc/refman/5.5/en/storage-engines.html) makes
+that help very slow in coming. Any change to the table engine interface means
+perturbing the code to each engine, making progress on new MySQL-level
+features that interact with storage such as better query planning or new SQL
+constructs necessarily slow to implement and slow to test.
+
+### Poor Priorities
+
+Early on, the MySQL team focused on pure read performance and on "ease of use"
+(for new users with simple needs, as far as I can tell) over correctness and
+completeness, violating Knuth's laws of optimization. Many of these decisions
+locked MySQL into behaviours very early in its life that it still displays
+now. Features like implicit type conversions legitimately do help streamline
+development in very simple cases; experience with [other
+languages](http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/)
+unfortunately shows that the same behaviours sandbag development and help hide
+bugs in more sophisticated scenarios.
+
+While the MySQL (and MariaDB, and Percona) teams have matured greatly, MySQL's
+massive and, frequently, not terribly database-heavy userbase makes it very
+hard to introduce breaking changes. At the same time, adding _optional_
+breaking changes via server and client mode flags (such as `sql_mode`)
+increases the cognitive burden involved in understanding MySQL's behaviours --
+especially when that behaviour can vary from client to client, or when the
+server's configuration is out of your control (on a shared host).
+
+A solution similar to Python's `from __future__ import` pragmas for making
+breaking changes opt-in some releases in advance of making them mandatory
+might help, but MySQL doesn't have the kind of highly-invested, highly-skilled
+user base that would make that effective -- and it still has all of the
+problems of modal behaviour.
+
+### The Inmates are Running The Asylum
+
+[What](http://lists.mysql.com/mysql/228854)
+[is](http://lists.mysql.com/mysql/228563)
+[this](http://lists.mysql.com/mysql/228412)
+[shit](http://lists.mysql.com/mysql/228091)?
+
+It wouldn't be so frustrating if I could assign poor faith to someone, but no,
+the MySQL folks are here to _help_.
+
+## Bad Arguments
+
+Inevitably, someone's going to come along and tell me how wrong I am and how
+MySQL is just fine as a database system. These people are everywhere, and they
+mean well too, and they are almost all wrong. There are two good reasons to
+use MySQL:
+
+1. **Some earlier group wrote for it, and we haven't finished porting our code
+    off of MySQL.**
+2. **We've considered all of these points, and many more, and decided that
+    `___feature_x___` that MySQL offers is worth the hassle.**
+
+Unfortunately, these aren't the reasons people do give, generally. The
+following are much more common:
+
+* **It's good enough.** There are plenty of other equally-capable data storage
+  systems that don't come with MySQL's huge raft of edge cases and quirks.
+* **We already know how to use it.** MySQL development and administration
+  causes brain damage, folks, the same way PHP does. Where PHP teaches
+  programmers that "array" is the only structure you need, MySQL teaches
+  people that databases are awkward, slow, hard-to-tune monsters that require
+  constant attention. That doesn't have to be true; there are comfortable,
+  fast, and easily-tuned systems out there that don't require daily care and
+  feeding or the love of a specialist.
+* **It's the only thing our host supports.** [Get](http://linode.com/)
+  [a](http://www.heroku.com/) [better](http://gandi.net/)
+  [host](https://www.engineyard.com). It's not like they're expensive or hard
+  to find.
+    * **We used it because it was there.** Please hire some fucking software
+      developers and go back to writing elevator pitches and flirting with Y
+      Combinator.
+* **Everybody knows MySQL. It's easy to hire MySQL folks.** It's easy to hire
+  MCSEs, too, but you should be hiring for attitude and ability to learn, not
+  for specific skillsets, if you want to run a successful software project.
+    * **It's popular.** Sure, and nobody ever got fired for buying
+      IBM/Microsoft/Adobe. Popularity isn't any indication of quality, and if
+      we let popularity dictate what technology we use and improve we'll never
+      get anywhere. Marketing software to geeks is _easy_ - it's just that
+      lots of high-quality projects don't bother.
+* **It's lightweight.** So's [SQLite 3](http://www.sqlite.org) or
+  [H2](http://www.h2database.com/html/main.html). If you care about deployment
+  footprint more than any other factor, MySQL is actually pretty clunky (and
+  embedded MySQL has even bigger problems than freestanding MySQL).
+* **It's getting better, so we might as well stay on it.** [It's
+  true](http://dev.mysql.com/doc/refman/5.6/en/mysql-nutshell.html), if you go
+  by feature checklists and the manual, MySQL is improving "rapidly". 5.6 is
+  due out soon and superficially looks to contain a number of good changes. I
+  have two problems with this line of reasoning:
+    1. Why wait? Other databases are good _now_, not _eventually_.
+    2. MySQL has a history of providing the bare minimum to satisfy a feature
+    checkbox without actually making the feature work well, work consistently,
+    or work in combination with other features.
