@@ -71,6 +71,33 @@ familiar with other SQL implementations).
   3-byte limit, tend to leak out into client applications. Data that does not
   fit MySQL's understanding of the storage encoding will be transformed until
   it does, by truncation or replacement, by default.
+    * Collation support is per-encoding, with one of the stranger default
+      configurations: by default, the collation orders characters according to
+      Swedish alphabetization rules, case-insensitively.
+    * Since it's the default, lots of folks who don't know the manual
+      inside-out and backwards observe MySQL's case-insensitive collation
+      behaviour (`'a' = 'A'`) and conclude that "MySQL is case-insensitive",
+      complicating any effort to use a case-sensitive locale.
+    * Both the encoding and the collation can vary, independently, by
+      _column_. Do you keep your schema definition open when you write
+      queries to watch out for this sort of shit?
+* The `TIMESTAMP` type tries to do something smart by storing values in a
+  canonical timezone (UTC), but it's done with so few affordances that it's
+  very hard to even _tell_ that MySQL's done a right thing with your data.
+    * And even after that, the result of `foo < '2012-04-01 09:00:00'` still
+      depends on what time of year it is when you evaluate the query, unless
+      you're very careful with your connection timezone.
+    * `TIMESTAMP` is also special-cased in MySQL's schema definition handling,
+      making it easy to accidentally create (or to accidentally fail to
+      create) an auto-updating field when you didn't (did) want one.
+    * `DATETIME` does not get the same timezone handling `TIMESTAMP` does.
+      What? And you can't provide your own without resorting to hacks like
+      extra columns.
+    * Oh, did you want to _use_ MySQL's timezone support? Too bad, none of
+      that data's loaded by default. You have to process the OS's `tzinfo`
+      files into SQL with a separate tool and import that. If you ever want to
+      update MySQL's timezone settings later, you need to take the server down
+      just to make sure the changes apply.
 
 ### Preserving Data
 
