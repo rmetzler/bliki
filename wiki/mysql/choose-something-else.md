@@ -141,6 +141,66 @@ This mostly works as expected. Most of the ways MySQL will screw you happen
 when you store data, not when you retrieve it. However, there are a few things
 that implicitly transform stored data before returning it:
 
+* MySQL's surreal type conversion system works the same way during `SELECT`
+  that it works during other operations, which can lead to queries matching
+  unexpected rows:
+
+        owen@scratch> CREATE TABLE account (
+            ->     accountid INTEGER
+            ->         AUTO_INCREMENT
+            ->         PRIMARY KEY,
+            ->     discountid INTEGER
+            -> );
+        Query OK, 0 rows affected (0.54 sec)
+
+        owen@scratch> INSERT INTO account
+            ->     (discountid)
+            -> VALUES
+            ->     (0),
+            ->     (1),
+            ->     (2);
+        Query OK, 3 rows affected (0.03 sec)
+        Records: 3  Duplicates: 0  Warnings: 0
+
+        owen@scratch> SELECT *
+            -> FROM account
+            -> WHERE discountid = 'banana';
+        +-----------+------------+
+        | accountid | discountid |
+        +-----------+------------+
+        |         1 |          0 |
+        +-----------+------------+
+        1 row in set, 1 warning (0.05 sec)
+
+    Ok, unexpected, but there's at least a warning (do your apps check for
+    those?) - let's see what it says:
+
+        owen@scratch> SHOW WARNINGS;
+        +---------+------+--------------------------------------------+
+        | Level   | Code | Message                                    |
+        +---------+------+--------------------------------------------+
+        | Warning | 1292 | Truncated incorrect DOUBLE value: 'banana' |
+        +---------+------+--------------------------------------------+
+        1 row in set (0.03 sec)
+
+    I can count on one hand the number of `DOUBLE` columns in this example and
+    still have five fingers left over.
+
+    You might think this is an unreasonable example: maybe you should always
+    make sure your argument types exactly match the field types, and the query
+    should use `57` instead of `'banana'`. (This does actually "fix" the
+    problem.) It's unrealistic to expect every single user to run `SHOW CREATE
+    TABLE` before every single query, or to memorize the types of every column
+    in your schema, though. This example derived from a technically-skilled
+    but MySQL-ignorant tester examining MySQL data to verify some behavioural
+    changes in an app.
+
+    * Actually, you don't even need a table for this: `SELECT 0 = 'banana'`
+      returns `1`. Did the [PHP](http://phpsadness.com/sad/52) folks design
+      MySQL's `=` operator?
+
+    * This isn't affected by `sql_mode`, even though so many other things are.
+
 * `TIMESTAMP` columns (and _only_ `TIMESTAMP` columns) can return
   apparently-differing values for the same stored value depending on
   per-connection configuration even during read-only operation. This is done
