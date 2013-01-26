@@ -613,7 +613,7 @@ a specific index, filters the rows itself, and asks the engine to close the
 table.
 
 This simplistic interface frees table engines from having to worry about query
-optimisation - in theory. Unfortunately, engine-specific features have a large
+optimization - in theory. Unfortunately, engine-specific features have a large
 impact on the performance of various query plans, but the channels back to the
 query planner provide very little granularity for estimating cost and prevent
 the planner from making good use of the engine in unusual cases. Conversely,
