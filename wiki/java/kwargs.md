@@ -33,9 +33,9 @@ arguments to Java).
 The keyword-argument version would be something like
 
     Response r = new Response(
-        .status=200,
-        .entity=foo,
-        .headers=Arrays.asList(Header.of("X-Plane", "Amazing"))
+        .status = 200,
+        .entity = foo,
+        .headers = Arrays.asList(Header.of("X-Plane", "Amazing"))
     );
 
 and the `ResponseBuilder` class would not need to exist at all for this case.
@@ -58,6 +58,11 @@ Python, most recently:
         pass
     
     foo(z=3, x=1, y=2)
+
+Smalltalk (and ObjectiveC) use an interleaving convention that reads very much
+like keyword arguments:
+
+    Point atX: 5 atY: 8
 
 ## Challenges
 
@@ -82,12 +87,39 @@ Allow calls written as
 `SOME-SYNTAX` is a production that is not already legal at that point in Java,
 which is a surprisingly frustrating limitation. Constructs like
 
-    foo(x=EXPR, y=EXPR, z=EXPR)
+    foo(x = EXPR, y = EXPR, z = EXPR)
 
 are already legal (assignment is an expression) and already match positional
 arguments.
 
-Possibilities:
+Keyword arguments match the name of the formal argument in the method
+declaration. Passing a keyword argument that does not match a formal argument
+is a compilation error.
+
+Calls can mix keyword arguments and positional arguments, in the following
+order:
+
+1. Positional arguments.
+2. Varargs positional arguments.
+3. Keyword arguments.
+
+Passing the same argument as both a positional and a keyword argument is a
+compilation error.
+
+Call sites must satisfy every argument the method/constructor has (i.e., this
+doesn't imply optional arguments). This makes implementation easy and
+unintrusive: the compiler can implement keyword arguments by transforming them
+into positional arguments. Reflective calls (`Method.invoke` and friends) can
+continue accepting arguments as a sequence.
+
+The `Method` class would expose a new method:
+
+    public List<String> getArgumentNames()
+
+The indexes in `getArgumentNames` match the indexes in `getArgumentTypes` and
+related methods.
+
+Possibilities for syntax:
 
 * `foo(x := 5, y := 8, z := 2)` - `:=` is never a legal sequence of tokens in
   Java. Introduces one new operator-like construct; the new sequence `:=`
@@ -108,8 +140,13 @@ parameters, not just their order. This is a breaking change, and generated
 names will need to be chosen for existing class files. (This may be derivable
 from debug information, where present.)
 
+
 ## Edge Cases
 
 * Mixed positional and keyword arguments.
     * Collisions (same argument passed by both) are, I think, detectable at
       compile time. This should be an error.
+* Inheritance. It is legal for a superclass to define `foo(a, b)` and for
+  subclasses to override it as `foo(x, y)`. Which argument names do you use
+  when?
+* Varargs.
