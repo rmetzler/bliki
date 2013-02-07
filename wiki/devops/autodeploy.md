@@ -23,3 +23,16 @@ wish on my worst enemy.)
 
 5. For each service, in each environment, there is a canonical series of steps
 that produce a "deployed" system.
+
+-----
+
+1. Decide what code should be deployed. (This is a version control activity.)
+2. Get the code onto the fucking server.
+3. Decide what configuration values should be deployed. (This is also a
+    version control activity, though possibly not in the same repositories as
+    the code.)
+4. Get the configuration onto the fucking server.
+5. Get the code running with the configuration.
+6. Log to fucking syslog.
+7. When the machine reboots, make sure the code comes back running the same
+    configuration.
