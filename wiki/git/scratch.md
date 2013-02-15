@@ -7,10 +7,9 @@ Git repos are stored in .git:
     fakegit$ mkdir .git
 
 They have a "symbolic ref" (which are text files, see [`man
-git-symbolic-ref`](http://jk.gs/git-symbolic-ref.html)) named `HEAD``,
-pointing to the currently checked-out branch. Let's use `master`. Branches are
-refs under `refs/heads` (see [`man
-git-branch`](http://jk.gs/git-branch.html)):
+git-symbolic-ref`](http://jk.gs/git-symbolic-ref.html)) named `HEAD`, pointing
+to the currently checked-out branch. Let's use `master`. Branches are refs
+under `refs/heads` (see [`man git-branch`](http://jk.gs/git-branch.html)):
 
     fakegit ((unknown))$ echo 'ref: refs/heads/master' > .git/HEAD
 
