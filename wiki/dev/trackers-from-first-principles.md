@@ -71,13 +71,15 @@ Elemental states:
 Most real-world workflows introduce some intermediate states that tie into
 process-related handoffs.
 
-For software, the following divisions are common:
+For software, I see these divisions, in various combinations, frequently:
 
 * "Open":
-    * "In Development": someone is working on the code changes and asset
-      changes necessary to complete the task. This occasionally subsumes
-      preliminary work, too.
-    * "In Testing": code changes and asset changes are ostensibly complete,
+    * "Unverified": further work needs to be done to decide whether the task
+      should be completed.
+    * "In Development": someone is working on the code and asset changes
+      necessary to complete the task. This occasionally subsumes preliminary
+      work, too.
+    * "In Testing": code and asset changes are ostensibly complete,
       but need testing to validate that the task has been completed
       satisfactorially.
 * "Completed":
@@ -93,6 +95,9 @@ For software, the following divisions are common:
     * "Duplicate": the task is identical to, or closely related to, some other
       task, such that completing either would be equivalent to completing
       both.
+    * "Invalid": the task isn't relevant, is incompletely described, doesn't
+      make sense, or is otherwise not appropriate work for the team using the
+      tracker.
 
 None of these are universal.
 
@@ -102,6 +107,14 @@ Transitions show how a task moves from state to state.
     * Explicit transitions: "mark this task as completed"
     * Implicit transitions: "This commit also completes these tasks"
 * Drive external factors (tasks marked completed are emailed to testers)
+
+States implicitly describe a _belief_ or a _desire_ about the future of the
+task, which is a human artifact and may be wrong or overly hopeful. Tasks can
+transition to "Completed" or "Abandoned" states when the work hasn't actually
+been completed or abandoned, or from "Completed" or "Abandoned" to an "Open"
+state to note that the work isn't as done as we thought it was. _This is a
+feature_ and trackers that assume every transition is definitely true and
+final encourage ugly workarounds like duplicating tickets to reopen them.
 
 ## Speciation
 
@@ -121,4 +134,22 @@ necessary.
 Supporting structure helps if it leads to more interesting or efficient ways
 of using tasks to drive and understand work.
 
-Bugs are not the only "special" kind of task.
+Bugs are not the only "special" kind of task:
+
+* "Feature" tasks show up frequently, and speciate on having room for
+  describing specs and scope.
+* "Support ticket" tasks show up in a few trackers, and speciate dramatically
+  as they tend to be tasks describing the work of a single incident rather
+  than tasks describing the work on some shared aspect, so they tend to pick
+  up fields for relating tickets to the involved parties. (Arguably, incident
+  tickets have needs so drastically different that you should use a dedicated
+  incident-management tool, not a task/bug tracker.)
+
+Other kinds are possible, and you've probably seen them in the wild.
+
+Ideally, speciation happens to support _widespread_ specialized needs. Bug
+repro is a good example; every task whose goal is to fix a defect should
+include a clear understanding of the defect, both to allow it to be fixed and
+to allow it to be tested. Adding specialized data for bugs supports that by
+encouraging clearer, more structured descriptions of the defect (with implicit
+"fix this" as the task).
