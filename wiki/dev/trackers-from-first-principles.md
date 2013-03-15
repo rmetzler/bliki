@@ -32,6 +32,11 @@ the publishing of other facts.
 Tasks are only useful if they're actionable. To be actionable, they must be
 understood. Understanding requires communication and documentation.
 
+* A protocol-agnostic _name_, for easily identifying a task in related
+  conversations.
+    * These names need to be _short_ since they're used conversationally. Long
+      issue names will be shortened by convention whether the tracker supports
+      it or not.
 * An actionable _description_ of the task.
     * Frequently, a short _summary_ of the task, to ease bulk task
       manipulation. Think of the difference between an email subject and an
@@ -40,6 +45,32 @@ understood. Understanding requires communication and documentation.
   understanding alongside the task.
 
 See [speciation](#speciation), below.
+
+## Responsibility and Ownership
+
+Regardless of whether your team operates with a top-down, command-oriented
+management structure or with a more self-directed and anarchistic process, for
+every task, there is notionally one person currently responsible for ensuring
+that the task is completed.
+
+That relationship can change over time; how it does so is probably
+team-specific.
+
+There may be other people _involved_ in a task that are not _responsible_ for
+a task, in a number of roles. Just because I developed the code for a feature
+does not mean I am necessarily responsible for the feature any more, but it
+might be useful to have a "developed by" list for the feature's task.
+
+Ways of identifying people:
+
+* Natural-language names ("Gianna Grady")
+* Email addresses
+* Login names
+* Distinguished names in some directory
+* URLs
+
+Task responsibility relationships reflect real-world responsibility, and help
+communicate it, but do not normally define it.
 
 ## Workflow
 
@@ -153,3 +184,36 @@ include a clear understanding of the defect, both to allow it to be fixed and
 to allow it to be tested. Adding specialized data for bugs supports that by
 encouraging clearer, more structured descriptions of the defect (with implicit
 "fix this" as the task).
+
+## Implementation notes
+
+If we reduce task tracking to "record changes to fields and record discussion
+comments, on a per task basis", we can describe the current state of a ticket
+using the "most recent" values of each field and the aggregate of all recorded
+comments. This can be done ~2 ways:
+
+1. "Centralized" tracking, where each task has a single, total order of
+    changes. Changes are mediated through a centralized service.
+2. "Decentralized" tracking, where each task has only a partial order over the
+    history of changes. Changes are mediated by sharing sets of changes, and by
+    appending "reconciliation" changes to resolve cases where two incomparable
+    changes modify the same field/s. The most obvious partial order is a
+    digraph.
+
+Centralized tracking is a well-solved problem. Decentralized tracking so far
+seems to rely heavily on DSCM tools (Git, Mercurial, Fossil) for resolving
+conflicts.
+
+The "work offline" aspect of a distributed tracker is less interesting in as
+much as task tracking is a communications tool. Certain kinds of changes
+should be published and communicated as early as possible so as to avoid
+misunderstandings or duplicated work.
+
+Being able to separate the mechanism of how changes to tasks are recorded from
+the policy of which library of tasks is "canonical" is potentially useful as
+an editorial tool and for progressive publication to wider audiences as work
+progresses.
+
+Issue tracking is considerably more amenable to append-only implementations
+than SCM is, even if you dislike history-editing SCM workflows. This suggests
+that Git is a poor choice of issue-tracking storage backends...
