@@ -4,7 +4,7 @@ In the last couple of years, I've been interacting with folks who take a more
 active hand in gender and social issues, and it's changed the way I see the
 word "rape". It didn't entirely make sense to me how so many people could be
 self-identified victims of rape culture while so few people are, even in a
-euphemistic way, self-identified rapists, so I dug a bit at my assumptions.
+euphemistic way, identifiable as rapists, so I dug a bit at my assumptions.
 
 Growing up immersed in what I now recognize as the early stages of modern
 "news" culture, rape was always reported as a violent act. Something so black
@@ -16,7 +16,7 @@ and raped", and so on.
 Reading more recent postings on the idea of "rape culture", however, paints a
 very different picture of the same word. "Raped at a party", "too drunk to
 consent", and other depictions of rape as an act of exploitation (or,
-appallingly, convenience) rather than violence.
+appallingly, convenience or indifference) rather than violence.
 
 Let me be perfectly clear here: without _active consent_, any sexual contact
 is rape or is on the road to it. In that sense, violence, exploitation,
