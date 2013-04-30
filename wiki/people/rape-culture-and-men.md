@@ -2,7 +2,9 @@
 
 In the last couple of years, I've been interacting with folks who take a more
 active hand in gender and social issues, and it's changed the way I see the
-word "rape". Here's my story.
+word "rape". It didn't entirely make sense to me how so many people could be
+self-identified victims of rape culture while so few people are, even in a
+euphemistic way, self-identified rapists, so I dug a bit at my assumptions.
 
 Growing up immersed in what I now recognize as the early stages of modern
 "news" culture, rape was always reported as a violent act. Something so black
@@ -13,12 +15,12 @@ and raped", and so on.
 
 Reading more recent postings on the idea of "rape culture", however, paints a
 very different picture of the same word. "Raped at a party", "too drunk to
-consent", and other depictions of rape as an act of exploitation rather than
-violence.
+consent", and other depictions of rape as an act of exploitation (or,
+appallingly, convenience) rather than violence.
 
 Let me be perfectly clear here: without _active consent_, any sexual contact
-is rape. In that sense, violence, exploitation, intoxication and other forms
-of coercion are interchangeable and equally vile.
+is rape or is on the road to it. In that sense, violence, exploitation,
+intoxication and other forms of coercion are interchangeable and equally vile.
 
 However, when the public idea of rape is limited to rapes with overt violence,
 it's really easy to excuse non-violent coerced sex as "not really rape". After
@@ -33,3 +35,4 @@ Relevant reading:
 
 * ["My friend group has a case of Creepy Dude", by Captain
   Awkward](http://captainawkward.com/2012/08/07/322-323-my-friend-group-has-a-case-of-the-creepy-dude-how-do-we-clear-that-up/)
+  (which also reminded me that it's possible to be a creep to your girlfriend)
