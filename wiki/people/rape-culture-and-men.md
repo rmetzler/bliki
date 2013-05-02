@@ -36,3 +36,4 @@ Relevant reading:
 * ["My friend group has a case of Creepy Dude", by Captain
   Awkward](http://captainawkward.com/2012/08/07/322-323-my-friend-group-has-a-case-of-the-creepy-dude-how-do-we-clear-that-up/)
   (which also reminded me that it's possible to be a creep to your girlfriend)
+* ["Meet the Predators", from the fantastic Yes Means Yes](http://yesmeansyesblog.wordpress.com/2009/11/12/meet-the-predators/), cited in the Captain Awkward article but worth a read on its own well-researched merits.
