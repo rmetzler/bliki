@@ -1,4 +1,43 @@
-{% extends 'markdoc-default/listing.html' %}
+{% extends 'base.html' %}
+
+{% block title %}ls /{{ directory|e }}{% endblock %}
+
+{% block content %}
+	<div id="listing">
+		<h1><code>ls /{{ directory|e }}</code></h1>
+
+		{% if sub_directories %}
+			<div id="directories">
+				<h2>Directories</h2>
+				<ul>
+					{% for dir in sub_directories %}
+						<li><a href="{{ make_relative(dir.href) }}">{{ dir.basename|e }}/</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+
+		{% if pages %}
+			<div id="pages">
+				<h2>Pages</h2>
+				<ul>
+					{% for page in pages %}
+						<li><a href="{{ make_relative(page.href) }}">{{ page.title }}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+
+		{% if files %}
+			<div id="files">
+				<h2>Files</h2>
+				{% for file in files %}
+					<li><a href="{{ make_relative(file.href) }}">{{ file.basename|e }}</a></li>
+				{% endfor %}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}
 
 {% block github_info %}
 <a href="https://github.com/ojacobson/grimoiredotca/tree/master/wiki/{{ directory }}">See this directory on GitHub</a> (<a href="https://github.com/ojacobson/grimoiredotca/commits/master/wiki/{{ directory }}">history</a>).

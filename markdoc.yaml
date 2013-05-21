@@ -1,5 +1,8 @@
 wiki-name: "The Codex"
 
+use-default-templates: false
+use-default-static:    false
+
 markdown:
     extensions:
         - extra

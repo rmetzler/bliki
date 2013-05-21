@@ -1,19 +1,64 @@
-{% extends 'markdoc-default/base.html' %}
-{% block css %}
-{{ super() }}
-{{ html.cssimport(make_relative("/media/css/custom.css")) }}
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		{% block title_prefix -%}
+			{% if 'wiki-name' in config %}{{ config['wiki-name']|e }} » {% endif %}
+		{%- endblock %}
+		{% block title -%}
+			{{ title }}
+		{%- endblock %}
+	</title>
 
-{% block body_footer %}
-<div id="footer">
-  <p>
-    {% if 'wiki-name' in config %}
-      {{ config['wiki-name']|e }} —
-    {% endif %}
-    Powered by <a href="http://markdoc.org/">Markdoc</a>.
-    {% block github_info %}
-    <a href="https://github.com/ojacobson/grimoiredotca">See it on GitHub</a>.
-    {% endblock %}
-  </p>
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="{{ make_relative('/media/css/reset.css') }}">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="{{ make_relative('/media/css/grimoire.css') }}">
+</head>
+<body>
+
+<div id="shell">
+	{% if crumbs %}
+		<ol id="breadcrumbs">
+			{% for name, href in crumbs %}
+				<li class="crumb-{{ loop.index0 }} {% if loop.last %}last{% else %}not-last{% endif %}">
+					{% if not href %}
+						{{ name|e }}
+					{% else %}
+						<a href="{{ make_relative(href)|e }}">{{ name|e }}</a>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ol>
+	{% endif %}
+
+	{% block content %}
+	{% endblock %}
+
+	{% block after_content %}
+	{% endblock %}
+
+	{% block footer %}
+	<div id="footer">
+		<p>
+			{% if 'wiki-name' in config %}
+				{{ config['wiki-name']|e }} —
+			{% endif %}
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			{% block github_info %}
+				<a href="https://github.com/ojacobson/grimoiredotca">See it on GitHub</a>.
+			{% endblock %}
+		</p>
+	</div>
+	{% endblock %}
 </div>
-{% endblock %}
+</body>
+</html>
