@@ -15,9 +15,9 @@ that front, too), we still have the `git(1)` UI right now and people still get
 into trouble with it right now.
 
 Git follows the New Jersey approach laid out in Richard Gabriel's [The Rise of
-"Worse is Better"](http://www.jwz.org/doc/worse-is-better.html): given the
-choice between a simple implementation and a simple interface, Git chooses the
-simple implementation almost everywhere. This internal simplicity can give
+"Worse is Better"](http://www.dreamsongs.com/RiseOfWorseIsBetter.html): given
+the choice between a simple implementation and a simple interface, Git chooses
+the simple implementation almost everywhere. This internal simplicity can give
 users the leverage to fix the problems that its horrible user interface leads
 them into, so these pages will focus on explaining the simple parts and giving
 users the tools to examine them.
