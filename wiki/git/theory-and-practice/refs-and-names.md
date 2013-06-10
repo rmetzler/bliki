@@ -21,8 +21,8 @@ identically, after resolving the ref down to the SHA-1.
 
 Every operation in Git that uses a name of some sort, including branching
 (branch names), tagging (tag names), fetching (remote-tracking branch names),
-and pushing (many kinds of name) expand those names to refs, using a namespace
-convention. The following namespaces are common:
+and pushing (many kinds of name), expands those names to refs, using a
+namespace convention. The following namespaces are common:
 
 * `refs/heads/NAME`: branches. The branch name is the ref name with
   `refs/heads/` removed. Names generally point to commits.
@@ -33,6 +33,12 @@ convention. The following namespaces are common:
 
 * `refs/tags/NAME`: tags. The tag name is the ref name with `refs/heads/`
   removed. Names generally point to commits or tag objects.
+
+* `refs/bisect/STATE`: `git bisect` markers for known-good and known-bad
+  revisions, from which the rest of the bisect state can be derived.
+
+There are also a few special refs directly in the `refs/` namespace, most
+notably:
 
 * `refs/stash`: The most recent stash entry, as maintained by `git stash`.
   (Other stash entries are maintained by a separate system.) Names generally
