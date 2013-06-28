@@ -9,6 +9,7 @@ I use a couple of naming conventions here that are not stock `git`:
 
 origin
 :   The repository to which you _publish_ proposed changes
+
 upstream
 :   The repository from which you receive ongoing development, and which will
     receive your changes.
