@@ -49,6 +49,9 @@ While you're here, `cd` into it and add the original project as a remote:
 
 ## Feature process
 
+Do these things for each feature you work on. To switch features, just use
+`git checkout my-feature`.
+
 ### Create a new feature branch locally
 
 We use `upstream`'s `master` branch here, so that your feature includes all of
