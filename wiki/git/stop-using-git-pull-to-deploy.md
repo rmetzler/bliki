@@ -69,7 +69,7 @@ Sitaram's own documentation talks about how to accomplish these when
 impractical) in most cases; deployment should use a dedicated clone of the
 canonical repository.
 
-I also disaree with point 3, preferring to keep deployment-related changes
+I also disagree with point 3, preferring to keep deployment-related changes
 outside of tracked files. This makes it much easier to argue that the changes
 introduced to configure the project for deployment do not introduce new bugs
 or other surprise features.
