@@ -33,7 +33,7 @@ preserved (and merged) into the deployment, for example; once this happens,
 the actual deployed commit will _never_ match the intended commit.
 
 `git pull` will approximate the right thing "by accident": if the current
-local branch (generally `master` for people using `git pull` is always clean,
+local branch (generally `master`) for people using `git pull` is always clean,
 and always tracks the desired deployment branch, then `git pull` will update
 to the intended commit exactly. This is pretty fragile, though; many git
 commands can cause the local branch to diverge from its upstream branch, and
