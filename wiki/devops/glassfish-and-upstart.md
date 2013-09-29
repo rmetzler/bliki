@@ -127,11 +127,11 @@ Combined with a per-domain wrapper:
     stop on deconfiguring-networking
 
     pre-start script
-        start glassfish-domain example
+        start glassfish-domain DOMAIN=example
     end script
 
     post-stop script
-        stop glassfish-domain example
+        stop glassfish-domain DOMAIN=example
     end script
 
 ## Possible refinements
