@@ -65,12 +65,15 @@ familiar with other SQL implementations).
   states](http://dev.mysql.com/doc/refman/5.5/en/server-sql-mode.html), making
   it harder to carry expectations from manual testing over to code or from
   tool to tool.
-* MySQL recommends UTF-8 as a character-set, but still defaults to Latin-1.  The implimentation
-of `utf8` up until MySQL 5.5 was only the 3-byte [BMP](http://en.wikipedia.org/wiki/Basic_Multilingual_Plane#Basic_Multilingual_Plane).  MySQL 5.5 and beyond supports a 4-byte `utf8`, but confusingly must be set with the character-set `utf8mb4`.  Implementation details of
-  these encodings within MySQL, such as the `utf8` 
-  3-byte limit, tend to leak out into client applications. Data that does not
-  fit MySQL's understanding of the storage encoding will be transformed until
-  it does, by truncation or replacement, by default.
+* MySQL recommends UTF-8 as a character-set, but still defaults to Latin-1.
+  The implimentation of `utf8` up until MySQL 5.5 was only the 3-byte
+  [BMP](http://en.wikipedia.org/wiki/Basic_Multilingual_Plane#Basic_Multilingual_Plane).
+  MySQL 5.5 and beyond supports a 4-byte `utf8`, but confusingly must be set
+  with the character-set `utf8mb4`. Implementation details of these encodings
+  within MySQL, such as the `utf8` 3-byte limit, tend to leak out into client
+  applications. Data that does not fit MySQL's understanding of the storage
+  encoding will be transformed until it does, by truncation or replacement, by
+  default.
     * Collation support is per-encoding, with one of the stranger default
       configurations: by default, the collation orders characters according to
       Swedish alphabetization rules, case-insensitively.
