@@ -102,9 +102,16 @@ familiar with other SQL implementations).
 ### Preserving Data
 
 ... against unexpected changes: like most disk-backed storage systems, MySQL
-is as reliable as the disks and filesystems its data lives on. MySQL makes
-very little effort to do its own storage validation and error correction, but
-this is a limitation shared with many, _many_ other systems.
+is as reliable as the disks and filesystems its data lives on. MySQL provides 
+no additional functionality in terms of mirroring or hardware failure tolerance
+(such as [Oracle ASM](http://en.wikipedia.org/wiki/Automatic_Storage_Management)).
+However this is a limitation shared with many, _many_ other systems.
+
+When using the InnoDB storage engine (default since MySQL 5.5), MySQL maintains page
+checksums in order to detect corruption caused by underlying storage.  However,
+many third-party software applications, as sell as users upgrading
+from earlier versions of MySQL may be using MyISAM, which will frequently corrupt
+data files on inproper shutdown.
 
 The implicit conversion rules that bite when storing data also bite when
 asking MySQL to modify data - my favourite example being a fat-fingered
