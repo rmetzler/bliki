@@ -65,12 +65,15 @@ familiar with other SQL implementations).
   states](http://dev.mysql.com/doc/refman/5.5/en/server-sql-mode.html), making
   it harder to carry expectations from manual testing over to code or from
   tool to tool.
-* MySQL uses non-standard and rather unique interpretations of several common
-  character encodings, including UTF-8 and Latin-1. Implementation details of
-  these encodings within MySQL, such as the `utf8` encoding's MySQL-specific
-  3-byte limit, tend to leak out into client applications. Data that does not
-  fit MySQL's understanding of the storage encoding will be transformed until
-  it does, by truncation or replacement, by default.
+* MySQL recommends UTF-8 as a character-set, but still defaults to Latin-1.
+  The implimentation of `utf8` up until MySQL 5.5 was only the 3-byte
+  [BMP](http://en.wikipedia.org/wiki/Basic_Multilingual_Plane#Basic_Multilingual_Plane).
+  MySQL 5.5 and beyond supports a 4-byte `utf8`, but confusingly must be set
+  with the character-set `utf8mb4`. Implementation details of these encodings
+  within MySQL, such as the `utf8` 3-byte limit, tend to leak out into client
+  applications. Data that does not fit MySQL's understanding of the storage
+  encoding will be transformed until it does, by truncation or replacement, by
+  default.
     * Collation support is per-encoding, with one of the stranger default
       configurations: by default, the collation orders characters according to
       Swedish alphabetization rules, case-insensitively.
@@ -102,9 +105,16 @@ familiar with other SQL implementations).
 ### Preserving Data
 
 ... against unexpected changes: like most disk-backed storage systems, MySQL
-is as reliable as the disks and filesystems its data lives on. MySQL makes
-very little effort to do its own storage validation and error correction, but
-this is a limitation shared with many, _many_ other systems.
+is as reliable as the disks and filesystems its data lives on. MySQL provides 
+no additional functionality in terms of mirroring or hardware failure tolerance
+(such as [Oracle ASM](http://en.wikipedia.org/wiki/Automatic_Storage_Management)).
+However this is a limitation shared with many, _many_ other systems.
+
+When using the InnoDB storage engine (default since MySQL 5.5), MySQL maintains page
+checksums in order to detect corruption caused by underlying storage.  However,
+many third-party software applications, as sell as users upgrading
+from earlier versions of MySQL may be using MyISAM, which will frequently corrupt
+data files on improper shutdown.
 
 The implicit conversion rules that bite when storing data also bite when
 asking MySQL to modify data - my favourite example being a fat-fingered
