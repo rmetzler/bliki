@@ -111,7 +111,7 @@ When using the InnoDB storage engine (default since MySQL 5.5), MySQL maintains 
 checksums in order to detect corruption caused by underlying storage.  However,
 many third-party software applications, as sell as users upgrading
 from earlier versions of MySQL may be using MyISAM, which will frequently corrupt
-data files on inproper shutdown.
+data files on improper shutdown.
 
 The implicit conversion rules that bite when storing data also bite when
 asking MySQL to modify data - my favourite example being a fat-fingered
