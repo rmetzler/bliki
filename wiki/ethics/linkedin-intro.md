@@ -150,7 +150,7 @@ to some of the security concerns. The post is interesting, and I recommend you
 read it.
 
 The key point about the response is that it underscores how secure Intro is
-_for LinkedIn_. It does absolutely nothign to discuss how LinkedIn is curating
+_for LinkedIn_. It does absolutely nothing to discuss how LinkedIn is curating
 its users' security needs. In particular:
 
 > We isolated Intro in a separate network segment and implemented a
