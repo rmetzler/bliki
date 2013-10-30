@@ -174,6 +174,11 @@ was or to understand who vetted the results.
 
 ## The Bottom Line
 
+_If_ LinkedIn Intro works as built, and _if_ their security safeguards are put
+into place, then Intro exposes its users to much greater risk of password
+compromise and helps them expose themselves to surveillence, both government
+and private. If either of those conditions does not hold, it's worse.
+
 The software industry is young, and immature, and wealthy. There is no ethics
 body to complain to; had the developers of Intro said "no", they would very
 likely have been replaced by another round of developers who would help
