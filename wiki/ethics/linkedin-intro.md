@@ -23,7 +23,7 @@ outgoing mail server to deliver mail with correct SPF or DKIM validation. This
 implies that LinkedIn Intro must know the user's email credentials, which it
 acquires from their mobile device. Since this is a "use" of a password, not
 merely a "validation" of an incoming password, the password must be available
-_to LinkedIn_ as plain text*. There are two serious problems with this that
+_to LinkedIn_ as plain text. There are two serious problems with this that
 are directly LinkedIn's responsibilty, and a third that's indirect but
 important. (Some email providers - notably Google - support non-password,
 revokable authentication mechanisms for exactly this sort of use. It's not
