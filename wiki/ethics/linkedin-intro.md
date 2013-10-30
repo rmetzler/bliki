@@ -145,7 +145,7 @@ down the road.
 
 Shortly after Intro's first round of public mockery, a LinkedIn employee
 [posted a
-resonse](http://blog.linkedin.com/2013/10/26/the-facts-about-linkedin-intro/)
+response](http://blog.linkedin.com/2013/10/26/the-facts-about-linkedin-intro/)
 to some of the security concerns. The post is interesting, and I recommend you
 read it.
 
