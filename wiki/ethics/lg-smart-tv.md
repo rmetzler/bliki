@@ -35,7 +35,7 @@ a website that uses invasive ad tracking, LG's position is more analogous to
 that of the web browser itself: they get to watch the customer's habits no matter what they choose to watch.
 
 There is a material difference between advertising targeted by time slot and
-by the content distributors (television networks) on their own belahf, which
+by the content distributors (television networks) on their own behalf, which
 has been part of television nearly from its inception, and the kind of
 personally-invasive and cross-channel targeted advertising LG is engaging in.
 LG's ability to correlate viewing habits across every channel and across
