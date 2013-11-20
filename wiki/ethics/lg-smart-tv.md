@@ -1,4 +1,4 @@
-# LG Smart TVs
+# LG Smart TVs are dumb
 
 (Or, corporate entitlement run amok.)
 
@@ -17,7 +17,7 @@ Under his diagnosis, the TV sends an event to LG that identifies the specific TV
 The page comments additionally suggest that the TV sends back information
 whenever the menu is opened, as well.
 
-This information is used to provide targetted advertising, likely to offset
+This information is used to provide targeted advertising, likely to offset
 the operational cost of the TV's "intelligent" features. Consumer protections
 around personal data and tracking have traditionally been very weak, so it's
 not entirely surprising that LG would choose to extract revenue this way
@@ -34,6 +34,10 @@ produce. However, LG is not a content producer; while you can choose to leave
 a website that uses invasive ad tracking, LG's position is more analogous to
 that of the web browser itself: they get to watch the customer's habits no matter what they choose to watch.
 
+There is a material difference between advertising targeted by time slot and
+by the content distributors (television networks) on their own belahf, which
+has been part of television nearly from its inception, and the kind of
+personally-invasive and cross-channel targeted advertising LG is engaging in.
 LG's ability to correlate viewing habits across every channel and across
 non-public media the user watches places them in a position where they may
 well derive more information about the people watching TV than those peoples'
@@ -50,7 +54,7 @@ silently extracting from viewers is not diseminated further. The TV sends
 viewing information - channel names, file names from USB sticks, and so on -
 over the internet in plain text, allowing anyone on the network path between
 the TV and LG to intercept it and use it for their own ends. This kind of
-information is incredibly useful for targetted fraud, and I'm sure the NSA is
+information is incredibly useful for targeted fraud, and I'm sure the NSA is
 thrilled to have such a useful source of personally-identifying and
 habit-revealing data available for free, too.
 
@@ -89,6 +93,6 @@ multi-decade existence, and it's disingenuous for LG to act like the customer
 "should have known" in any sense that the LG TV acts in this way.
 
 LG is hiding behind the modern culture of unfair post-sale contracts to
-justify a novel, deeply-invasive program of customer monitoring, relying on
-corporate law to protect themselves from consumer reprisals. This cannot be
-allowed to continue; vote with your dollars.
+impose a novel, deeply-invasive program of customer monitoring for their own
+benefit, relying on corporate law to protect themselves from consumer
+reprisals. This cannot be allowed to continue; vote with your dollars.
