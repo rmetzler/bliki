@@ -36,4 +36,6 @@ vs
         synchronous_response = synchronous_entry_point(request)
         return response_callback(synchronous_response)
 
-Going the other way is more or less impossible.
+Going the other way is more or less impossible, which is why websocket
+support, HTML5 server-sent event support, and every other async tool for the
+web has an awful server interface.
