@@ -58,12 +58,10 @@ in the real world get some of these steps wrong.
 ## The Future
 
 [Supervisord](http://supervisord.org),
-[Foreman](http://ddhttp://cr.yp.to/daemontools.htmlollar.github.io/foreman/),
+[Foreman](http://ddollar.github.io/foreman/),
 [Upstart](http://upstart.ubuntu.com),
-[Launchd](https://developer.apple.com/library/mac/documentation/Darwin/Referen
- ce/ManPages/man1/launchctl.1.html),
-[systemd](http://www.freedesktop.org/wiki/Software/systemd/http://cr.yp.to/dae
- montools.html), and [daemontools](http://cr.yp.to/daemontools.html) all
+[Launchd](https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/launchctl.1.html),
+[systemd](http://www.freedesktop.org/wiki/Software/systemd/), and [daemontools](http://cr.yp.to/daemontools.html) all
 encourage services _not_ to self-daemonize by providing a sane system for
 starting the daemon with the right parent process and the right environment
 in the first place.
