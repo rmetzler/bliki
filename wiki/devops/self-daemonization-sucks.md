@@ -51,6 +51,9 @@ given the individual interfaces' relative simplicity:
 * Daemons must ensure that all of the above steps happen in signal-safe ways,
   so that a daemon can be shut down sanely even if it's still starting up
 
+See [this list](http://www.freedesktop.org/software/systemd/man/daemon.html)
+for a longer version. It's worse than you think.
+
 All of this gets even more complicated if the daemon has its own child
 processes, a pattern common to network services. Naturally, a lot of daemons
 in the real world get some of these steps wrong.
