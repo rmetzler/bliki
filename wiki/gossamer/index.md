@@ -253,7 +253,6 @@ to recover the list), to ensure that the follow list is not easily available
 to others without the node owner's permission.
 
 Exercises such as [Finding Paul Revere](http://kieranhealy.org/blog/archives/2013/06/09/using-metadata-to-find-paul-revere/)
-
 have shown that the collection of graph edges showing who communicates with
 whom can often be sufficient to map identities into people. Gossamer attempts
 to restrict access to this data, believing it is not the network's place to
