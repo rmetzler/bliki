@@ -83,6 +83,15 @@ possible.
 
 **TODO**: Gossamer and uPNP, what do locators _look_ like?
 
+When presented with an identifier, Gossamer offers to _follow_ the identities
+it contains, and uses the _nodes_ whose addresses it contains to connect to
+the Gossamer network. This allows new clients to bootstrap into Gossamer, and
+provides an easy way for users to exchange Gossamer identities to connect to
+one another later.
+
+(Clever readers will note that the address list is actually independent of
+the identity list.)
+
 ### Gossip
 
 Each Gossamer node maintains a pair of "freshness" databases, associating
