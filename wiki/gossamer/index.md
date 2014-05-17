@@ -27,20 +27,30 @@ software.
 ## Design Goals
 
 * Users must be in control of their own privacy and identity at all times.
-  (This is a major failing with Diaspora, which gates personal ownership by
-  being hard to run.)
+  (This is a major failing with Diaspora, which limits access to personal
+  ownership of data by being hard to run.)
 
 * Any functional communication system _will_ be used for illicit purposes.
   This is an unavoidable consequence of being usable for legitimate purposes
-  without a central authority.
+  without a central authority. Rather than revealing illicit conversations,
+  Gossamer should do what it can to preserve the anonymity and privacy of
+  legitimate ones.
 
 * Centralization encourages control and enables pervasive monitoring.
+  Contrary to received wisdom, people who haven't done anything wrong
+  _should_ be entitled to hide things, and to have conversations without the
+  intervention of a central conversation authority.
 
 * All nodes are as equal as possible. The node _I_ use is not more
-  authoritative for messages from me than any other node.
+  authoritative for messages from me than any other node. You can hear my
+  words from anyone who has heard my words, and I can hear yours from anyone
+  who has heard your words, so long as some variety of authenticity and
+  privacy are maintained.
 
 * If an identity's secrets are removed, a node should contain no data that
-  correlates the owner with his or her Gossamer identities.
+  correlates the owner with his or her Gossamer identities. Relaying and
+  authoring must be as indistinguishable as possible, to limit the utility of
+  traffic analysis.
 
 ## Gossamer Network Primitives
 
@@ -107,6 +117,8 @@ might of Gossamer's network?
 
 **TODO**: Can we reuse Bittorrent's DHT system (BEP-5) to avoid having every
 node know the full network topology?
+
+**TODO**: Are node-to-node exchanges encrypted? If so, why and how?
 
 ### Authenticity
 
