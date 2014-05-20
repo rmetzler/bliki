@@ -24,6 +24,10 @@ Gossamer does not exist, but if it did, the following notes describe what it
 might look like, and the factors to consider when implementing Gossamer as
 software.
 
+The following is loosely inspired by [Rumor
+Monger](http://www.mememotes.com/meme_motes/2005/02/rumor_monger.html), at
+"whole world" scale.
+
 ## Design Goals
 
 * Users must be in control of their own privacy and identity at all times.
