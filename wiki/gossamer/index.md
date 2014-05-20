@@ -114,7 +114,7 @@ I don't have an obvious resolution to this. Gossamer's underlying protocol
 relies on randomly-selected nodes being more likely to propagate a message
 than to ignore it, because this helps make Gossamer resilient to hostile
 users, nosy intelligence agencies, and others who believe communication must
-be restrictable. On the other hand, I'd like not to put a user in Thaiwan at
+be restrictable. On the other hand, I'd like not to put a user in Taiwan at
 risk of legal or social reprisals because a total stranger in Canada decided
 to post something vile.
 
