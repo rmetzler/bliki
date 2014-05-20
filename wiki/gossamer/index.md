@@ -54,7 +54,7 @@ software.
 ## Public and Private Information
 
 Every piece of data Gossamer uses, either internally or to communicate with
-other ndoes, is classified as either _public_ or "private". Public
+other ndoes, is classified as either _public_ or _private_. Public
 information can be communicated to other nodes, and is assumed to be safe if
 recovered out of band. Private information includes anything which may be
 used to associate a Gossamer identity with the person who controls it, except
