@@ -1,5 +1,21 @@
 # Design Mistakes
 
+## Is Gossamer Up?
+
+[@megtastique](https://twitter.com/megtastique) points out that two factors
+doom the whole design:
+
+1. There's no way to remove content from Gossamer once it's published, and
+
+2. Gossamer can anonymously share images.
+
+Combined, these make Gossamer the _perfect_ vehicle for revenge porn and
+other gendered, sexually-loaded network abuse.
+
+This alone is enough to doom the design, as written: even restricting the
+size of messages to the single kilobyte range still makes it trivial to
+irrevocably disseminate _links_ to similar content.
+
 ## Protected Feeds? Who Needs Those?
 
 Gossamer's design does not carry forward an important Twitter feature: the
