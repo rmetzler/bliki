@@ -22,7 +22,10 @@ into the Gossamer network.
 
 Gossamer does not exist, but if it did, the following notes describe what it
 might look like, and the factors to consider when implementing Gossamer as
-software.
+software. I have made [mistakes](mistakes) while writing it; I have not
+rushed to build it specifically because Twitter, Gossamer's model, is so
+deeply woven into so many peoples' lives. A successor must make fewer
+mistakes, not merely different mistakes, and certainly not more mistakes.
 
 The following is loosely inspired by [Rumor
 Monger](http://www.mememotes.com/meme_motes/2005/02/rumor_monger.html), at
