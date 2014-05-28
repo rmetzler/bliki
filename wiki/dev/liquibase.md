@@ -1,7 +1,7 @@
 # Liquibase
 
-Note to self: I think this (a) needs an outline and (b) wants to become a "how
-to automate db upgrades for dummies" page. Also, this is really old (~2008)
+Note to self: I think this (a) needs an outline and (b) wants to become a “how
+to automate db upgrades for dummies” page. Also, this is really old (~2008)
 and many things have changed: database migration tools are more
 widely-available and mature now. On the other hand, I still see a lot of
 questions on IRC that are based on not even knowing these tools exist.

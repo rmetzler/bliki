@@ -14,7 +14,7 @@ instance. These init scripts wrap `asadmin start-domain` and `asadmin
 start-local-instance`. However, the scripts it emits are (justifiably)
 minimalist, and it makes some very strong assumptions about the layout of your
 system's rc.d trees and about your system's choice of runlevels. The minimal
-init scripts avoid any integration with platform "enhancements" (such as
+init scripts avoid any integration with platform “enhancements” (such as
 Redhat's `/var/lock/subsys` mechanism and `condrestart` convention, or
 Debian's `start-stop-daemon` helpers) in the name of portability, and the
 assumptions it makes about runlevels and init layout are becoming
@@ -27,17 +27,17 @@ Upstart's process tracking mechanism relies on services following one of three
 forking models, so that it can accurately track which children of PID 1 are
 associated with which services:
 
-* No `expect` stanza: The service's "main" process is expected not to fork at
-  all, and to remain running. The process started by upstart is the "main"
+* No `expect` stanza: The service's “main” process is expected not to fork at
+  all, and to remain running. The process started by upstart is the “main”
   process.
 
 * `expect fork`: The service is expected to call `fork()` or `clone()` once.
-  The process started by upstart itself is not the "main" process, but its
+  The process started by upstart itself is not the “main” process, but its
   first child process is.
 
 * `expect daemon`: The service is expected to call `fork()` or `clone()`
   twice. The first grandchild process of the one started by upstart itself is
-  the "main" process. This corresponds to classical Unix daemons, which fork
+  the “main” process. This corresponds to classical Unix daemons, which fork
   twice to properly dissociate themselves from the launching shell.
 
 Surprisingly, `asadmin`-launched Glassfish matches _none_ of these models, and
@@ -69,7 +69,7 @@ the server's operation is correct, and that's probably true, but I've not
 tested its effect on outward-facing requests or on in-flight operations far
 enough to be comfortable with it.
 
-I chose to run a "clean"(er) shutdown using `asadmin stop-domain`. This fits
+I chose to run a “clean”(er) shutdown using `asadmin stop-domain`. This fits
 nicely in Upstart's `pre-stop` step, _provided you do not use Upstart's
 `respawn` feature_. Upstart will correctly notice that Glassfish has already
 stopped after `pre-stop` finishes, but when `respawn` is enabled Upstart will
@@ -85,7 +85,7 @@ Yes, this does make it impossible to stop Glassfish, ever, unless you set a
 respawn limit.
 
 Fortunately, you don't actually want to use `respawn` to manage availability.
-The `respawn` mode cripples your ability to manage the service "out of band"
+The `respawn` mode cripples your ability to manage the service “out of band”
 by forcing Upstart to restart it as a daemon every time it stops for any
 reason. This means you cannot stop a server with `SIGTERM` or `SIGKILL`; it'll
 immediately start again.
@@ -99,7 +99,7 @@ other commands anyways, so this is not a big limitation.
 
 ## Instances
 
-Upstart supports "instances" of a service. This slots nicely into Glassfish's
+Upstart supports “instances” of a service. This slots nicely into Glassfish's
 ability to host multiple domains and instances on the same physical hardware.
 I ended up with a generic `glassfish-domain.conf` Upstart configuration:
 

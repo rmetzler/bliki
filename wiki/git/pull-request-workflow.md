@@ -69,7 +69,7 @@ If you need my help here, stop now.
 
 If you find yourself needing something that's been added upstream, use
 _rebase_ to integrate it to avoid littering your feature branch with
-"meaningless" merge commits.
+“meaningless” merge commits.
 
     git checkout my-feature
     git fetch upstream
@@ -77,7 +77,7 @@ _rebase_ to integrate it to avoid littering your feature branch with
 
 ### Publish your branch
 
-When you're "done", publish your branch to your personal repository:
+When you're “done,” publish your branch to your personal repository:
 
     git push origin my-feature
 

@@ -40,13 +40,13 @@ Gossamer's network protocol converges towards a total graph, where every node
 knows how to connect to every other node, and new information (new posts)
 rapidly push out to every single node.
 
-If you've ever been privy to the Twitter "firehose" feed, you'll understand
+If you've ever been privy to the Twitter “firehose” feed, you'll understand
 why this is a drastic mistake. Even a moderately successful social network
 sees on the order of millions of messages a day. Delivering _all_ of this
 directly to _every_ node _all_ of the time would rapidly drown users in
 bandwidth charges and render their internet connections completely unusable.
 
-Gossamer's design also has no concept of "quiet" periods: every fifteen to
+Gossamer's design also has no concept of “quiet” periods: every fifteen to
 thirty seconds, rain or shine, every node is supposed to wake up and exchange
 data with some other node, regardless of how long it's been since either node
 in the exchange has seen new data. This very effectively ensures that
@@ -74,7 +74,7 @@ Gossamer node immediately forwards it to at least one other node to inject it
 into the network. This makes unencrypted Gossamer relatively vulnerable to
 traffic analysis for correlating Gossamer identities with human beings.
 
-Someone at a network "pinch point" -- an ISP, or a coffee shop wifi router --
+Someone at a network “pinch point” -- an ISP, or a coffee shop wifi router --
 can monitor Gossamer traffic entering and exiting nodes on their network and
 easily identify which nodes originated which messages, and thus which nodes
 have access to which identities. This seriously compromises the effectiveness

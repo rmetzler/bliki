@@ -3,7 +3,7 @@
 (Written largely because newbies in [##java](http://evanchooly.com) never seem
 to have this knowledge.)
 
-A "debugger" is a mechanism for monitoring and controlling the execution of
+A “debugger” is a mechanism for monitoring and controlling the execution of
 your program, usually interactively. Using a debugger, you can stop your
 program at known locations and examine the _actual_ values of its variables
 (to compare against what you expected), monitor variables for changes (to see
@@ -14,7 +14,7 @@ Pretty much every worthwhile language has debugging support of some kind,
 whether it's via IDE integration or via a command-line debugger.
 
 (Of course, none of this helps if you don't have a mental model of the
-"expected" behaviour of the program. Debuggers can help you read, but can't
+“expected” behaviour of the program. Debuggers can help you read, but can't
 replace having an understanding of the code.)
 
 ## Debugging Your First Program
@@ -43,8 +43,8 @@ program - generally in one of five ways:
 * Execute the _next_ statement. Execution proceeds for one statement in the
   current function, then stops again. If the statement is, for example, a
   function or method call, the call will be completely evaluated (unless it
-  contains breakpoints of its own). (In some debuggers, this is labelled "step
-  over", since it will step "over" a function call.)
+  contains breakpoints of its own). (In some debuggers, this is labelled “step
+  over,” since it will step “over” a function call.)
 
 * _Step_ forward one operation. Execution proceeds for one statement, then
   stops again. This mode can single-step into function calls, rather than
@@ -54,8 +54,8 @@ program - generally in one of five ways:
   reaches the end of the current function, then halts the program again.
 
 * _Continue to a specific statement_. Some debuggers support this mode as a
-  way of stepping over or through "uninteresting" sections of code quickly and
-  easily. (You can implement this yourself with "Continue" and normal
+  way of stepping over or through “uninteresting” sections of code quickly and
+  easily. (You can implement this yourself with “Continue” and normal
   breakpoints, too.)
 
 Whenever the debugger halts your program, you can do any of several things:
@@ -67,7 +67,7 @@ Whenever the debugger halts your program, you can do any of several things:
   having to rerun your code with extra debug output.
 
 * Inspect the result of an expression. The debugger will evaluate an
-  expression "as if" it occurred at the point in the program where the
+  expression “as if” it occurred at the point in the program where the
   debugger is halted, including any local variables. In languages with static
   visibility controls like Java, visibility rules are often relaxed in the
   name of ease of use, allowing you to look at the private fields of objects.
@@ -75,7 +75,7 @@ Whenever the debugger halts your program, you can do any of several things:
   like a variable.
 
 * Modify a variable or field. You can use this to quickly test hypotheses: for
-  example, if you know what value a variable "should" have, you can set that
+  example, if you know what value a variable “should” have, you can set that
   value directly and observe the behaviour of the program to check that it
   does what you expected before fixing the code that sets the variable in a
   non-debug run.

@@ -4,7 +4,7 @@
 
 [According to a UK
 blogger](http://doctorbeet.blogspot.co.uk/2013/11/lg-smart-tvs-logging-usb-fil
-enames-and.html), LG Smart TVs not only offer "smart" features, but also
+enames-and.html), LG Smart TVs not only offer “smart” features, but also
 track your viewing habits _extremely_ closely by submitting events back to LG
 and to LG's advertising affiliates.
 
@@ -18,7 +18,7 @@ The page comments additionally suggest that the TV sends back information
 whenever the menu is opened, as well.
 
 This information is used to provide targeted advertising, likely to offset
-the operational cost of the TV's "intelligent" features. Consumer protections
+the operational cost of the TV's “intelligent” features. Consumer protections
 around personal data and tracking have traditionally been very weak, so it's
 not entirely surprising that LG would choose to extract revenue this way
 instead of raising the price of the product to cover the operational costs and instead of offering the intelligent features as a subscription service, but this is extremely disappointing.
@@ -60,10 +60,10 @@ habit-revealing data available for free, too.
 
 ## Icing on the cake
 
-The TV's settings menu contains an item entitled "Collection of watching
-info" which can be turned to "On" (the default, even if the customer rejects
+The TV's settings menu contains an item entitled “Collection of watching
+info” which can be turned to “On” (the default, even if the customer rejects
 the end-user license agreement on the television and disables the
-"intelligent" features) or "Off". It would be reasonable to expect that this
+“intelligent” features) or “Off.” It would be reasonable to expect that this
 option would stop the TV from communicating viewing habits to the internet;
 however, the setting appears to do very little. The article shows packet
 captures of the TV submitting viewing information to LG with the setting in
@@ -74,7 +74,7 @@ _actually_ does or to clarify expectations around it.
 
 ## LG's stance is morally indefensible
 
-From the blog post, LG's representative claims that viewers "agree" to this
+From the blog post, LG's representative claims that viewers “agree” to this
 monitoring when they accept the TV's end-user license agreement, and that
 it's up to the retailer to inform the user of the contents of the license
 agreement. However:
@@ -90,7 +90,7 @@ agreement. However:
 It is not reasonable to expect customers to assume their TV will track
 viewing habits publicly. This is not a behaviour that TVs have had over their
 multi-decade existence, and it's disingenuous for LG to act like the customer
-"should have known" in any sense that the LG TV acts in this way.
+“should have known” in any sense that the LG TV acts in this way.
 
 LG is hiding behind the modern culture of unfair post-sale contracts to
 impose a novel, deeply-invasive program of customer monitoring for their own

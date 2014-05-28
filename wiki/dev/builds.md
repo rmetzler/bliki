@@ -29,9 +29,9 @@ person's physical and mental well-being on the premise that all the items at
 the lowest level of the hierarchy must be met before a person will be able to
 focus usefully on higher-level needs. Maslow's hierarchy begins with a set of
 needs that, without which, you do not have a person (for long)—physiological
-needs like "breathing," "food," and "water." At the peak, there are extremely
+needs like “breathing,” “food,” and “water.” At the peak, there are extremely
 high-level needs that are about being a happy and enlightened
-person—"creativity," "morality," "curiosity," and so on.
+person—“creativity,” “morality,” “curiosity,” and so on.
 
 ![A three-tier pyramid. At the bottom: Automatable. Repeatable. Standardized.
 Extensible. Understood. In the middle tier: Simple. Fast. Unit tests. Part of
@@ -50,7 +50,7 @@ Before a build is a build, there are five key needs to meet:
 * **It must be repeatable**. Every time you start your build on a given source
   tree, it must build exactly the same products without any further
   intervention. Without this, you can't reliably decide whether a given build
-  is "good," and can easily wind up with a build that needs to be run several
+  is “good,” and can easily wind up with a build that needs to be run several
   times, or a build that relies on running several commands in the right
   order, to produce a build.
 * **It must be automatable**. Build systems are used by developers sitting at
@@ -69,7 +69,7 @@ Before a build is a build, there are five key needs to meet:
   descriptor before it can compile anything. There must be affordances within
   the standard build that allow developers to describe the ways their build is
   different. Without this, you have to write what amounts to a second build
-  tool to ensure that all the "extra" steps for certain projects happen.
+  tool to ensure that all the “extra” steps for certain projects happen.
 * **Someone must understand it**. A build nobody understands is a time bomb:
   when it finally breaks (and it will), your project will be crippled until
   someone fixes it or, more likely, hacks around it.
@@ -77,7 +77,7 @@ Before a build is a build, there are five key needs to meet:
 If you have these five things, you have a working build. The next step is to
 make it comfortable. Comfortable builds can be used daily for development
 work, demonstrations, and tests as well as during releases; builds that are
-used constantly don't get a chance to "rust" as developers ignore them until a
+used constantly don't get a chance to “rust” as developers ignore them until a
 release or a demo and don’t hide surprises for launch day.
 
 * **It must be simple**. When a complicated build breaks, you need someone who
@@ -100,7 +100,7 @@ release or a demo and don’t hide surprises for launch day.
   uniform on any environment, any developer can cook up a build for a test or
   demo at any time.
 
-Finally, there are "chrome" features that take a build from effective to
+Finally, there are “chrome” features that take a build from effective to
 excellent. These vary widely from project to project and from organization to
 organization. Here are some common chrome needs:
 
@@ -125,7 +125,7 @@ organization. Here are some common chrome needs:
   builds amplifies the benefits of early testing and, if your acceptance tests
   are good, when your project is done.
 * **It should not need repeating**. Once you declare a particular set of build
-  products "done", you should be able to use those products as-is any time you
+  products “done,” you should be able to use those products as-is any time you
   need them. Without this, you will eventually find yourself rebuilding the
   same code from the same release over and over again.
 

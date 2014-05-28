@@ -15,8 +15,8 @@ manual](http://dev.mysql.com/doc/refman/5.5/en/xa-restrictions.html):
 
 If you're solving the kinds of problems where two-phase commit and XA
 transaction management look attractive, then you very likely have the kinds of
-uptime requirements that make replication mandatory. "It works, but not with
-replication" is effectively "it doesn't work".
+uptime requirements that make replication mandatory. “It works, but not with
+replication” is effectively “it doesn't work.”
 
 > It is possible that the server will roll back a pending XA transaction, even
 > one that has reached the PREPARED state. This happens if a client connection
@@ -25,5 +25,5 @@ replication" is effectively "it doesn't work".
 
 XA transaction managers assume that if every resource successfully reaches the
 PREPARED state, then every resource will be able to commit the transaction
-"eventually". Resources that unilaterally roll back PREPARED transactions
+“eventually.” Resources that unilaterally roll back PREPARED transactions
 violate this assumption pretty badly.

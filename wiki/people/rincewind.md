@@ -11,7 +11,7 @@ capable of magic.
 Rincewind is a wizard: he is not well fed, having spent his life being thrust
 from one adventure to the next; his body is more attuned for running away
 from things than it is for meandering the halls or sitting by a fire; his
-opinions largely revolve around "is this new thing going to eat me," rather
+opinions largely revolve around “is this new thing going to eat me,” rather
 than more abstract matters; importantly, he is completely incapable of magic,
 in spite of years of study.
 
@@ -26,7 +26,7 @@ back, while she was teaching herself to program. I don't recall exactly what
 prompted it, but at one point I told her to stop worrying about all the
 better programmers out there: from everyone else's point of view, she was
 already a wizard. There might be better wizards, and worse wizards, but she'd
-already passed any sort of bright line delimiting "not a programmer" from
-"programmer".
+already passed any sort of bright line delimiting “not a programmer” from
+“programmer.”
 
 I think self-identification is important, and overlooked.

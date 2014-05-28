@@ -27,11 +27,11 @@ also helps with less-drastic solutions by letting you run comparisons between
 your broken code and working code, which helps narrow down whatever problem
 you've created for yourself.
 
-(Aside: if you're in a shop that "doesn't use source control", and for
+(Aside: if you're in a shop that “doesn't use source control,” and for
 whatever insane reason you haven't already run screaming, this safety net is a
 good reason to use source control independently of the organization as a
 whole. Go on, it's easy; modern DSCM tools like Mercurial or Git make
-importing "external" trees pretty straightforward. Your future self thanks
+importing “external” trees pretty straightforward. Your future self thanks
 you.)
 
 ## Historical record
@@ -51,11 +51,11 @@ the loop agree on what, exactly, the software being released looks like and
 whether or not various releasability criteria have been met. It doesn't matter
 if you use rolling releases or carefully curate and tag every release after
 months of discussion, you still need to be able to point to a specific version
-of your project's source code and say "this will be our next release".
+of your project's source code and say “this will be our next release.”
 
 SCM systems can help direct and contextualize that discussion by recording the
 way your project has changed during those discussion, whether that's part of
-development or a separate post-"freeze" release process.
+development or a separate post-“freeze” release process.
 
 ## Proposals and speculative development
 

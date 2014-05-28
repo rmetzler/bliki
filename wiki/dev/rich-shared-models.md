@@ -23,7 +23,7 @@ models slightly differently.
 
 With the rise of object-oriented development, explicit models became the focus
 of several well-known practices. Many medium-to-large projects are built
-"model first", with the interfaces to that model being sketched out later in
+“model first,” with the interfaces to that model being sketched out later in
 the process. Since the model holds the system's understanding of its task,
 this makes sense, and so long as you keep the problem you're actually solving
 in mind, it works well. Unfortunately, it's too easy to lose sight of the
@@ -37,7 +37,7 @@ best.
     * Unmanaged growth
         * Adding features to an existing system
         * Building new systems on top of existing tools
-    * Misguided applications of "simplicity" and "reuse"
+    * Misguided applications of “simplicity” and “reuse”
     * Encouraged by distributed object systems (CORBA, EJB, SOAP, COM)
 * What are the consequences?
     * Models end up holding behaviour and data relevant to many applications
@@ -69,16 +69,16 @@ functionality was already in one place, it became psychologically easy to add
 one more responsibility to its already-bloated interface.
 
 What had been a clean model in the problem space eventually became one of a
-handful of "glue" pieces in a [big ball of
+handful of “glue” pieces in a [big ball of
 mud](http://www.laputan.org/mud/mud.html#BigBallOfMud) program. The User
 object did not come about through conscious design, but rather through
 evolution from a simple system. There was no clear point where User became
-"too big"; instead, the vagueness of its role slowly grew until it became the
+“too big”; instead, the vagueness of its role slowly grew until it became the
 default behaviour-holder for all things user-specific.
 
 The same problem modeling exercise also points at a better way to design the
 same system: it describes a number of capabilities the system needed to be
-able to perform, each of which is simpler than "build a gaming website." Each
+able to perform, each of which is simpler than “build a gaming website.” Each
 of these capabilities (accept or reject logins, process deposits, accept and
 settle wagers, and send out notification emails to players) has a much simpler
 model and solves a much more constrained of problem. There is no reason the

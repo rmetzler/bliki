@@ -30,17 +30,17 @@ Storage systems have four properties:
 3. Provide stored data to applications on demand.
 4. Give administrators effective management tools.
 
-In a truly "pure" storage application, data-comprehension features
+In a truly “pure” storage application, data-comprehension features
 (constraints and relationships, nontrivial functions and aggregates) would go
-totally unused. There is a time and a place for this: the return of "NoSQL"
+totally unused. There is a time and a place for this: the return of “NoSQL”
 storage systems attests to that.
 
-Pure storage systems tend to be closely coupled to their "main" application:
-consider most web/server app databases. "Secondary" clients tend to be
+Pure storage systems tend to be closely coupled to their “main” application:
+consider most web/server app databases. “Secondary” clients tend to be
 read-only (reporting applications, monitoring) or to be utilities in service
 of the main application (migration tools, documentation tools). If you believe
 constraints, validity checks, and other comprehension features can be
-implemented in "the application", you are probably thinking of databases close
+implemented in “the application,” you are probably thinking of databases close
 to this pole.
 
 ### Storing Data
@@ -79,7 +79,7 @@ familiar with other SQL implementations).
       Swedish alphabetization rules, case-insensitively.
     * Since it's the default, lots of folks who don't know the manual
       inside-out and backwards observe MySQL's case-insensitive collation
-      behaviour (`'a' = 'A'`) and conclude that "MySQL is case-insensitive",
+      behaviour (`'a' = 'A'`) and conclude that “MySQL is case-insensitive,”
       complicating any effort to use a case-sensitive locale.
     * Both the encoding and the collation can vary, independently, by
       _column_. Do you keep your schema definition open when you write
@@ -125,7 +125,7 @@ implicit string-to-integer conversions.
 ... against loss: hoo boy. MySQL, out of the box, gives you three approaches
 to [backups](http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html):
 
-* Take "blind" filesystem backups with `tar` or `rsync`. Unless you
+* Take “blind” filesystem backups with `tar` or `rsync`. Unless you
   meticulously lock tables or make the database read-only for the duration,
   this produces a backup that requires crash recovery before it will be
   usable, and can produce an inconsistent database.
@@ -152,13 +152,13 @@ the
 [behaviour](http://dev.mysql.com/doc/refman/5.5/en/replication-formats.html)
 is to log SQL statements, rather than logging their side effects. This has
 lead to numerous bugs over the years; MySQL (now) makes an effort to make
-common "non-deterministic" cases such as `NOW()` and `RANDOM()` act
+common “non-deterministic” cases such as `NOW()` and `RANDOM()` act
 deterministically but these have been addressed using ad-hoc solutions.
 Restoring binary-log-based backups can easily lead to data that differs from
 the original system, and by the time you've noticed the problem, it's too late
 to do anything about it.
 
-(Seriously. The binary log entries for each statement contain the "current"
+(Seriously. The binary log entries for each statement contain the “current”
 time on the master and the random seed at the start of the statement, just in
 case. If your non-deterministic query uses any other function, you're still
 [fucked by
@@ -233,7 +233,7 @@ that implicitly transform stored data before returning it:
 
     You might think this is an unreasonable example: maybe you should always
     make sure your argument types exactly match the field types, and the query
-    should use `57` instead of `'banana'`. (This does actually "fix" the
+    should use `57` instead of `'banana'`. (This does actually “fix” the
     problem.) It's unrealistic to expect every single user to run `SHOW CREATE
     TABLE` before every single query, or to memorize the types of every column
     in your schema, though. This example derived from a technically-skilled
@@ -358,7 +358,7 @@ fixed) type constraints:
       foreign key pointing into a MyISAM or NDB table, do not cause warnings
       or any other diagnostics. The foreign key is simply discarded. SURPRISE.
       (MySQL is riddled with these sorts of surprises, and apologists lean
-      very heavily on the "that's documented" excuse for its bad behaviour.)
+      very heavily on the “that's documented” excuse for its bad behaviour.)
 * The MySQL parser recognizes `CHECK` clauses, which allow schema developers
   to make complex declarative assertions about tuples in the database, but
   [discards them without
@@ -370,7 +370,7 @@ fixed) type constraints:
   case](https://dev.mysql.com/doc/refman/5.5/en/timestamp-initialization.html)
   of at most one `TIMESTAMP` column per table and at most one sequence-derived
   column. Who designed this mess?
-    * Furthermore, there's no way to say "no default" and raise an error when
+    * Furthermore, there's no way to say “no default” and raise an error when
       an INSERT forgets to provide a value. The default `DEFAULT` is either
       `NULL` or a zero-like constant (`0`, `''`, and so on). Even for types
       with no meaningful zero-like values (`DATETIME`).
@@ -385,7 +385,7 @@ because MySQL _cannot help you_ if you make a mistake.
 
 ### Summarizing and Deriving Data
 
-SQL databases generally provide features for doing "interesting" things with
+SQL databases generally provide features for doing “interesting” things with
 sets of tuples, and MySQL is no exception. However, MySQL's limitations mean
 that actually processing data in the database is fraught with wasted money,
 brains, and time:
@@ -415,7 +415,7 @@ brains, and time:
     * MySQL's query planner can't fold constraints from outer queries into
       subqueries.
     * The generated in-memory table never has any indexes, ever, even when
-      appropriate indexes are "obvious" from the surrounding query; you cannot
+      appropriate indexes are “obvious” from the surrounding query; you cannot
       even specify them.
     * These limitations also affect views, which are evaluated as if they were
       subqueries. In combination with the lack of constraint folding in the
@@ -452,19 +452,19 @@ brains, and time:
   using simple algebra, many useful cases (whitespace-insensitive comparison,
   hash-based comparisons, and so on) can't.
     * You can fake these by storing the computed value in the row alongside
-      the "real" value. This leaves your schema with some ugly data repetition
+      the “real” value. This leaves your schema with some ugly data repetition
       and a chance for the two to fall out of sync, and clients must use the
-      "computed" column explicitly.
-    * Oh, and they must maintain the "computed" version explicitly.
+      “computed” column explicitly.
+    * Oh, and they must maintain the “computed” version explicitly.
     * Or you can use triggers. Ha. See above.
 
 And now you know why MySQL advocates are such big fans of doing data
-_processing_ in "the client" or "the app".
+_processing_ in “the client” or “the app.”
 
 ### Alternate Representations and Derived Tables
 
 Many databases let schema designers and administrators abstract the underlying
-"physical" table structure from the presentation given to clients, or to some
+“physical” table structure from the presentation given to clients, or to some
 specific clients, for any of a number of reasons. MySQL tries to let you do
 this, too! And fumbles it quite badly.
 
@@ -474,12 +474,12 @@ this, too! And fumbles it quite badly.
   partitioning arrangements or a permissions check in a view if you want any
   kind of performance.
 * The poor interactions between triggers and binary logging's default
-  configuration make it impractical to use triggers to maintain "materialized"
-  views to avoid the problems with "real" views.
+  configuration make it impractical to use triggers to maintain “materialized”
+  views to avoid the problems with “real” views.
     * It also effectively means triggers can't be used to emulate `CHECK`
       constraints and other consistency features.
     * Code to maintain materialized views is also finicky and hard to get
-      "right", especially if the view includes aggregates or interesting joins
+      “right,” especially if the view includes aggregates or interesting joins
       over its source data. I hope you enjoy debugging MySQL's procedural
       SQL…
 * For the relatively common case of wanting to abstract partitioned storage
@@ -487,7 +487,7 @@ this, too! And fumbles it quite badly.
   tool](http://dev.mysql.com/doc/refman/5.5/en/partitioning.html) for it! But
   it comes with [enough caveats to strangle a
   horse](http://dev.mysql.com/doc/refman/5.5/en/partitioning-limitations.html):
-    * It's a separate table engine wrapping a "real" storage engine, which
+    * It's a separate table engine wrapping a “real” storage engine, which
       means it has its own, separate support for engine-specific features:
       transactions, foreign keys, and index types, `AUTO_INCREMENT`, and
       others. The syntax for configuring partitions makes selecting the wrong
@@ -503,13 +503,13 @@ this, too! And fumbles it quite badly.
           together in the same file. Partitioning InnoDB tables is a waste of
           time for managing storage.
     * TL,DR: MySQL's partition support is so finicky and limited that
-      MySQL-based apps tend to opt for multiple MySQL servers ("sharding")
+      MySQL-based apps tend to opt for multiple MySQL servers (“sharding”)
       instead.
 
 ### Hosting Logic In The Database
 
-Yeah, yeah, the usual reaction to stored procedures and in-DB code is "eww,
-yuck!" for some not-terrible reasons, but hear me out on two points:
+Yeah, yeah, the usual reaction to stored procedures and in-DB code is “eww,
+yuck!” for some not-terrible reasons, but hear me out on two points:
 
 * Under the freestanding-database-server paradigm, there will usually be
   network latency between database clients and the database itself. There are
@@ -572,7 +572,7 @@ choices:
             END LOOP;
         END;
 
-    The original "structured programming" revolution in the 1960s seems to
+    The original “structured programming” revolution in the 1960s seems to
     have passed the MySQL team by.
 
 * Okay, I lied. There are two looping constructs: there's also the `REPEAT ...
@@ -581,7 +581,7 @@ choices:
   can't run zero iterations of the loop's main body this way.
 * There is nothing resembling a modern exception system with automatic scoping
   of handlers or declarative exception management. Error handling is entirely
-  via Visual Basic-style "on condition X, do Y" instructions, which remain in
+  via Visual Basic-style “on condition X, do Y” instructions, which remain in
   effect for the rest of the program's execution.
     * In the language shipped with MySQL 5.0, there wasn't a way to signal
       errors, either: programmers had to resort to stunts like [intentionally
@@ -628,11 +628,11 @@ impact on the performance of various query plans, but the channels back to the
 query planner provide very little granularity for estimating cost and prevent
 the planner from making good use of the engine in unusual cases. Conversely,
 the table engine system is totally isolated from the actual query, and can't
-make query-dependent performance choices "on its own". There's no third path;
+make query-dependent performance choices “on its own.” There's no third path;
 the query planner itself is not pluggable.
 
 Similar consequences apply to type checking, support for new types, or even
-something as "obvious" as multiple automatic `TIMESTAMP` columns in the same
+something as “obvious” as multiple automatic `TIMESTAMP` columns in the same
 table.
 
 Table manipulation -- creation, structural modification, and so on -- runs
@@ -652,7 +652,7 @@ constructs necessarily slow to implement and slow to test.
 
 ### Poor Priorities
 
-Early on, the MySQL team focused on pure read performance and on "ease of use"
+Early on, the MySQL team focused on pure read performance and on “ease of use”
 (for new users with simple needs, as far as I can tell) over correctness and
 completeness, violating Knuth's laws of optimization. Many of these decisions
 locked MySQL into behaviours very early in its life that it still displays
@@ -712,7 +712,7 @@ following are much more common:
       database intelligently are very hard to notice in action.
 * **We already know how to use it.** MySQL development and administration
   causes brain damage, folks, the same way PHP does. Where PHP teaches
-  programmers that "array" is the only structure you need, MySQL teaches
+  programmers that “array” is the only structure you need, MySQL teaches
   people that databases are awkward, slow, hard-to-tune monsters that require
   constant attention. That doesn't have to be true; there are comfortable,
   fast, and easily-tuned systems out there that don't require daily care and
@@ -736,7 +736,7 @@ following are much more common:
   embedded MySQL has even bigger problems than freestanding MySQL).
 * **It's getting better, so we might as well stay on it.** [It's
   true](http://dev.mysql.com/doc/refman/5.6/en/mysql-nutshell.html), if you go
-  by feature checklists and the manual, MySQL is improving "rapidly". 5.6 is
+  by feature checklists and the manual, MySQL is improving “rapidly.” 5.6 is
   due out soon and superficially looks to contain a number of good changes. I
   have two problems with this line of reasoning:
     1. Why wait? Other databases are good _now_, not _eventually_.

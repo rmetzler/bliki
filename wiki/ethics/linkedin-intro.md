@@ -4,7 +4,7 @@
 provided by LinkedIn that inserts LinkedIn relationship data into the user's
 incoming and outgoing mail. This allows, for example, LinkedIn to decorate
 incoming mail with a toolbar linking to the sender's LinkedIn account, and
-automatically injects a short "signature" of your LinkedIn profile into
+automatically injects a short “signature” of your LinkedIn profile into
 outgoing mail.
 
 These are useful features, and the resulting interaction is quite smooth.
@@ -21,8 +21,8 @@ LinkedIn Intro's proxy mail server must be able to log into the user's real
 incoming mail server to retrieve mail, and often must log into the user's real
 outgoing mail server to deliver mail with correct SPF or DKIM validation. This
 implies that LinkedIn Intro must know the user's email credentials, which it
-acquires from their mobile device. Since this is a "use" of a password, not
-merely a "validation" of an incoming password, the password must be available
+acquires from their mobile device. Since this is a “use” of a password, not
+merely a “validation” of an incoming password, the password must be available
 _to LinkedIn_ as plain text. There are two serious problems with this that
 are directly LinkedIn's responsibilty, and a third that's indirect but
 important. (Some email providers - notably Google - support non-password,
@@ -84,7 +84,7 @@ of either the sender's or the recipients' control. LinkedIn is in a position
 to claim that Intro users have given it _permission_ to be intrusive into
 their email in this way.
 
-Very few people use a dedicated email account for "corporate networking" and
+Very few people use a dedicated email account for “corporate networking” and
 recruiting activities. A CEO (LinkedIn's own example) recieves mail pertaining
 to many sensitive aspects of a corporation's running: lawsuit notices, gossip
 among the exec team, planning emails discussing the future of the company,
@@ -99,7 +99,7 @@ Users in heavily-regulated industries, such as health care or finance, may be
 exposing their whole organization to government interventions by using Intro,
 as LinkedIn is not known to be HIPAA, SOX, or PCI compliant.
 
-The resulting "who mailed what to whom" database is hugely valuable. I expect
+The resulting “who mailed what to whom” database is hugely valuable. I expect
 LinkedIn to be banking on this; such a corpus of conversational data would
 greatly help them develop new features targetting specific groups of users,
 and could improve the overall effectiveness of their recommendation engine.
@@ -127,7 +127,7 @@ All of the risks outlined above are manageable. With proper information, the
 end user can make an informed decision as to whether
 
 * to ignore Intro at all, or
-* to use Intro with a dedicated "LinkedIn Only" email account, or
+* to use Intro with a dedicated “LinkedIn Only” email account, or
 * to use Intro with everything
 
 LinkedIn's own marketing materials outline _absolutely none_ of these risks.
@@ -159,7 +159,7 @@ its users' security needs. In particular:
 A breach in LinkedIn proper may not imply a breach in LinkedIn Intro, and vice
 versa, but there must be at least some data passing back and forth for Intro
 to operate. The nature and structure of the security mechanisms that permit
-the "right" kind of data are not elaborated on; it's impossible to decide how
+the “right” kind of data are not elaborated on; it's impossible to decide how
 well they actually insulate Intro from LinkedIn. Furthermore, a breach in
 LinkedIn Intro is still incredibly damaging even if it doesn't span LinkedIn
 itself.
@@ -181,7 +181,7 @@ both government and private. If either of those conditions does not hold, it's
 worse.
 
 The software industry is young, and immature, and wealthy. There is no ethics
-body to complain to; had the developers of Intro said "no", they would very
+body to complain to; had the developers of Intro said “no,” they would very
 likely have been replaced by another round of developers who would help
 LinkedIn violate their users' privacy. That does not excuse LinkedIn; their
 product is vile, and must not be tolerated in the market.

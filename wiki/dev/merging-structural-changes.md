@@ -40,21 +40,21 @@ merged in. On the right, a working copy of the branch where the structure
 changed is checked out, then the changes from the branch where the content
 changed are merged in. In both cases, the result of the merge has the new
 directory name, and the original file contents. In one case, the merge
-triggers a rather opaque warning about a "missing file"; in the other, the
+triggers a rather opaque warning about a “missing file”; in the other, the
 merge silently ignores the content changes.
 
 This is a consequence of the way Subversion implements renames and copies.
 When Subversion assembles a changeset for committing to the repository, it
 comes up with a list of primitive operations that reproduce the change. There
-is no primitive that says "this object was moved," only primitives which say
-"this object was deleted" or "this object was added, as a copy of that
-object." When you move a file in Subversion, those two operations are
+is no primitive that says “this object was moved,” only primitives which say
+“this object was deleted” or “this object was added, as a copy of that
+object.” When you move a file in Subversion, those two operations are
 scheduled. Later, when Subversion goes to merge content changes to the
 original file, all it sees is that the file has been deleted; it's completely
 unaware that there is a new name for the same file.
 
-This would be fairly easy to remedy by adding a "this object was moved to that
-object" primitive to the changeset language, and [a bug report for just such a
+This would be fairly easy to remedy by adding a “this object was moved to that
+object” primitive to the changeset language, and [a bug report for just such a
 feature](http://subversion.tigris.org/issues/show_bug.cgi?id=898) was filed in
 2002. However, by that time Subversion's repository and changeset formats had
 essentially frozen, as Subversion was approaching a 1.0 release and more
@@ -73,8 +73,8 @@ change.](/media/dev/merging-structural-changes/mercurial-merge-results)
 
 Interestingly, there are tools which get this merge scenario right: the
 diagram above shows how [Mercurial](http://www.selenic.com/mercurial/) handles
-the same two tests. Since its changeset language does include an "object
-moved" primitive, it's able to take a content change for `dir-a/file` and
+the same two tests. Since its changeset language does include an “object
+moved” primitive, it's able to take a content change for `dir-a/file` and
 apply it to `dir-b/file` if appropriate.
 
 ## Git

@@ -35,9 +35,9 @@
 Asking Puppet to upgrade Puppet went wrong on Ubuntu because of the way Puppet
 is packaged: there are three (ish) Puppet packages, and Puppet's resource
 evaluation bits try to upgrade and install one package at a time. Upgrading
-only "puppetmaster" upgraded "puppet-common" but not "puppet", causing Apt to
-remove "puppet"; upgrading only "puppet" similarly upgraded "puppet-copmmon"
-but not "puppetmaster", causing Apt to remove "puppetmaster".
+only “puppetmaster” upgraded “puppet-common” but not “puppet,” causing Apt to
+remove “puppet”; upgrading only “puppet” similarly upgraded “puppet-copmmon”
+but not “puppetmaster,” causing Apt to remove “puppetmaster.”
 
 The Puppet aptitude provider (which I use instead of apt-get) for Package
 resources also doesn't know how to tell aptitude what to do with config files
@@ -45,7 +45,7 @@ during upgrades. This prevented Puppet from being able to upgrade pacakges
 even when running standalone (via `puppet apply`).
 
 Finally, something about the switchover from Canonical's Puppet .debs to
-Puppetlabs' .debs caused aptitude to consider all three packages "broken"
+Puppetlabs' .debs caused aptitude to consider all three packages “broken”
 after a manual upgrade ('aptitude upgrade puppet puppetmaster'). Upgrading the
 packages a second time corrected it; this is the path I eventually took with
 my production puppetmaster and nodes.

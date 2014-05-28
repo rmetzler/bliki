@@ -29,7 +29,7 @@ mistakes, not merely different mistakes, and certainly not more mistakes.
 
 The following is loosely inspired by [Rumor
 Monger](http://www.mememotes.com/meme_motes/2005/02/rumor_monger.html), at
-"whole world" scale.
+“whole world” scale.
 
 ## Design Goals
 
@@ -141,13 +141,13 @@ legitimate.
 
 Gossamer maintains relationships between identities to allow users to
 _verify_ the identities of one another, and to publish attestations of that
-to other Gossamer nodes. From this, Gossamer can recover much of GPG's "web
-of trust".
+to other Gossamer nodes. From this, Gossamer can recover much of GPG's “web
+of trust.”
 
 **TODO**: revocation of identities, revocation of verifications. Both are
 important; novice users are likely to verify people poorly, and there should
-be a recovery path less drastic than GPG's "you swore it, you're stuck with
-it" model.
+be a recovery path less drastic than GPG's “you swore it, you're stuck with
+it” model.
 
 Gossamer encourages users to create additional identities as needed to, for
 example, support the separation of work and home conversations, or to provide
@@ -181,7 +181,7 @@ the same identity.
 WON'T**. Identity keys protect the user's Gossamer identity, but they _also_
 protect the user's private messages (see below) and other potentially
 identifying data. The export format must be designed to be as resilient as
-possible, and Gossamer's software must take care to ensure that "used"
+possible, and Gossamer's software must take care to ensure that “used”
 identity files are _automatically_ destroyed safely wherever possible and to
 discourage users from following practices that weaken their own safety
 unknowingly.
@@ -236,7 +236,7 @@ clear. The author's bare identity is included in the encrypted part of the
 message, to allow the intended recipient to identify the sender.
 
 **TODO**: sign-then-encrypt, or encrypt-then-sign? If sign-then-encrypt, are
-private messages exempted from the "drop broken messages" rule above?
+private messages exempted from the “drop broken messages” rule above?
 
 ## Following Users
 
@@ -304,7 +304,7 @@ three or more identities in this database, will automatically be filtered out
 from display. (Additionally, transitively-blocked users will automatically be
 added to the block database. Blocking is contagious.) (**TODO**: should
 Gossamer _drop_ blocked messages? How does that interact with the inevitable
-"shared blocklist" systems that arise in any social network?)
+“shared blocklist” systems that arise in any social network?)
 
 As with the follow list, the block database is encrypted using the node's
 identities.
@@ -328,12 +328,12 @@ Gossamer bootstraps its network using a number of paths:
 * Gossamer nodes in the same broadcast domain discover one another using UDP
   broadcasts as well as Bonjour/mDNS.
 
-* Gossamer can generate _locator_ strings, which can be shared "out of band"
+* Gossamer can generate _locator_ strings, which can be shared “out of band”
   via email, SMS messages, Twitter, graffiti, etc.
 
 * Gossamer nodes share knowledge of nodes whenever they exchange messages, to
   allow the Gossamer network to recover from lost nodes and to permit nodes
-  to remain on the network as "known" nodes are lost to outages and entropy.
+  to remain on the network as “known” nodes are lost to outages and entropy.
 
 ### Locators
 
@@ -357,7 +357,7 @@ the identity list.)
 
 ### Gossip
 
-Each Gossamer node maintains a pair of "freshness" databases, associating
+Each Gossamer node maintains a pair of “freshness” databases, associating
 some information with a freshness score (expressed as an integer). One
 freshness database holds the addresses of known Gossamer nodes, and another
 holds Gossamer messages.
@@ -365,14 +365,14 @@ holds Gossamer messages.
 Whenever two Gossamer nodes interact, each sends the other a Gossamer node
 from its current node database, and a message from its message database. When
 selecting an item to send for either category, Gossamer uses a random
-selection that weights towards items with a higher "freshness" score.
+selection that weights towards items with a higher “freshness” score.
 (**TODO**: how?)
 
 When sending a fact, if the receiving node already knows the fact, both nodes
 decrement that fact's freshness by one. If the receiving node _does not_
 already know the fact, the sending node leaves its freshness unaltered, and
 the receiving node sets its freshness to the freshest possible value. This
-system encourages nodes to exchange "fresh" facts, then cease exchanging them
+system encourages nodes to exchange “fresh” facts, then cease exchanging them
 as the network becomes aware of them.
 
 During each exchange, Gossamer nodes send each other one Gossamer node

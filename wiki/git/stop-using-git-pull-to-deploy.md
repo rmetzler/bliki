@@ -3,13 +3,13 @@
 ## The problem
 
 * You have a Git repository containing your project.
-* You want to "deploy" that code when it changes.
+* You want to “deploy” that code when it changes.
 * You'd rather not download the entire project from scratch for each
   deployment.
 
 ## The antipattern
 
-"I know, I'll use `git pull` in my deployment script!"
+“I know, I'll use `git pull` in my deployment script!”
 
 Stop doing this. Stop teaching other people to do this. It's wrong, and it
 will eventually lead to deploying something you didn't want.
@@ -32,7 +32,7 @@ the intended deployment tree. Local changes (intentional or otherwise) will be
 preserved (and merged) into the deployment, for example; once this happens,
 the actual deployed commit will _never_ match the intended commit.
 
-`git pull` will approximate the right thing "by accident": if the current
+`git pull` will approximate the right thing “by accident”: if the current
 local branch (generally `master`) for people using `git pull` is always clean,
 and always tracks the desired deployment branch, then `git pull` will update
 to the intended commit exactly. This is pretty fragile, though; many git
@@ -65,7 +65,7 @@ Quoting [Sitaram Chamarty](http://gitolite.com/the-list-and-irc/deploy.html):
 >     Again, some people might want to detect this and abort the deployment.
 
 Sitaram's own documentation talks about how to accomplish these when
-"deploying" straight out of a bare repository. That's unwise (not to mention
+“deploying” straight out of a bare repository. That's unwise (not to mention
 impractical) in most cases; deployment should use a dedicated clone of the
 canonical repository.
 

@@ -2,15 +2,15 @@
 
 Git's [object system](objects) stores most of the data for projects tracked in
 Git, but only provides SHA-1 hashes. This is basically useless if you want to
-make practical use of Git, so Git also has a naming mechanism called "refs"
+make practical use of Git, so Git also has a naming mechanism called “refs”
 that provide human-meaningful names for objects.
 
 There are two kinds of refs:
 
-* "Normal" refs, which are names that resolve directly to SHA-1 hashes. These
+* “Normal” refs, which are names that resolve directly to SHA-1 hashes. These
   are the vast majority of refs in most repositories.
 
-* "Symbolic" refs, which are names that resolve to other refs. In most
+* “Symbolic” refs, which are names that resolve to other refs. In most
   repositories, only a few of these appear. (Circular references are possible
   with symbolic refs. Git will refuse to resolve these.)
 
@@ -27,7 +27,7 @@ namespace convention. The following namespaces are common:
 * `refs/heads/NAME`: branches. The branch name is the ref name with
   `refs/heads/` removed. Names generally point to commits.
 
-* `refs/remotes/REMOTE/NAME`: "remote-tracking" branches. These are maintained
+* `refs/remotes/REMOTE/NAME`: “remote-tracking” branches. These are maintained
   in tandem by `git remote` and `git fetch`, to cache the state of other
   repositories. Names generally point to commits.
 
@@ -54,7 +54,7 @@ rather than sanity-checking the ref before using it.
 There are a handful of special refs used by Git commands for their own
 operation. These refs do _not_ begin with `refs/`:
 
-* `HEAD`: the "current" commit for most operations. This is set when checking
+* `HEAD`: the “current” commit for most operations. This is set when checking
   out a commit, and many revision-related commands default to `HEAD` if not
   given a revision to operate on. `HEAD` can either be a symbolic ref
   (pointing to a branch ref) or a normal ref (pointing directly to a commit),

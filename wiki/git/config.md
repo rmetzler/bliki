@@ -13,7 +13,7 @@ Full documentation is under `git help config`, unless otherwise stated.
 * `git config push.default simple` - the default behaviour (called `matching`)
   of an unqualified `git push` is to identify pairs of branches by name and
   push all matches from your local repository to the remote. Given that
-  branches have explicit "upstream" configuration identifying which, if any,
+  branches have explicit “upstream” configuration identifying which, if any,
   branch in which, if any, remote they're associated with, this is dumb. The
   `simple` mode pushes the current branch to its upstream remote, if and only
   if the local branch name and the remote branch name match _and_ the local
@@ -29,7 +29,7 @@ Full documentation is under `git help config`, unless otherwise stated.
 * `git config rebase.autosquash true` - causes `git rebase -i` to parse magic
   comments created by `git commit --squash=some-hash` and `git commit
   --fixup=some-hash` and reorder the commit list before presenting it for
-  further editing. See the descriptions of "squash" and "fixup" in `git help
+  further editing. See the descriptions of “squash” and “fixup” in `git help
   rebase` for details; autosquash makes amending commits other than the most
   recent easier and less error-prone.
 
@@ -40,10 +40,10 @@ Full documentation is under `git help config`, unless otherwise stated.
   `always`) this only happens when the start point is a remote-tracking
   branch.
 
-* `git config rerere.enabled true` - enable "reuse recorded resolution". The
+* `git config rerere.enabled true` - enable “reuse recorded resolution.” The
   `git help rerere` docs explain it pretty well, but the short version is that
-  git can record how you resolve conflicts during a "test" merge and reuse the
-  same approach when resolving the same conflict later, in a "real" merge.
+  git can record how you resolve conflicts during a “test” merge and reuse the
+  same approach when resolving the same conflict later, in a “real” merge.
 
 ## For advanced users
 
@@ -52,7 +52,7 @@ you no longer need them.
 
 * `git config advice.detachedHead` - if you already understand the difference
   between having a branch checked out and having a commit checked out, and
-  already understand what "detatched head" means, the warning on every `git
+  already understand what “detatched head” means, the warning on every `git
   checkout ...some detatched thing...` isn't helping anyone. This is also
   useful repositories used for deployment, where specific commits (from tags,
   for example) are regularly checked out.

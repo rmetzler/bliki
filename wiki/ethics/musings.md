@@ -50,27 +50,27 @@ for society.
 ## Integrity is not about contracts or legislation
 
 Ethics, personal integrity, and group integrity are tangled together, but
-modern Western conceptions of group integrity tend to revolve around "does
-this group break the law or engender lawsuits," not "does this group act in
-the best interests of people outside of it."
+modern Western conceptions of group integrity tend to revolve around “does
+this group break the law or engender lawsuits,” not “does this group act in
+the best interests of people outside of it.”
 
 ## Assumptions
 
-I've embedded some of my personal morality into the "ethics" articles in this
+I've embedded some of my personal morality into the “ethics” articles in this
 section, in the absence of a published moral code. Those, obviously, aren't
 absolute, but you can reason about their validity if you assume that I
-believe the "end user's" privacy and active consent take priority over the
+believe the “end user's” privacy and active consent take priority over the
 technical cleverness or business value of a software system.
 
 ### Consent and social software
 
-This has some complicated downstream effects: "active consent" means
+This has some complicated downstream effects: “active consent” means
 something you can't handwave away by putting implied consent (for example, to
 future changes) in an EULA or privacy statement. I haven't written much that
 calls out this pattern because it's _pervasive_.
 
-The "end user is the real product" business model most social networks
+The “end user is the real product” business model most social networks
 operate on is fundamentally unethical under this code. It will always be more
-valuable to the "real customers" (advertisers, analytics platforms, law
+valuable to the “real customers” (advertisers, analytics platforms, law
 enforcement, and intelligence agencies) for users to be opted into new
 measurements by default, _assuming_ consent rather than obtaining it.

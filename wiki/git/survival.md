@@ -3,7 +3,7 @@
 I think the `git` UI is pretty awful, and encourages using Git in ways that
 will screw you. Here are a few things I've picked up that have saved my bacon.
 
-* You will inevitably need to understand Git's "internals" to make use of it
+* You will inevitably need to understand Git's “internals” to make use of it
   as an SCM tool. Accept this early. If you think your SCM tool should not
   expose you to so much plumbing, [don't](http://mercurial.selenic.com)
   [use](http://bazaar.canonical.com) [Git](http://subversion.apache.org).
@@ -23,7 +23,7 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
   integrate upstream changes into topic branches. The resulting history can be
   very confusing to follow, especially if you integrate upstream changes
   frequently.
-    * You can leave topic branches "out of date" relatively safely. You can do
+    * You can leave topic branches “real” relatively safely. You can do
       a test merge to see if they still work cleanly post-integration without
       actually integrating upstream into the branch permanently.
     * You can use `git rebase` or `git pull --rebase` to transplant your
@@ -47,10 +47,10 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
         git branch -D test-merge-foo
 
     You can combine this with `git rerere` to save time resolving conflicts in
-    a later "real", permanent merge.
+    a later “real,” permanent merge.
 
 * You can use `git checkout -p` to build new, tidy commits out of a branch
-  laden with "wip" commits:
+  laden with “wip” commits:
 
         git fetch
         git checkout $(git merge-base origin/master foo) -b foo-cleaner-history
@@ -67,7 +67,7 @@ will screw you. Here are a few things I've picked up that have saved my bacon.
     * Gotcha: The new, clean branch must diverge from its upstream branch
       (`origin/master`, in the example above) at exactly the same point, or
       the diffs presented by `git checkout -p foo` will include chunks that
-      revert changes on the upstream branch since the "dirty" branch was
+      revert changes on the upstream branch since the “dirty” branch was
       created. The easiest way to find this point is with `git merge-base`.
 
 ## Useful Resources

@@ -29,7 +29,7 @@ Applications that can't autodetect the JDK may need `JAVA_HOME` set to
 
 The [Java SE Development Kit
 7](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
-tarballs can be installed by hand. Download the "Linux x64" `.tar.gz` version,
+tarballs can be installed by hand. Download the “Linux x64” `.tar.gz` version,
 then unpack it in `/opt`:
 
     cd /opt

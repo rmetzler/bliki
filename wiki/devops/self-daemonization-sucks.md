@@ -1,6 +1,6 @@
 # Self-daemonizing code is awful
 
-The classical UNIX approach to services is to implement them as "daemons",
+The classical UNIX approach to services is to implement them as “daemons,”
 programs that run without a terminal attached and provide some service. The
 key feature of a classical daemon is that, when started, it carefully
 detaches itself from its initial environment and terminal, then continues
@@ -23,7 +23,7 @@ stop it, to an unsuspecting `init`, which has no idea how this specific
 daemon is special.
 
 The standard workaround has daemons write their own PIDs to a file, but a
-file is "dead" data: it's not automatically updated if the daemon dies, and
+file is “dead” data: it's not automatically updated if the daemon dies, and
 can linger long enough to contain the PID of some later, unrelated program.
 PID file validity checks generally suffer from subtle (or, sometimes, quite
 gross) race conditions.
@@ -73,6 +73,6 @@ This is a great application of
 [DRY](http://c2.com/cgi/wiki?DontRepeatYourself), as the daemon management
 code only needs to be written once (in the daemon-managing daemon) rather
 than many times over (in each individual daemon). It also makes daemon
-execution more predictable, since daemons "in production" behave more like
+execution more predictable, since daemons “in production” behave more like
 they do when run attached to a developer's console during debugging or
 development.

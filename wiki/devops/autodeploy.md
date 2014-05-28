@@ -12,8 +12,8 @@ here?)
 then come back. No, seriously, _now_.)
 
 3. You will be deploying your services to one or more _environments_. An
-environment is an abstract thing: think "production", not
-"web01.public.example.com". (If not, where, exactly, will your service run?)
+environment is an abstract thing: think “production,” not
+“web01.public.example.com.” (If not, where, exactly, will your service run?)
 
 4. For each service, in each environment, there are one or more _servers_ to
 host the service. These servers are functionally identical. (If not, go pave
@@ -22,7 +22,7 @@ and duct tape. An environment full of one-offs is the kind of hell I wouldn't
 wish on my worst enemy.)
 
 5. For each service, in each environment, there is a canonical series of steps
-that produce a "deployed" system.
+that produce a “deployed” system.
 
 -----
 

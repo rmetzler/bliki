@@ -123,7 +123,7 @@ Possibilities for syntax:
 
 * `foo(x := 5, y := 8, z := 2)` - `:=` is never a legal sequence of tokens in
   Java. Introduces one new operator-like construct; the new sequence `:=`
-  "looks like" assignment, which is a useful mnemonic.
+  “looks like” assignment, which is a useful mnemonic.
 
 * `foo(x ~ 5, y ~ 8, z ~ 2)` - `~` is not a binary operator and this is never
   legal right now. This avoids introducing new operators, but adds a novel
@@ -133,7 +133,7 @@ Possibilities for syntax:
 * `foo(.x = 5, .y = 8, .z = 2)` - using `=` as the keyword binding feels more
   natural. Parameter names must be legal identifiers, which means the leading
   dot is unambiguous. This syntax is not legal anywhere right now (the dot
-  always has a leading expression). The dot is a "namespace" symbol already.
+  always has a leading expression). The dot is a “namespace” symbol already.
 
 To support this, the class file format will need to record the names of
 parameters, not just their order. This is a breaking change, and generated

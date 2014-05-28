@@ -1,7 +1,7 @@
 # Objects
 
 Git's basest level is a storage and naming system for things Git calls
-"objects". These objects hold the bulk of the data about files and projects
+“objects.” These objects hold the bulk of the data about files and projects
 tracked by Git: file contents, directory trees, commits, and so on. Every
 object is identified by a SHA-1 hash, which is derived from its contents.
 
@@ -54,8 +54,8 @@ system. Revisions and their history are represented by `commit` objects, which c
 
     * The SHA-1 hash of the root `tree` object of the commit,
     * Zero or more SHA-1 hashes for parent commits,
-    * The name and email address of the commit's "author",
-    * The name and email address of the commit's "committer",
+    * The name and email address of the commit's “author,”
+    * The name and email address of the commit's “committer,”
     * Timestamps representing when the commit was authored and committed, and
     * A commit message.
 
@@ -67,9 +67,9 @@ predictable order determined by the `git checkout` and `git merge` commands.
 
 ## Tags
 
-Git's revision-tracking system supports "tags", which are stable names for
+Git's revision-tracking system supports “tags,” which are stable names for
 specific configurations. It also, uniquely, supports a concept called an
-"annotated tag", represented by the `tag` object type. These annotated tag
+“annotated tag,” represented by the `tag` object type. These annotated tag
 objects contain
 
     * The type and SHA-1 hash of another object,
@@ -106,8 +106,8 @@ for providing stable, meaningful names for commits.
 
 ## Storage
 
-Objects are stored in two places in Git: as "loose objects", and in "pack
-files". Newly-created objects are initially loose objects, for ease of
+Objects are stored in two places in Git: as “loose objects,” and in “pack
+files.” Newly-created objects are initially loose objects, for ease of
 manipulation; transferring objects to another repository or running certain
 administrative commands can cause them to be placed in pack files for faster
 transfer and for smaller storage.

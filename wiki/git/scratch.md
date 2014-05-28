@@ -6,7 +6,7 @@ Git repos are stored in .git:
 
     fakegit$ mkdir .git
 
-They have a "symbolic ref" (which are text files, see [`man
+They have a “symbolic ref” (which are text files, see [`man
 git-symbolic-ref`](http://jk.gs/git-symbolic-ref.html)) named `HEAD`, pointing
 to the currently checked-out branch. Let's use `master`. Branches are refs
 under `refs/heads` (see [`man git-branch`](http://jk.gs/git-branch.html)):
@@ -46,10 +46,10 @@ Does it work?
 Should you do this? **Of course not.** Anywhere you could run these commands,
 you could instead run `git init` or `git clone`, which set up a number of
 other structures, including `.git/config` and any unusual permissions options.
-The key part here is that a directory's identity as "a git repository" is
+The key part here is that a directory's identity as “a git repository” is
 entirely a function of its contents, not of having been blessed into being by
 `git` itself.
 
-You can infer a lot from this: for example, you can infer that it's "safe" to
+You can infer a lot from this: for example, you can infer that it's “safe” to
 move git repositories around using FS tools, or to back them up with the same
 tools, for example. This is not as obvious to everyone as you might hope; people 
