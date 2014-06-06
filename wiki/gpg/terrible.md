@@ -57,6 +57,15 @@ they signed it.
 A lot of people can be meaningfully identified by that information alone,
 even without publishing their personal identity.
 
+## The Web Of Vulnerable CAs
+
+Each GPG user is also a unilateral signing authority. GPG's trust model means
+that a compromised key can be used to confer trust onto _any_ other key,
+compromising potentially many other users by causing them to trust
+illegitimate keys. GPG assumes everyone will be constantly on watch for
+unusual signing activity, and perfectly aware of the safety of their own keys
+at all times.
+
 ## Interoperability
 
 Sending a GPG-signed message to a non-GPG-using normal human being is a great
@@ -88,11 +97,8 @@ for you!)
 Apparently Google's [finally fixing that for Chrome
 users](https://code.google.com/p/end-to-end/), so that's something.
 
-## The Web Of Vulnerable CAs
+## Mobile Need Not Apply
 
-Each GPG user is also a unilateral signing authority. GPG's trust model means
-that a compromised key can be used to confer trust onto _any_ other key,
-compromising potentially many other users by causing them to trust
-illegitimate keys. GPG assumes everyone will be constantly on watch for
-unusual signing activity, and perfectly aware of the safety of their own keys
-at all times.
+Safely distributing GPG keys to mobile applications is more or less
+impossible, and integration with mobile mail applications is nonexistant.
+Hope you only ever read your mail from a Real Computer!
