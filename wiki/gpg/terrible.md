@@ -28,7 +28,7 @@ users.
 
 ## The Real Name Policy
 
-The GPG community has a massive "legal names" fixation. [Widespread GPG
+The GPG community has a massive “legal names” fixation. [Widespread GPG
 documentation](http://cryptnet.net/fdp/crypto/keysigning_party/en/extra/signing_policy.html),
 and years of community inertia, stand behind expecting people to put their
 legal name in their GPG key, and conversely expecting people to verify the
@@ -62,12 +62,12 @@ even without publishing their personal identity.
 Sending a GPG-signed message to a non-GPG-using normal human being is a great
 way to confuse the hell out of them. You have two options:
 
-* In-band "cleartext" signing, which litters the email body with technical
+* In-band “cleartext” signing, which litters the email body with technical
   noise, or
-* PGP/MIME, which delivers a meaningless-looking "signature.asc" attachment.
+* PGP/MIME, which delivers a meaningless-looking “signature.asc” attachment.
 
 In both cases, the recipient is left with a bunch of information they (a)
-can't use and (b) can't hide or remove. It might as well say "virus.dat" for
+can't use and (b) can't hide or remove. It might as well say “virus.dat” for
 all the meaning it conveys.
 
 Some of this is not GPG's fault, exactly, but after over a decade, surely
