@@ -9,13 +9,15 @@ incentives to screw you, or GPG.
 S/MIME in the wild is a total non-starter. GPG, on the other hand, is merely
 really, _really_ bad.
 
+(You may want to take this with a side of [the other perspective](cool).)
+
 ## Body Security And Nothing Else
 
-GPG encrypts and signs email message bodies. That's it, that's all it does.
-Email contains lots of other useful, potentially sensitive data: the subject
-line, for example. GPG still exposes all of the headers for the world to see,
-and conversely does nothing to detect or prevent header tampering by idiot
-mailers.
+GPG encrypts and signs email message bodies. That's it, that's all it does
+when integrated with email. Email messages contain lots of other useful,
+potentially sensitive data: the subject line, for example. GPG still exposes
+all of the headers for the world to see, and conversely does nothing to
+detect or prevent header tampering by idiot mailers.
 
 (Yes. Signed headers _would_ mean that mailing lists can no longer inject
 `[listname]` crud into your messages. Feature, not bug; we should be, and in
@@ -39,14 +41,14 @@ you, this policy is harmful and limiting. There are good theoretical reasons
 to validate _an_ identity before using its keys to secure messages, but legal
 identities can be anywhere from awkward to dangerous to use.
 
-GPG does not _technically_ restrict users from creating pseudonymous keys,
-but the community at large discourages their use unless they can be traced
-back to some legal identity. Pseudonymous keys tend to go unsigned by any
-other key, cutting them off from the GPG trust network's validation effect.
+GPG does not _technically_ restrict users from creating autonymous keys, but
+the community at large discourages their use unless they can be traced back
+to some legal identity. Autonyms keys tend to go unsigned by any other key,
+cutting them off from the GPG trust network's validation effect.
 
 ## Finding Paul Revere
 
-It turns out pseudonymity in GPG would be pretty fragile even if GPG's user
+It turns out autonymity in GPG would be pretty fragile even if GPG's user
 community _didn't_ insist on puncturing it at every opportunity, since GPG
 irrevocably publishes the social graph of its users to every keyserver they
 use. You don't even have to publish it yourself; anyone who has a copy of
@@ -99,6 +101,11 @@ users](https://code.google.com/p/end-to-end/), so that's something.
 
 ## Mobile Need Not Apply
 
-Safely distributing GPG keys to mobile applications is more or less
+<del>Safely distributing GPG keys to mobile applications is more or less
 impossible, and integration with mobile mail applications is nonexistant.
-Hope you only ever read your mail from a Real Computer!
+Hope you only ever read your mail from a Real Computer!</del>
+
+vollkorn points out that the above is inaccurate. He posted a couuple of
+options for GPG on Android, and the state of the art for iOS GPG apps is
+apparently better than I was able to find. See [his
+comment](#comment-1422227740) for details.
