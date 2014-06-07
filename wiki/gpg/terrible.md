@@ -105,7 +105,7 @@ users](https://code.google.com/p/end-to-end/), so that's something.
 impossible, and integration with mobile mail applications is nonexistant.
 Hope you only ever read your mail from a Real Computer!</del>
 
-vollkorn points out that the above is inaccurate. He posted a couuple of
+vollkorn points out that the above is inaccurate. He posted a couple of
 options for GPG on Android, and the state of the art for iOS GPG apps is
 apparently better than I was able to find. See [his
 comment](#comment-1422227740) for details.
