@@ -62,7 +62,7 @@ even without publishing their personal identity.
 ## The Web Of Vulnerable CAs
 
 Each GPG user is also a unilateral signing authority. GPG's trust model means
-that a compromised key can be used to confer trust onto _any_ other key,
+that a compromised key can be used to confer validity onto _any_ other key,
 compromising potentially many other users by causing them to trust
 illegitimate keys. GPG assumes everyone will be constantly on watch for
 unusual signing activity, and perfectly aware of the safety of their own keys
