@@ -1,0 +1,54 @@
+# GPG Keys
+
+If you've read [GPG Is Terrible](terrible) and [GPG Is Pretty Cool](cool),
+and their references, and for some reason still feel the need to use GPG, my
+key fingerprint is `77BD C4F1 6EFD 607E 85AA  B639 5023 2991 F10D FFD0`. The
+key itself is below.
+
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+    Version: GnuPG/MacGPG2 v2.0.22 (Darwin)
+    Comment: GPGTools - https://gpgtools.org
+
+    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
+    Pl2Cbae75Fci6WpA+A==
+    =vFvJ
+    -----END PGP PUBLIC KEY BLOCK-----

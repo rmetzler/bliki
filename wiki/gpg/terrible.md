@@ -109,3 +109,8 @@ vollkorn points out that the above is inaccurate. He posted a couple of
 options for GPG on Android, and the state of the art for iOS GPG apps is
 apparently better than I was able to find. See [his
 comment](#comment-1422227740) for details.
+
+## Further Reading
+
+* [Secushare.org's “15 reasons not to start using PGP”](http://secushare.org/PGP)
+* [Mike Perry's “Why the Web of Trust Sucks”](https://lists.torproject.org/pipermail/tor-talk/2013-September/030235.html)
