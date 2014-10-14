@@ -5,7 +5,7 @@ mature software development. Jenkins (and its predecessor, Hudson) has the
 unique privilege of being both an early player in the niche and
 free-as-in-beer. The blog space is littered with interesting articles about
 continuous builds, automated testing, and continuous deployment, all of which
-conclude on "how do we make Jenkins do it?"
+conclude on “how do we make Jenkins do it?”
 
 This is unfortunate, because Jenkins has some serious problems, and I want it
 to stop informing the discussion.
