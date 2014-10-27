@@ -22,6 +22,6 @@ The following beliefs are widespread and incorrect:
 
 4. **Your shutdown hook will run to completion.** Some languages run shutdown hooks even when the original termination request came from, for example, the user logging out. Most environments give programs a finite amount of time to wrap up before forcibly terminating them; your shutdown hook may well be mid-run when this occurs.
 
-5. **Your shutdown hook will be the only thing running.** In languages that support "daemon" threads, shutdown hooks may start before daemon threads terminate. In languages with concurrent shutdown hooks, other hooks will be in flight at the same time. On POSIX platforms, signals can still arrive during your shutdown hook. (Did you start any child processes? `SIGCHLD` can still arrive.)
+5. **Your shutdown hook will be the only thing running.** In languages that support “daemon” threads, shutdown hooks may start before daemon threads terminate. In languages with concurrent shutdown hooks, other hooks will be in flight at the same time. On POSIX platforms, signals can still arrive during your shutdown hook. (Did you start any child processes? `SIGCHLD` can still arrive.)
 
 Programs that rely on shutdown hooks for correctness should be treated as de-facto incorrect, much like object finalization in garbage-collected languages.
