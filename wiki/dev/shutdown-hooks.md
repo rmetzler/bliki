@@ -24,4 +24,6 @@ The following beliefs are widespread and incorrect:
 
 5. **Your shutdown hook will be the only thing running.** In languages that support “daemon” threads, shutdown hooks may start before daemon threads terminate. In languages with concurrent shutdown hooks, other hooks will be in flight at the same time. On POSIX platforms, signals can still arrive during your shutdown hook. (Did you start any child processes? `SIGCHLD` can still arrive.)
 
+6. **You need a shutdown hook.** Closing files, terminating threads, and hanging up network connections are all done automatically by the OS as part of process destruction. The behaviour of the final few writes to a file handle aren't completely deterministic (unflushed data can be lost), but that's true even if a shutdown hook tries to close the file.
+
 Programs that rely on shutdown hooks for correctness should be treated as de-facto incorrect, much like object finalization in garbage-collected languages.
