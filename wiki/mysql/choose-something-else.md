@@ -535,8 +535,8 @@ Given the examples of
 [contemporaneous](http://msdn.microsoft.com/en-US/library/ms189826(v=sql.90).aspx)
 [procedural](http://docs.oracle.com/cd/B10501_01/appdev.920/a96624/toc.htm)
 [languages](http://www.firebirdsql.org/file/documentation/reference_manuals/reference_material/html/langrefupd15-psql.html),
-MySQL's procedural dialect contains some very strange and unfortunate design
-choices:
+MySQL's procedural dialect -- an implementation of the
+[SQL/PSM](http://en.wikipedia.org/wiki/SQL/PSM) language -- is quite limited:
 
 * There is no language construct for looping over a query result. This seems
   like a pretty fundamental feature for a database-hosted language, but no.
@@ -650,9 +650,9 @@ perturbing the code to each engine, making progress on new MySQL-level
 features that interact with storage such as better query planning or new SQL
 constructs necessarily slow to implement and slow to test.
 
-### Poor Priorities
+### Held Back By History
 
-Early on, the MySQL team focused on pure read performance and on “ease of use”
+The original MySQL team focused on pure read performance and on “ease of use”
 (for new users with simple needs, as far as I can tell) over correctness and
 completeness, violating Knuth's laws of optimization. Many of these decisions
 locked MySQL into behaviours very early in its life that it still displays
@@ -662,29 +662,20 @@ languages](http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/)
 unfortunately shows that the same behaviours sandbag development and help hide
 bugs in more sophisticated scenarios.
 
-While the MySQL (and MariaDB, and Percona) teams have matured greatly, MySQL's
-massive and, frequently, not terribly database-heavy userbase makes it very
-hard to introduce breaking changes. At the same time, adding _optional_
-breaking changes via server and client mode flags (such as `sql_mode`)
-increases the cognitive burden involved in understanding MySQL's behaviours --
-especially when that behaviour can vary from client to client, or when the
-server's configuration is out of your control (on a shared host).
+MySQL has since changed hands, and the teams working on MySQL (and MariaDB,
+and Percona) are much more mature now than the team that made those early
+decisions. MySQL's massive and frequently non-savvy userbase makes it very hard
+to introduce breaking changes. At the same time, adding _optional_ breaking
+changes via server and client mode flags (such as `sql_mode`) increases the
+cognitive overhead of understanding MySQL's behaviours -- especially when that
+behaviour can vary from client to client, or when the server's configuration is
+out of the user's control (for example, on a shared host, or on EC2).
 
 A solution similar to Python's `from __future__ import` pragmas for making
 breaking changes opt-in some releases in advance of making them mandatory
 might help, but MySQL doesn't have the kind of highly-invested, highly-skilled
 user base that would make that effective -- and it still has all of the
 problems of modal behaviour.
-
-### The Inmates are Running The Asylum
-
-[What](http://lists.mysql.com/mysql/228854)
-[is](http://lists.mysql.com/mysql/228563)
-[this](http://lists.mysql.com/mysql/228412)
-[shit](http://lists.mysql.com/mysql/228091)?
-
-It wouldn't be so frustrating if I could assign poor faith to someone, but no,
-the MySQL folks are here to _help_.
 
 ## Bad Arguments
 
