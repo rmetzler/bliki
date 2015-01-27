@@ -46,6 +46,23 @@ the community at large discourages their use unless they can be traced back
 to some legal identity. Autonyms keys tend to go unsigned by any other key,
 cutting them off from the GPG trust network's validation effect.
 
+As [@wlonk](https://twitter.com/wlonk/) put it:
+
+> I care about communicating with the coherent theory of mind behind @so-and-so.
+
+## Issuing Identities
+
+GPG makes issuing new identities simultaneously too easy and too hard for users.
+It's hard, because the _only_ way to issue a new identity on an existing key
+(and thus associated with and able to share correspondence with an existing
+identity) requires that the user have access to their personal root key. There's
+no way to create ad-hoc identities and bind them after the fact, making it hard
+to implement opportunistic tools. (OTR's on-demand key generation fails to the
+opposite extreme.) It's easy, because there's no mechanism beyond the web of
+trust itself to vet newly-created keys or identities; the GPG community
+compounds this by demanding that everyone carefully vet legal identities, making
+it _very_ time-consuming to deploy a new name.
+
 ## Finding Paul Revere
 
 It turns out autonymity in GPG would be pretty fragile even if GPG's user
@@ -67,6 +84,12 @@ compromising potentially many other users by causing them to trust
 illegitimate keys. GPG assumes everyone will be constantly on watch for
 unusual signing activity, and perfectly aware of the safety of their own keys
 at all times.
+
+Given that the GPG signature graph is largely public, it should be possible to
+moderate signatures using clique analysis, limiting the impact of a trusted
+party who signs inauthentic identities. Unfortunately, GPG makes it challenging
+to implement this by providing almost no support for iteratively deepening the
+local keyring by downloading signers' keys as needed.
 
 ## Interoperability
 
