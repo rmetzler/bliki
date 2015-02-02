@@ -1,7 +1,7 @@
 # JDBC Drivers and `Class.forName()`
 
 The short version: stop using `Class.forName(driverClass)` to load JDBC
-drivers. You don't need this, and haven't since Java 5. You arguably never
+drivers. You don't need this, and haven't since Java 6. You arguably never
 needed this.
 
 This pattern appears all over the internet, and it's wrong.
