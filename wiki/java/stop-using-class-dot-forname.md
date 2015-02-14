@@ -44,6 +44,13 @@ developers.
 
 _You don't need to write any code to load a JDBC 4 driver._
 
+## What's The Harm?
+
+It's harmless in the immediate sense: forcing a driver to load immediately
+before JDBC would load it itself has no additional side effects. However, it's
+a pretty clear indicator that you've copied someone else's code without
+thoroughly understanding what it does, which is a bad habit.
+
 ## But What About My Database?
 
 You don't need to worry about it. All of the following drivers support JDBC
