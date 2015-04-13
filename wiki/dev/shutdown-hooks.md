@@ -1,4 +1,4 @@
-# Falsehoods Programmers Beleive About Shutdown Hooks
+# Falsehoods Programmers Believe About Shutdown Hooks
 
 Shutdown hooks are language features allowing programs to register callbacks to run during the underlying runtime's orderly teardown. For example:
 
