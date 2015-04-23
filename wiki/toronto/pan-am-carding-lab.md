@@ -35,8 +35,9 @@ through a Toronto officer or an RCMP officer. Remember, you are entirely within
 your rights to be there, with a camera, walking.
 
 It's important that you do this _without_ the trappings of authority and
-without witnesses. Be powerless. Experience an unjustified police stop as
-someone who has no immediate recourse.
+without witnesses. Be powerless. Put yourself at the mercy of the police you
+enabled. Experience an unjustified police stop as someone who has no immediate
+recourse.
 
 That experience is no fun. It's in turns demeaning, terrifying, embarassing,
 and disempowering. [For some Torontonians, this is a daily
