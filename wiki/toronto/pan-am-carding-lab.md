@@ -32,7 +32,9 @@ harmless to others.
 
 You will absolutely be stopped by the police Integrated Security Unit, either
 through a Toronto officer or an RCMP officer. Remember, you are entirely within
-your rights to be there, with a camera, walking.
+your rights to be there, with a camera, walking. (You'll need the camera to put
+yourself on the radar: if you're white, the police will largely ignore you.
+Taking pictures is optional, but a lot of fun.)
 
 It's important that you do this _without_ the trappings of authority and
 without witnesses. Be powerless. Put yourself at the mercy of the police you
