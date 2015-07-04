@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Glassfish and Upstart
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">devops</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						glassfish-and-upstart
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="glassfish-and-upstart">Glassfish and Upstart</h1>
+<p><strong>Warning</strong>: the article you're about to read is largely empirical. Take
+everything in it in a grain of salt, and <em>verify it yourself</em> before putting
+it into production. You have been warned.</p>
+<p>The following observations apply to Glassfish 3.1.2.2. Other versions probably
+act similarly, but check the docs.</p>
+<h2 id="asadmin-create-service"><code>asadmin create-service</code></h2>
+<p>Glassfish is capable of emitting SysV init scripts for the DAS, or for any
+instance. These init scripts wrap <code>asadmin start-domain</code> and <code>asadmin
+start-local-instance</code>. However, the scripts it emits are (justifiably)
+minimalist, and it makes some very strong assumptions about the layout of your
+system's rc.d trees and about your system's choice of runlevels. The minimal
+init scripts avoid any integration with platform “enhancements” (such as
+Redhat's <code>/var/lock/subsys</code> mechanism and <code>condrestart</code> convention, or
+Debian's <code>start-stop-daemon</code> helpers) in the name of portability, and the
+assumptions it makes about runlevels and init layout are becoming
+incrementally more fragile as more distributions switch to alternate init
+systems with SysV compatiblity layers.</p>
+<h2 id="fork-and-expect">Fork and <code>expect</code></h2>
+<p>Upstart's process tracking mechanism relies on services following one of three
+forking models, so that it can accurately track which children of PID 1 are
+associated with which services:</p>
+<ul>
+<li>
+<p>No <code>expect</code> stanza: The service's “main” process is expected not to fork at
+  all, and to remain running. The process started by upstart is the “main”
+  process.</p>
+</li>
+<li>
+<p><code>expect fork</code>: The service is expected to call <code>fork()</code> or <code>clone()</code> once.
+  The process started by upstart itself is not the “main” process, but its
+  first child process is.</p>
+</li>
+<li>
+<p><code>expect daemon</code>: The service is expected to call <code>fork()</code> or <code>clone()</code>
+  twice. The first grandchild process of the one started by upstart itself is
+  the “main” process. This corresponds to classical Unix daemons, which fork
+  twice to properly dissociate themselves from the launching shell.</p>
+</li>
+</ul>
+<p>Surprisingly, <code>asadmin</code>-launched Glassfish matches <em>none</em> of these models, and
+using <code>asadmin start-domain</code> to launch Glassfish from Upstart is not, as far
+as I can tell, possible. It's tricky to debug why, since JVM thread creation
+floods <code>strace</code> with chaff, but I suspect that either <code>asadmin</code> or Glassfish
+itself is forking too many times.</p>
+<p>From <a href="https://java.net/projects/glassfish/lists/dev/archive/2012-02/message/9">this mailing list
+thread</a>,
+though, it appears to be safe to launch Glassfish directly, using <code>java -jar
+GLASSFISH_ROOT/modules/glassfish.jar -domain DOMAIN</code>. This fits nicely into
+Upstart's non-forking expect mode, but you lose the ability to pass VM
+configuration settings to Glassfish during startup. Any memory settings or
+Java environment properties you want to pass to Glassfish have to be passed to
+the <code>java</code> command manually.</p>
+<p>You also lose <code>asadmin</code>'s treatment of Glassfish's working directory. Since
+Upstart can configure the working directory, this isn't a big deal.</p>
+<h2 id="sigterm-versus-asadmin-stop-domain"><code>SIGTERM</code> versus <code>asadmin stop-domain</code></h2>
+<p>Upstart always stops services by sending them a signal. While you can dictate
+which signal it uses, you cannot replace signals with another mechanims.
+Glassfish shuts down abruptly when it recieves <code>SIGTERM</code> or <code>SIGINT</code>, leaving
+some ugly noise in the logs and potentially aborting any transactions and
+requests in flight. The Glassfish developers believe this is harmless and that
+the server's operation is correct, and that's probably true, but I've not
+tested its effect on outward-facing requests or on in-flight operations far
+enough to be comfortable with it.</p>
+<p>I chose to run a “clean”(er) shutdown using <code>asadmin stop-domain</code>. This fits
+nicely in Upstart's <code>pre-stop</code> step, <em>provided you do not use Upstart's
+<code>respawn</code> feature</em>. Upstart will correctly notice that Glassfish has already
+stopped after <code>pre-stop</code> finishes, but when <code>respawn</code> is enabled Upstart will
+treat this as an unexpected termination, switch goals from <code>stop</code> to
+<code>respawn</code>, and restart Glassfish.</p>
+<p>(The Upstart documentation claims that <code>respawn</code> does not apply if the tracked
+process exits during <code>pre-stop</code>. This may be true in newer versions of
+Upstart, but the version used in Ubuntu 12.04 does restart Glassfish if it
+stops during <code>pre-stop</code>.)</p>
+<p>Yes, this does make it impossible to stop Glassfish, ever, unless you set a
+respawn limit.</p>
+<p>Fortunately, you don't actually want to use <code>respawn</code> to manage availability.
+The <code>respawn</code> mode cripples your ability to manage the service “out of band”
+by forcing Upstart to restart it as a daemon every time it stops for any
+reason. This means you cannot stop a server with <code>SIGTERM</code> or <code>SIGKILL</code>; it'll
+immediately start again.</p>
+<h2 id="initctl-reload"><code>initctl reload</code></h2>
+<p>It sends <code>SIGHUP</code>. This does not reload Glassfish's configuration. Deal with
+it; use <code>initctl restart</code> or <code>asadmin restart-domain</code> instead. Most of
+Glassfish's configuration can be changed on the fly with <code>asadmin set</code> or
+other commands anyways, so this is not a big limitation.</p>
+<h2 id="instances">Instances</h2>
+<p>Upstart supports “instances” of a service. This slots nicely into Glassfish's
+ability to host multiple domains and instances on the same physical hardware.
+I ended up with a generic <code>glassfish-domain.conf</code> Upstart configuration:</p>
+<pre><code>description "Glassfish DAS"
+console log
+
+instance $DOMAIN
+
+setuid glassfish
+setgid glassfish
+umask 0022
+chdir /opt/glassfish3
+
+exec /usr/bin/java -jar /opt/glassfish3/glassfish/modules/glassfish.jar -domain "${DOMAIN}"
+
+pre-stop exec /opt/glassfish3/bin/asadmin stop-domain "${DOMAIN}"
+</code></pre>
+<p>Combined with a per-domain wrapper:</p>
+<pre><code>description "Glassfish 'example' domain"
+console log
+
+# Consider using runlevels here.
+start on started networking
+stop on deconfiguring-networking
+
+pre-start script
+    start glassfish-domain DOMAIN=example
+end script
+
+post-stop script
+    stop glassfish-domain DOMAIN=example
+end script
+</code></pre>
+<h2 id="possible-refinements">Possible refinements</h2>
+<ul>
+<li>
+<p>Pull system properties and VM flags from the domain's own <code>domain.xml</code>
+  correctly. It might be possible to abuse the (undocumented, unsupported, but
+  helpful) <code>--_dry-run</code> argument from <code>asadmin start-domain</code> for this, or it
+  might be necessary to parse <code>domain.xml</code> manually, or it may be possible to
+  exploit parts of Glassfish itself for this.</p>
+</li>
+<li>
+<p>The <code>asadmin</code> cwd is actually the domain's <code>config</code> dir, not the Glassfish
+  installation root.</p>
+</li>
+<li>
+<p>Something something something password files.</p>
+</li>
+<li>
+<p>Syslog and logrotate integration would be useful. The configurations above
+  spew Glassfish's startup output and stdout to
+  <code>/var/log/upstart/glassfish-domain-FOO.log</code>, which may not be rotated by
+  default.</p>
+</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/devops/glassfish-and-upstart.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/devops/glassfish-and-upstart.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

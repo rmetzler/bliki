@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Do Not Pass This Way Again
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">mysql</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						choose-something-else
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="do-not-pass-this-way-again">Do Not Pass This Way Again</h1>
+<p>Considering MySQL? Use something else. Already on MySQL? Migrate. For every
+successful project built on MySQL, you could uncover a history of time wasted
+mitigating MySQL's inadequacies, masked by a hard-won, but meaningless, sense
+of accomplishment over the effort spent making MySQL behave.</p>
+<p>Thesis: databases fill roles ranging from pure storage to complex and
+interesting data processing; MySQL is differently bad at both tasks. Real apps
+all fall somewhere between these poles, and suffer variably from both sets of
+MySQL flaws.</p>
+<ul>
+<li>MySQL is bad at <a href="#storage">storage</a>.</li>
+<li>MySQL is bad at <a href="#data-processing">data processing</a>.</li>
+<li>MySQL is bad <a href="#by-design">by design</a>.</li>
+<li><a href="#bad-arguments">Bad arguments</a> for using MySQL.</li>
+</ul>
+<p>Much of this is inspired by the principles behind <a href="http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/">PHP: A Fractal of Bad
+Design</a>. I
+suggest reading that article too -- it's got a lot of good thought in it even
+if you already know to stay well away from PHP. (If that article offends you,
+well, this page probably will too.)</p>
+<h2 id="storage">Storage</h2>
+<p>Storage systems have four properties:</p>
+<ol>
+<li>Take and store data they receive from applications.</li>
+<li>Keep that data safe against loss or accidental change.</li>
+<li>Provide stored data to applications on demand.</li>
+<li>Give administrators effective management tools.</li>
+</ol>
+<p>In a truly “pure” storage application, data-comprehension features
+(constraints and relationships, nontrivial functions and aggregates) would go
+totally unused. There is a time and a place for this: the return of “NoSQL”
+storage systems attests to that.</p>
+<p>Pure storage systems tend to be closely coupled to their “main” application:
+consider most web/server app databases. “Secondary” clients tend to be
+read-only (reporting applications, monitoring) or to be utilities in service
+of the main application (migration tools, documentation tools). If you believe
+constraints, validity checks, and other comprehension features can be
+implemented in “the application,” you are probably thinking of databases close
+to this pole.</p>
+<h3 id="storing-data">Storing Data</h3>
+<p>MySQL has many edge cases which reduce the predictability of its behaviour
+when storing information. Most of these edge cases are documented, but violate
+the principle of least surprise (not to mention the expectations of users
+familiar with other SQL implementations).</p>
+<ul>
+<li>Implicit conversions (particularly to and from string types) can modify
+  MySQL's behaviour.<ul>
+<li>Many implicit conversions are also silent (no warning, no diagnostic),
+  by design, making it more likely developers are entirely unaware of
+  them until one does something surprising.</li>
+</ul>
+</li>
+<li>Conversions that violate basic constraints (range, length) of the output
+  type often coerce data rather than failing.<ul>
+<li>Sometimes this raises a warning; does your app check for those?</li>
+<li>This behaviour is unlike many typed systems (but closely like PHP and
+  remotely like Perl).</li>
+</ul>
+</li>
+<li>Conversion behaviour depends on a per-connection configuration value
+  (<code>sql_mode</code>) that has <a href="http://dev.mysql.com/doc/refman/5.5/en/server-sql-mode.html">a large constellation of possible
+  states</a>, making
+  it harder to carry expectations from manual testing over to code or from
+  tool to tool.</li>
+<li>MySQL recommends UTF-8 as a character-set, but still defaults to Latin-1.
+  The implimentation of <code>utf8</code> up until MySQL 5.5 was only the 3-byte
+  <a href="http://en.wikipedia.org/wiki/Basic_Multilingual_Plane#Basic_Multilingual_Plane">BMP</a>.
+  MySQL 5.5 and beyond supports a 4-byte <code>utf8</code>, but confusingly must be set
+  with the character-set <code>utf8mb4</code>. Implementation details of these encodings
+  within MySQL, such as the <code>utf8</code> 3-byte limit, tend to leak out into client
+  applications. Data that does not fit MySQL's understanding of the storage
+  encoding will be transformed until it does, by truncation or replacement, by
+  default.<ul>
+<li>Collation support is per-encoding, with one of the stranger default
+  configurations: by default, the collation orders characters according to
+  Swedish alphabetization rules, case-insensitively.</li>
+<li>Since it's the default, lots of folks who don't know the manual
+  inside-out and backwards observe MySQL's case-insensitive collation
+  behaviour (<code>'a' = 'A'</code>) and conclude that “MySQL is case-insensitive,”
+  complicating any effort to use a case-sensitive locale.</li>
+<li>Both the encoding and the collation can vary, independently, by
+  <em>column</em>. Do you keep your schema definition open when you write
+  queries to watch out for this sort of shit?</li>
+</ul>
+</li>
+<li>The <code>TIMESTAMP</code> type tries to do something smart by storing values in a
+  canonical timezone (UTC), but it's done with so few affordances that it's
+  very hard to even <em>tell</em> that MySQL's done a right thing with your data.<ul>
+<li>And even after that, the result of <code>foo &lt; '2012-04-01 09:00:00'</code> still
+  depends on what time of year it is when you evaluate the query, unless
+  you're very careful with your connection timezone.</li>
+<li><code>TIMESTAMP</code> is also special-cased in MySQL's schema definition handling,
+  making it easy to accidentally create (or to accidentally fail to
+  create) an auto-updating field when you didn't (did) want one.</li>
+<li><code>DATETIME</code> does not get the same timezone handling <code>TIMESTAMP</code> does.
+  What? And you can't provide your own without resorting to hacks like
+  extra columns.</li>
+<li>Oh, did you want to <em>use</em> MySQL's timezone support? Too bad, none of
+  that data's loaded by default. You have to process the OS's <code>tzinfo</code>
+  files into SQL with a separate tool and import that. If you ever want to
+  update MySQL's timezone settings later, you need to take the server down
+  just to make sure the changes apply.</li>
+</ul>
+</li>
+</ul>
+<h3 id="preserving-data">Preserving Data</h3>
+<p>... against unexpected changes: like most disk-backed storage systems, MySQL
+is as reliable as the disks and filesystems its data lives on. MySQL provides 
+no additional functionality in terms of mirroring or hardware failure tolerance
+(such as <a href="http://en.wikipedia.org/wiki/Automatic_Storage_Management">Oracle ASM</a>).
+However this is a limitation shared with many, <em>many</em> other systems.</p>
+<p>When using the InnoDB storage engine (default since MySQL 5.5), MySQL maintains page
+checksums in order to detect corruption caused by underlying storage.  However,
+many third-party software applications, as sell as users upgrading
+from earlier versions of MySQL may be using MyISAM, which will frequently corrupt
+data files on improper shutdown.</p>
+<p>The implicit conversion rules that bite when storing data also bite when
+asking MySQL to modify data - my favourite example being a fat-fingered
+<code>UPDATE</code> query where a mistyped <code>=</code> (as <code>-</code>, off by a single key) caused 90%
+of the rows in the table to be affected, instead of one row, because of
+implicit string-to-integer conversions.</p>
+<p>... against loss: hoo boy. MySQL, out of the box, gives you three approaches
+to <a href="http://dev.mysql.com/doc/refman/5.5/en/backup-methods.html">backups</a>:</p>
+<ul>
+<li>Take “blind” filesystem backups with <code>tar</code> or <code>rsync</code>. Unless you
+  meticulously lock tables or make the database read-only for the duration,
+  this produces a backup that requires crash recovery before it will be
+  usable, and can produce an inconsistent database.<ul>
+<li>This can bite quite hard if you use InnoDB, as InnoDB crash recovery
+  takes time proportional to both the number of InnoDB tables and the
+  total size of InnoDB tables, with a large constant.</li>
+</ul>
+</li>
+<li>Dump to SQL with <code>mysqldump</code>: slow, relatively large backups, and
+  non-incremental.</li>
+<li>Archive binary logs: fragile, complex, over-configurable, and configured
+  badly by default. (Binary logging is also the basis of MySQL's replication
+  system.)</li>
+</ul>
+<p>If neither of these are sufficient, you're left with purchasing <a href="http://dev.mysql.com/doc/refman/5.5/en/glossary.html#glos_mysql_enterprise_backup">a backup tool
+from
+Oracle</a>
+or from one of the third-party MySQL vendors.</p>
+<p>Like many of MySQL's features, the binary logging feature is
+<a href="http://dev.mysql.com/doc/refman/5.5/en/binary-log.html">too</a>
+<a href="http://dev.mysql.com/doc/refman/5.5/en/replication-options-binary-log.html">configurable</a>,
+while still, somehow, defaulting to modes that are hazardous or surprising:
+the
+<a href="http://dev.mysql.com/doc/refman/5.5/en/replication-options-binary-log.html#sysvar_binlog_format">default</a>
+<a href="http://dev.mysql.com/doc/refman/5.5/en/replication-formats.html">behaviour</a>
+is to log SQL statements, rather than logging their side effects. This has
+lead to numerous bugs over the years; MySQL (now) makes an effort to make
+common “non-deterministic” cases such as <code>NOW()</code> and <code>RANDOM()</code> act
+deterministically but these have been addressed using ad-hoc solutions.
+Restoring binary-log-based backups can easily lead to data that differs from
+the original system, and by the time you've noticed the problem, it's too late
+to do anything about it.</p>
+<p>(Seriously. The binary log entries for each statement contain the “current”
+time on the master and the random seed at the start of the statement, just in
+case. If your non-deterministic query uses any other function, you're still
+<a href="http://dev.mysql.com/doc/refman/5.5/en/replication-sbr-rbr.html#replication-sbr-rbr-sbr-disadvantages">fucked by
+default</a>.)</p>
+<p>Additionally, a number of apparently-harmless features can lead to backups or
+replicas wandering out of sync with the original database, in the default
+configuration:</p>
+<ul>
+<li><code>AUTO_INCREMENT</code> and <code>UPDATE</code> statements.</li>
+<li><code>AUTO_INCREMENT</code> and <code>INSERT</code> statements (sometimes). SURPRISE.</li>
+<li>Triggers.</li>
+<li>User-defined (native) functions.</li>
+<li>Stored (procedural SQL) functions.</li>
+<li><code>DELETE ... LIMIT</code> and <code>UPDATE ... LIMIT</code> statements, though if you use
+  these, you've misunderstood how SQL is supposed to work.</li>
+<li><code>INSERT ... ON DUPLICATE KEY UPDATE</code> statements.</li>
+<li>Bulk-loading data with <code>LOAD DATA</code> statements.</li>
+<li><a href="http://dev.mysql.com/doc/refman/5.5/en/replication-features-floatvalues.html">Operations on floating-point
+  values</a>.</li>
+</ul>
+<h3 id="retrieving-data">Retrieving Data</h3>
+<p>This mostly works as expected. Most of the ways MySQL will screw you happen
+when you store data, not when you retrieve it. However, there are a few things
+that implicitly transform stored data before returning it:</p>
+<ul>
+<li>
+<p>MySQL's surreal type conversion system works the same way during <code>SELECT</code>
+  that it works during other operations, which can lead to queries matching
+  unexpected rows:</p>
+<pre><code>owen@scratch&gt; CREATE TABLE account (
+    -&gt;     accountid INTEGER
+    -&gt;         AUTO_INCREMENT
+    -&gt;         PRIMARY KEY,
+    -&gt;     discountid INTEGER
+    -&gt; );
+Query OK, 0 rows affected (0.54 sec)
+
+owen@scratch&gt; INSERT INTO account
+    -&gt;     (discountid)
+    -&gt; VALUES
+    -&gt;     (0),
+    -&gt;     (1),
+    -&gt;     (2);
+Query OK, 3 rows affected (0.03 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+owen@scratch&gt; SELECT *
+    -&gt; FROM account
+    -&gt; WHERE discountid = 'banana';
++-----------+------------+
+| accountid | discountid |
++-----------+------------+
+|         1 |          0 |
++-----------+------------+
+1 row in set, 1 warning (0.05 sec)
+</code></pre>
+<p>Ok, unexpected, but there's at least a warning (do your apps check for
+those?) - let's see what it says:</p>
+<pre><code>owen@scratch&gt; SHOW WARNINGS;
++---------+------+--------------------------------------------+
+| Level   | Code | Message                                    |
++---------+------+--------------------------------------------+
+| Warning | 1292 | Truncated incorrect DOUBLE value: 'banana' |
++---------+------+--------------------------------------------+
+1 row in set (0.03 sec)
+</code></pre>
+<p>I can count on one hand the number of <code>DOUBLE</code> columns in this example and
+still have five fingers left over.</p>
+<p>You might think this is an unreasonable example: maybe you should always
+make sure your argument types exactly match the field types, and the query
+should use <code>57</code> instead of <code>'banana'</code>. (This does actually “fix” the
+problem.) It's unrealistic to expect every single user to run <code>SHOW CREATE
+TABLE</code> before every single query, or to memorize the types of every column
+in your schema, though. This example derived from a technically-skilled
+but MySQL-ignorant tester examining MySQL data to verify some behavioural
+changes in an app.</p>
+<ul>
+<li>
+<p>Actually, you don't even need a table for this: <code>SELECT 0 = 'banana'</code>
+  returns <code>1</code>. Did the <a href="http://phpsadness.com/sad/52">PHP</a> folks design
+  MySQL's <code>=</code> operator?</p>
+</li>
+<li>
+<p>This isn't affected by <code>sql_mode</code>, even though so many other things are.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>TIMESTAMP</code> columns (and <em>only</em> <code>TIMESTAMP</code> columns) can return
+  apparently-differing values for the same stored value depending on
+  per-connection configuration even during read-only operation. This is done
+  silently and the default behaviour can change as a side effect of non-MySQL
+  configuration changes in the underlying OS.</p>
+</li>
+<li>String-typed columns are transformed for encoding on output if the
+  connection is not using the same encoding as the underlying storage, using
+  the same rules as the transformation on input.</li>
+<li>Values that stricter <code>sql_mode</code> settings would reject during storage can
+  still be returned during retrieval; it is impossible to predict in advance
+  whether such data exists, since clients are free to set <code>sql_mode</code> to any
+  value at any time.</li>
+</ul>
+<h3 id="efficiency">Efficiency</h3>
+<p>For purely store-and-retrieve applications, MySQL's query planner (which
+transforms the miniature program contained in each SQL statement into a tree
+of disk access and data manipulation steps) is sufficient, but only barely.
+Queries that retrieve data from one table, or from one table and a small
+number of one-to-maybe-one related tables, produce relatively efficient plans.</p>
+<p>MySQL, however, offers a number of tuning options that can have dramatic and
+counterintuitive effects, and the documentation provides very little advice
+for choosing settings. Tuning relies on the administrator's personal
+experience, blog articles of varying quality, and consultants.</p>
+<ul>
+<li>The MySQL query cache defaults to a non-zero size in some commonly-installed
+  configurations. However, the larger the cache, the slower writes proceed:
+  invalidating cache entries that include the tables modified by a query means
+  considering every entry in the cache. This cache also uses MySQL's LRU
+  implementation, which has its own performance problems during eviction that
+  get worse with larger cache sizes.</li>
+<li>Memory-management settings, including <code>key_buffer_size</code> and <code>innodb_buffer_pool_size</code>,
+  have non-linear relationships with performance. The <a href="http://www.mysqlperformanceblog.com/2006/09/29/what-to-tune-in-mysql-server-after-installation/">standard</a>
+  <a href="http://www.mysqlperformanceblog.com/2007/11/01/innodb-performance-optimization-basics/">advice</a> advises
+  making whichever value you care about more to a large value, but this can be
+  counterproductive if the related data is larger than the pool can hold:
+  MySQL is once again bad at discarding old buffer pages when the buffer is
+  exhausted, leading to dramatic slowdowns when query load reaches a certain
+  point.<ul>
+<li>This also affects filesystem tuning settings such as <code>table_open_cache</code>.</li>
+</ul>
+</li>
+<li>InnoDB, out of the box, comes configured to use one large (and automatically
+  growing) tablespace file for all tables, complicating backups and storage
+  management. This is fine for trivial databases, but MySQL provides no tools
+  (aside from <code>DROP TABLE</code> and reloading the data from an SQL dump) for
+  transplanting a table to another tablespace, and provides no tools (aside
+  from a filesystem-level <code>rm</code>, and reloading <em>all</em> InnoDB data from an SQL
+  dump) for reclaiming empty space in a tablespace file.</li>
+<li>MySQL itself provides very few tools to manage storage; tasks like storing
+  large or infrequently-accessed tables and databases on dedicated filesystems
+  must be done on the filesystem, with MySQL shut down.</li>
+</ul>
+<h2 id="data-processing">Data Processing</h2>
+<p>Data processing encompasses tasks that require making decisions about data and
+tasks that derive new data from existing data. This is a huge range of topics:</p>
+<ul>
+<li>Deciding (and enforcing) application-specific validity rules.</li>
+<li>Summarizing and deriving data.</li>
+<li>Providing and maintaining alternate representations and structures.</li>
+<li>Hosting complex domain logic near the data it operates on.</li>
+</ul>
+<p>The further towards data processing tasks applications move, the more their
+SQL resembles tiny programs sent to the data. MySQL is totally unprepared for
+programs, and expects SQL to retrieve or modify simple rows.</p>
+<h3 id="validity">Validity</h3>
+<p>Good constraints are like <code>assert</code>s: in an ideal world, you can't tell if they
+work, because your code never violates them. Here in the real world,
+constraint violations happen for all sorts of reasons, ranging from buggy code
+to buggy human cognition. A good database gives you more places to describe
+your expectations and more tools for detecting and preventing surprises.
+MySQL, on the other hand, can't validate your data for you, beyond simple (and
+fixed) type constraints:</p>
+<ul>
+<li>
+<p>As with the data you store in it, MySQL feels free to change your table
+  definitions <a href="http://dev.mysql.com/doc/refman/5.5/en/silent-column-changes.html">implicitly and
+  silently</a>.
+  Many of these silent schema changes have important performance and
+  feature-availability implications.</p>
+<ul>
+<li>
+<p>Foreign keys are ignored if you spell them certain, common, ways:</p>
+<pre><code>CREATE TABLE foo (
+    -- ...,
+    parent INTEGER
+        NOT NULL
+        REFERENCES foo_parent (id)
+    -- , ...
+)
+</code></pre>
+<p>silently ignores the foreign key specification, while</p>
+<pre><code>CREATE TABLE foo (
+    -- ...,
+    parent INTEGER
+        NOT NULL,
+    FOREIGN KEY (parent)
+        REFERENCES foo_parent (id)
+    -- , ...
+)
+</code></pre>
+<p>preserves it.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Foreign keys, one of the most widely-used database validity checks, are an
+  engine-specific feature, restricting their availability in combination with
+  other engine-specific features. (For example, a table cannot have both
+  foreign key constraints and full-text indexes, as of MySQL 5.5.)</p>
+<ul>
+<li>Configurations that violate assumptions about foreign keys, such as a
+  foreign key pointing into a MyISAM or NDB table, do not cause warnings
+  or any other diagnostics. The foreign key is simply discarded. SURPRISE.
+  (MySQL is riddled with these sorts of surprises, and apologists lean
+  very heavily on the “that's documented” excuse for its bad behaviour.)</li>
+</ul>
+</li>
+<li>The MySQL parser recognizes <code>CHECK</code> clauses, which allow schema developers
+  to make complex declarative assertions about tuples in the database, but
+  <a href="http://dev.mysql.com/doc/refman/5.5/en/create-table.html">discards them without
+  warning</a>. If you
+  want <code>CHECK</code>-like constraints, you must implement them as triggers - but see
+  below...</li>
+<li>MySQL's comprehension of the <code>DEFAULT</code> clause is, uh, limited: only
+  constants are permitted, except for the <a href="https://dev.mysql.com/doc/refman/5.5/en/timestamp-initialization.html">special
+  case</a>
+  of at most one <code>TIMESTAMP</code> column per table and at most one sequence-derived
+  column. Who designed this mess?<ul>
+<li>Furthermore, there's no way to say “no default” and raise an error when
+  an INSERT forgets to provide a value. The default <code>DEFAULT</code> is either
+  <code>NULL</code> or a zero-like constant (<code>0</code>, <code>''</code>, and so on). Even for types
+  with no meaningful zero-like values (<code>DATETIME</code>).</li>
+</ul>
+</li>
+<li>MySQL has no mechanism for introducing new types, which might otherwise
+  provide a route to enforcing validity. Counting the number of special cases
+  in MySQL's <a href="http://dev.mysql.com/doc/refman/5.5/en/data-types.html">existing type
+  system</a> illustrates
+  why that's probably unfixable.</li>
+</ul>
+<p>I hope every client with write access to your data is absolutely perfect,
+because MySQL <em>cannot help you</em> if you make a mistake.</p>
+<h3 id="summarizing-and-deriving-data">Summarizing and Deriving Data</h3>
+<p>SQL databases generally provide features for doing “interesting” things with
+sets of tuples, and MySQL is no exception. However, MySQL's limitations mean
+that actually processing data in the database is fraught with wasted money,
+brains, and time:</p>
+<ul>
+<li>Aggregate (<code>GROUP BY</code>) queries run up against limits in MySQL's query
+  planner: a query with both <code>WHERE</code> and <code>GROUP BY</code> clauses can only satisfy
+  one constraint or the other with indexes, unless there's an index that
+  covers all the relevant fields in both clauses, in the right order. (What
+  this order is depends on the complexity of the query and on the distribution
+  of the underlying data, but that's hardly MySQL-specific.)<ul>
+<li>If you have all three of <code>WHERE</code>, <code>GROUP BY</code>, and <code>ORDER BY</code> in the same
+  query, you're more or less fucked. Good luck designing a single index
+  that satisfies all three.</li>
+</ul>
+</li>
+<li>Even though MySQL allows database administrators to <a href="http://dev.mysql.com/doc/refman/5.5/en/create-procedure.html">define normal functions
+  in a procedural SQL
+  dialect</a>,
+  <a href="http://dev.mysql.com/doc/refman/5.5/en/create-function-udf.html">custom aggregate
+  functions</a>
+  can only be defined by native plugins. Good thing, too, because procedural
+  SQL in MySQL is its own kind of awful - more on that below.</li>
+<li>Subqueries are often convenient and occasionally necessary for expressing
+  multi-step transformations on some underlying data. MySQL's query planner
+  has only one strategy for optimizing them: evaluate the innermost query as
+  written, into an in-memory table, then use a nested loop to satisfy joins or
+  <code>IN</code> clauses. For large subquery results or interestingly nested subqueries,
+  this is absurdly slow.<ul>
+<li>MySQL's query planner can't fold constraints from outer queries into
+  subqueries.</li>
+<li>The generated in-memory table never has any indexes, ever, even when
+  appropriate indexes are “obvious” from the surrounding query; you cannot
+  even specify them.</li>
+<li>These limitations also affect views, which are evaluated as if they were
+  subqueries. In combination with the lack of constraint folding in the
+  planner, this makes filtering or aggregating over large views completely
+  impractical.</li>
+<li>MySQL lacks <a href="http://www.postgresql.org/docs/9.2/static/queries-with.html">common table
+  expressions</a>.
+  Even if subquery efficiency problems get fixed, the inability to give
+  meaningful names to subqueries makes them hard to read and comprehend.</li>
+<li>I hope you like <code>CREATE TEMPORARY TABLE AS SELECT</code>, because that's your
+  only real alternative.</li>
+</ul>
+</li>
+<li><a href="http://en.wikipedia.org/wiki/Select_(SQL)#Window_function">Window
+  functions</a> do not
+  exist at all in MySQL. This complicates many kinds of analysis, including
+  time series analyses and ranking analyses.<ul>
+<li>Specific cases (for example, assigning rank numbers to rows) can be
+  implemented using <a href="http://stackoverflow.com/questions/6473800/assigning-row-rank-numbers">server-side variables and side effects during
+  <code>SELECT</code></a>.
+  What? Good luck understanding that code in six months.</li>
+</ul>
+</li>
+<li>Even interesting joins run into trouble. MySQL's query planner has trouble
+  with a number of cases that can easily arise in well-normalized data:<ul>
+<li>Joining and ordering by rows from multiple tables often forces MySQL to
+  dump the whole join to a temporary table, then sort it -- awful,
+  especially if you then use <code>LIMIT BY</code> to paginate the results.</li>
+<li><code>JOIN</code> clauses with non-trivial conditions, such as joins by range or
+  joins by similarity, generally cause the planner to revert to table
+  scans even if the same condition would be indexable outside of a join.</li>
+<li>Joins with <code>WHERE</code> clauses that span both tables, where the rows
+  selected by the <code>WHERE</code> clause are outliers relative to the table
+  statistics, often cause MySQL to access tables in suboptimal order.</li>
+</ul>
+</li>
+<li>Ok, forget about interesting joins. Even interesting <code>WHERE</code> clauses can run
+  into trouble: MySQL can't index deterministic functions of a row, either.
+  While some deterministic functions can be eliminated from the <code>WHERE</code> clause
+  using simple algebra, many useful cases (whitespace-insensitive comparison,
+  hash-based comparisons, and so on) can't.<ul>
+<li>You can fake these by storing the computed value in the row alongside
+  the “real” value. This leaves your schema with some ugly data repetition
+  and a chance for the two to fall out of sync, and clients must use the
+  “computed” column explicitly.</li>
+<li>Oh, and they must maintain the “computed” version explicitly.</li>
+<li>Or you can use triggers. Ha. See above.</li>
+</ul>
+</li>
+</ul>
+<p>And now you know why MySQL advocates are such big fans of doing data
+<em>processing</em> in “the client” or “the app.”</p>
+<h3 id="alternate-representations-and-derived-tables">Alternate Representations and Derived Tables</h3>
+<p>Many databases let schema designers and administrators abstract the underlying
+“physical” table structure from the presentation given to clients, or to some
+specific clients, for any of a number of reasons. MySQL tries to let you do
+this, too! And fumbles it quite badly.</p>
+<ul>
+<li>As mentioned above, non-trivial views are basically useless. Queries like
+  <code>SELECT some columns FROM a_view WHERE id = 53</code> are evaluated in the
+  stupidest -- and slowest -- possible way. Good luck hiding unusual
+  partitioning arrangements or a permissions check in a view if you want any
+  kind of performance.</li>
+<li>The poor interactions between triggers and binary logging's default
+  configuration make it impractical to use triggers to maintain “materialized”
+  views to avoid the problems with “real” views.<ul>
+<li>It also effectively means triggers can't be used to emulate <code>CHECK</code>
+  constraints and other consistency features.</li>
+<li>Code to maintain materialized views is also finicky and hard to get
+  “right,” especially if the view includes aggregates or interesting joins
+  over its source data. I hope you enjoy debugging MySQL's procedural
+  SQL…</li>
+</ul>
+</li>
+<li>For the relatively common case of wanting to abstract partitioned storage
+  away for clients, MySQL actually has <a href="http://dev.mysql.com/doc/refman/5.5/en/partitioning.html">a
+  tool</a> for it! But
+  it comes with <a href="http://dev.mysql.com/doc/refman/5.5/en/partitioning-limitations.html">enough caveats to strangle a
+  horse</a>:<ul>
+<li>It's a separate table engine wrapping a “real” storage engine, which
+  means it has its own, separate support for engine-specific features:
+  transactions, foreign keys, and index types, <code>AUTO_INCREMENT</code>, and
+  others. The syntax for configuring partitions makes selecting the wrong
+  underlying engine entirely too easy, too.</li>
+<li>Partitioned tables may not be the referrent of foreign keys: you can't
+  have both enforced relationships and this kind of storage management.</li>
+<li>MySQL doesn't actually know how to store partitions on separate disks or
+  filesystems. You still need to reach underneath of MySQL do to actual
+  storage management.<ul>
+<li>Partitioning an InnoDB table under the default InnoDB configuration
+  stores all of the partitions in the global tablespace file anyways.
+  Helpful! For per-table configurations, they still all end up
+  together in the same file. Partitioning InnoDB tables is a waste of
+  time for managing storage.</li>
+</ul>
+</li>
+<li>TL,DR: MySQL's partition support is so finicky and limited that
+  MySQL-based apps tend to opt for multiple MySQL servers (“sharding”)
+  instead.</li>
+</ul>
+</li>
+</ul>
+<h3 id="hosting-logic-in-the-database">Hosting Logic In The Database</h3>
+<p>Yeah, yeah, the usual reaction to stored procedures and in-DB code is “eww,
+yuck!” for some not-terrible reasons, but hear me out on two points:</p>
+<ul>
+<li>Under the freestanding-database-server paradigm, there will usually be
+  network latency between database clients and the database itself. There are
+  two ways to minimize the impact of that: move the data to the code in bulk
+  to minimize round-trips, or move the code to the data.</li>
+<li>Some database administration tasks are better implemented using in-database
+  code than as freestanding clients: complex data migrations that can't be
+  expressed as freestanding SQL queries, for example.</li>
+</ul>
+<p>MySQL, as of version
+<a href="http://dev.mysql.com/doc/relnotes/mysql/5.0/en/news-5-0-0.html">5.0</a>
+(released in 2003 -- remember that date, I'll come back to it), has support
+for in-database code via a procedural SQL-like dialect, like many other SQL
+databases. This includes server-side procedures (blocks of stored code that
+are invoked outside of any other statements and return statement-like
+results), functions (blocks of stored code that compute a result, used in any
+expression context such as a <code>SELECT</code> list or <code>WHERE</code> clause), and triggers
+(blocks of stored code that run whenever a row is created, modified, or
+deleted).</p>
+<p>Given the examples of
+<a href="http://www.postgresql.org/docs/7.3/static/plpgsql.html">other</a>
+<a href="http://msdn.microsoft.com/en-US/library/ms189826(v=sql.90).aspx">contemporaneous</a>
+<a href="http://docs.oracle.com/cd/B10501_01/appdev.920/a96624/toc.htm">procedural</a>
+<a href="http://www.firebirdsql.org/file/documentation/reference_manuals/reference_material/html/langrefupd15-psql.html">languages</a>,
+MySQL's procedural dialect -- an implementation of the
+<a href="http://en.wikipedia.org/wiki/SQL/PSM">SQL/PSM</a> language -- is quite limited:</p>
+<ul>
+<li>There is no language construct for looping over a query result. This seems
+  like a pretty fundamental feature for a database-hosted language, but no.</li>
+<li>There is no language construct for looping while a condition holds. This
+  seems like a pretty fundamental feature for an imperative language designed
+  any time after about 1975, but no.</li>
+<li>There is no language construct for looping over a range.</li>
+<li>
+<p>There is, in fact, one language construct for looping: the unconditional
+  loop. All other iteration control is done via conditional <code>LEAVE</code>
+  statements, as</p>
+<pre><code>BEGIN
+    DECLARE c CURSOR FOR
+        SELECT foo, bar, baz
+        FROM some_table
+        WHERE some_condition;
+    DECLARE done INT DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+        SET done = 1;
+
+    DECLARE c_foo INTEGER;
+    DECLARE c_bar INTEGER;
+    DECLARE c_baz INTEGER;
+
+    OPEN c;
+    process_some_table: LOOP
+        FETCH c INTO c_foo, c_bar, c_baz;
+        IF done THEN
+            LEAVE process_some_table;
+        END IF;
+
+        -- do something with c_foo, c_bar, c_baz
+    END LOOP;
+END;
+</code></pre>
+<p>The original “structured programming” revolution in the 1960s seems to
+have passed the MySQL team by.</p>
+</li>
+<li>
+<p>Okay, I lied. There are two looping constructs: there's also the <code>REPEAT ...
+  UNTIL condition END REPEAT</code> construct, analogous to C's <code>do {} while
+  (!condition);</code> loop. But you still can't loop over query results, and you
+  can't run zero iterations of the loop's main body this way.</p>
+</li>
+<li>There is nothing resembling a modern exception system with automatic scoping
+  of handlers or declarative exception management. Error handling is entirely
+  via Visual Basic-style “on condition X, do Y” instructions, which remain in
+  effect for the rest of the program's execution.<ul>
+<li>In the language shipped with MySQL 5.0, there wasn't a way to signal
+  errors, either: programmers had to resort to stunts like <a href="http://stackoverflow.com/questions/465727/raise-error-within-mysql-function">intentionally
+  issuing failing
+  queries</a>,
+  instead. Later versions of the language addressed this with the
+  <a href="http://dev.mysql.com/doc/refman/5.5/en/signal.html"><code>SIGNAL</code>
+  statement</a>: see,
+  they <em>can</em> learn from better languages, eventually.</li>
+</ul>
+</li>
+<li>You can't escape to some other language, since MySQL doesn't have an
+  extension mechanism for server-side languages or a good way to call
+  out-of-process services during queries.</li>
+</ul>
+<p>The net result is that developing MySQL stored programs is unpleasant,
+uncomfortable, and far more error-prone than it could have been.</p>
+<h2 id="by-design">Why Is MySQL The Way It Is?</h2>
+<p>MySQL's technology and history contain the seeds of all of these flaws.</p>
+<h3 id="pluggable-storage-engines">Pluggable Storage Engines</h3>
+<p>Very early in MySQL's life, the MySQL dev team realized that MyISAM was not
+the only way to store data, and opted to support other storage backends within
+MySQL. This is basically an alright idea; while I personally prefer storage
+systems that focus their effort on making one backend work very well,
+supporting multiple backends and letting third-party developers write their
+own is a pretty good approach too.</p>
+<p>Unfortunately, MySQL's storage backend interface puts a very low ceiling on
+the ways storage backends can make MySQL behave better.</p>
+<p>MySQL's data access paths through table engines are very simple: MySQL asks
+the engine to open a table, asks the engine to iterate through the table
+returning rows, filters the rows itself (outside of the storage engine), then
+asks the engine to close the table. Alternately, MySQL asks the engine to open
+a table, asks the engine to retrieve rows in range or for a single value over
+a specific index, filters the rows itself, and asks the engine to close the
+table.</p>
+<p>This simplistic interface frees table engines from having to worry about query
+optimization - in theory. Unfortunately, engine-specific features have a large
+impact on the performance of various query plans, but the channels back to the
+query planner provide very little granularity for estimating cost and prevent
+the planner from making good use of the engine in unusual cases. Conversely,
+the table engine system is totally isolated from the actual query, and can't
+make query-dependent performance choices “on its own.” There's no third path;
+the query planner itself is not pluggable.</p>
+<p>Similar consequences apply to type checking, support for new types, or even
+something as “obvious” as multiple automatic <code>TIMESTAMP</code> columns in the same
+table.</p>
+<p>Table manipulation -- creation, structural modification, and so on -- runs
+into similar problems. MySQL itself parses each <code>CREATE TABLE</code> statement, then
+hands off a parsed representation to the table engine so that it can manage
+storage. The parsed representation is lossy: there are plenty of forms MySQL's
+parser recognizes that aren't representable in a <code>TABLE</code> structure, preventing
+engines from implementing, say, column or tuple <code>CHECK</code> constraints without
+MySQL's help.</p>
+<p>The <a href="http://dev.mysql.com/doc/refman/5.5/en/storage-engines.html">sheer number of table
+engines</a> makes
+that help very slow in coming. Any change to the table engine interface means
+perturbing the code to each engine, making progress on new MySQL-level
+features that interact with storage such as better query planning or new SQL
+constructs necessarily slow to implement and slow to test.</p>
+<h3 id="held-back-by-history">Held Back By History</h3>
+<p>The original MySQL team focused on pure read performance and on “ease of use”
+(for new users with simple needs, as far as I can tell) over correctness and
+completeness, violating Knuth's laws of optimization. Many of these decisions
+locked MySQL into behaviours very early in its life that it still displays
+now. Features like implicit type conversions legitimately do help streamline
+development in very simple cases; experience with <a href="http://me.veekun.com/blog/2012/04/09/php-a-fractal-of-bad-design/">other
+languages</a>
+unfortunately shows that the same behaviours sandbag development and help hide
+bugs in more sophisticated scenarios.</p>
+<p>MySQL has since changed hands, and the teams working on MySQL (and MariaDB,
+and Percona) are much more mature now than the team that made those early
+decisions. MySQL's massive and frequently non-savvy userbase makes it very hard
+to introduce breaking changes. At the same time, adding <em>optional</em> breaking
+changes via server and client mode flags (such as <code>sql_mode</code>) increases the
+cognitive overhead of understanding MySQL's behaviours -- especially when that
+behaviour can vary from client to client, or when the server's configuration is
+out of the user's control (for example, on a shared host, or on EC2).</p>
+<p>A solution similar to Python's <code>from __future__ import</code> pragmas for making
+breaking changes opt-in some releases in advance of making them mandatory
+might help, but MySQL doesn't have the kind of highly-invested, highly-skilled
+user base that would make that effective -- and it still has all of the
+problems of modal behaviour.</p>
+<h2 id="bad-arguments">Bad Arguments</h2>
+<p>Inevitably, someone's going to come along and tell me how wrong I am and how
+MySQL is just fine as a database system. These people are everywhere, and they
+mean well too, and they are almost all wrong. There are two good reasons to
+use MySQL:</p>
+<ol>
+<li><strong>Some earlier group wrote for it, and we haven't finished porting our code
+    off of MySQL.</strong></li>
+<li><strong>We've considered all of these points, and many more, and decided that
+    <code>___feature_x___</code> that MySQL offers is worth the hassle.</strong></li>
+</ol>
+<p>Unfortunately, these aren't the reasons people do give, generally. The
+following are much more common:</p>
+<ul>
+<li><strong>It's good enough.</strong> No it ain't. There are plenty of other equally-capable
+  data storage systems that don't come with MySQL's huge raft of edge cases
+  and quirks.<ul>
+<li><strong>We haven't run into these problems.</strong> Actually, a lot of these
+  problems happen <em>silently</em>. Odds are, unless you write your queries and
+  schema statements with the manual open and refer back to it constantly,
+  or have been using MySQL since the 3.x era <em>daily</em>, at least some of
+  these issues have bitten you. The ones that prevent you from using your
+  database intelligently are very hard to notice in action.</li>
+</ul>
+</li>
+<li><strong>We already know how to use it.</strong> MySQL development and administration
+  causes brain damage, folks, the same way PHP does. Where PHP teaches
+  programmers that “array” is the only structure you need, MySQL teaches
+  people that databases are awkward, slow, hard-to-tune monsters that require
+  constant attention. That doesn't have to be true; there are comfortable,
+  fast, and easily-tuned systems out there that don't require daily care and
+  feeding or the love of a specialist.</li>
+<li><strong>It's the only thing our host supports.</strong> <a href="http://linode.com/">Get</a> <a href="http://www.heroku.com/">a</a> <a href="http://gandi.net/">better</a> <a href="https://www.engineyard.com">host</a>. It's
+  not like they're expensive or hard to find.<ul>
+<li><strong>We used it because it was there.</strong> Please hire some fucking software
+  developers and go back to writing elevator pitches and flirting with Y
+  Combinator.</li>
+</ul>
+</li>
+<li><strong>Everybody knows MySQL. It's easy to hire MySQL folks.</strong> It's easy to hire
+  MCSEs, too, but you should be hiring for attitude and ability to learn, not
+  for specific skillsets, if you want to run a successful software project.<ul>
+<li><strong>It's popular.</strong> Sure, and nobody ever got fired for buying
+  IBM/Microsoft/Adobe. Popularity isn't any indication of quality, and if
+  we let popularity dictate what technology we use and improve we'll never
+  get anywhere. Marketing software to geeks is <em>easy</em> - it's just that
+  lots of high-quality projects don't bother.</li>
+</ul>
+</li>
+<li><strong>It's lightweight.</strong> So's <a href="http://www.sqlite.org">SQLite 3</a> or
+  <a href="http://www.h2database.com/html/main.html">H2</a>. If you care about deployment
+  footprint more than any other factor, MySQL is actually pretty clunky (and
+  embedded MySQL has even bigger problems than freestanding MySQL).</li>
+<li><strong>It's getting better, so we might as well stay on it.</strong> <a href="http://dev.mysql.com/doc/refman/5.6/en/mysql-nutshell.html">It's
+  true</a>, if you go
+  by feature checklists and the manual, MySQL is improving “rapidly.” 5.6 is
+  due out soon and superficially looks to contain a number of good changes. I
+  have two problems with this line of reasoning:<ol>
+<li>Why wait? Other databases are good <em>now</em>, not <em>eventually</em>.</li>
+<li>MySQL has a history of providing the bare minimum to satisfy a feature
+checkbox without actually making the feature work well, work consistently,
+or work in combination with other features.</li>
+</ol>
+</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/mysql/choose-something-else.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/mysql/choose-something-else.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

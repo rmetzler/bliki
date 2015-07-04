@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Keyword Arguments in Java
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">java</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						kwargs
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="keyword-arguments-in-java">Keyword Arguments in Java</h1>
+<h2 id="what">What</h2>
+<p>Java arguments are traditionally passed by position:</p>
+<pre><code>void foo(int x, int y, int z)
+</code></pre>
+<p>matches the call</p>
+<pre><code>foo(1, 2, 3)
+</code></pre>
+<p>and assigns <code>1</code> to <code>x</code>, <code>2</code> to <code>y</code>, and <code>3</code> to <code>z</code> in the resulting
+activation. Keyword arguments assign values to formal parameters by matching
+the parameter's name, instead.</p>
+<h2 id="why">Why</h2>
+<p>Fuck the builder pattern, okay? Patterns like</p>
+<pre><code>Response r = Response
+    .status(200)
+    .entity(foo)
+    .header("X-Plane", "Amazing")
+    .build();
+</code></pre>
+<p>(from JAX-RS) mean the creation and maintenance of an entire separate type
+just to handle arbitrary ordering and presence/absence of options. Ordering
+can be done using keywords; presence/absence can be done by providing one
+method for each legal combination of arguments (or by adding optional
+arguments to Java).</p>
+<p>The keyword-argument version would be something like</p>
+<pre><code>Response r = new Response(
+    .status = 200,
+    .entity = foo,
+    .headers = Arrays.asList(Header.of("X-Plane", "Amazing"))
+);
+</code></pre>
+<p>and the <code>ResponseBuilder</code> class would not need to exist at all for this case.
+(There are others in JAX-RS that would still make <code>ResponseBuilder</code> mandatory,
+but the use case for it gets much smaller.)</p>
+<p>As an added bonus, the necessary class metadata to make this work would also
+allow reflective frameworks such as Spring to make sensible use of the
+parameter names:</p>
+<pre><code>&lt;bean class="com.example.Person"&gt;
+    &lt;constructor-arg name="name" value="Erica McKenzie" /&gt;
+&lt;/bean&gt;
+</code></pre>
+<h2 id="other-languages">Other Languages</h2>
+<p>Python, most recently:</p>
+<pre><code>def foo(x, y, z):
+    pass
+
+foo(z=3, x=1, y=2)
+</code></pre>
+<p>Smalltalk (and ObjectiveC) use an interleaving convention that reads very much
+like keyword arguments:</p>
+<pre><code>Point atX: 5 atY: 8
+</code></pre>
+<h2 id="challenges">Challenges</h2>
+<ul>
+<li>Minimize changes to syntax.<ul>
+<li>Make keyword arguments unambiguous.</li>
+</ul>
+</li>
+<li>Minimize changes to bytecode spec.</li>
+</ul>
+<h2 id="proposal">Proposal</h2>
+<p>Given a method definition</p>
+<pre><code>void foo(int x, int y, int z)
+</code></pre>
+<p>Allow calls written as</p>
+<pre><code>foo(
+    SOME-SYNTAX(x, EXPR),
+    SOME-SYNTAX(y, EXPR),
+    SOME-SYNTAX(z, EXPR)
+)
+</code></pre>
+<p><code>SOME-SYNTAX</code> is a production that is not already legal at that point in Java,
+which is a surprisingly frustrating limitation. Constructs like</p>
+<pre><code>foo(x = EXPR, y = EXPR, z = EXPR)
+</code></pre>
+<p>are already legal (assignment is an expression) and already match positional
+arguments.</p>
+<p>Keyword arguments match the name of the formal argument in the method
+declaration. Passing a keyword argument that does not match a formal argument
+is a compilation error.</p>
+<p>Calls can mix keyword arguments and positional arguments, in the following
+order:</p>
+<ol>
+<li>Positional arguments.</li>
+<li>Varargs positional arguments.</li>
+<li>Keyword arguments.</li>
+</ol>
+<p>Passing the same argument as both a positional and a keyword argument is a
+compilation error.</p>
+<p>Call sites must satisfy every argument the method/constructor has (i.e., this
+doesn't imply optional arguments). This makes implementation easy and
+unintrusive: the compiler can implement keyword arguments by transforming them
+into positional arguments. Reflective calls (<code>Method.invoke</code> and friends) can
+continue accepting arguments as a sequence.</p>
+<p>The <code>Method</code> class would expose a new method:</p>
+<pre><code>public List&lt;String&gt; getArgumentNames()
+</code></pre>
+<p>The indexes in <code>getArgumentNames</code> match the indexes in <code>getArgumentTypes</code> and
+related methods.</p>
+<p>Possibilities for syntax:</p>
+<ul>
+<li>
+<p><code>foo(x := 5, y := 8, z := 2)</code> - <code>:=</code> is never a legal sequence of tokens in
+  Java. Introduces one new operator-like construct; the new sequence <code>:=</code>
+  “looks like” assignment, which is a useful mnemonic.</p>
+</li>
+<li>
+<p><code>foo(x ~ 5, y ~ 8, z ~ 2)</code> - <code>~</code> is not a binary operator and this is never
+  legal right now. This avoids introducing new operators, but adds a novel
+  interpretation to an existing unary operator that's not related to its
+  normal use.</p>
+</li>
+<li>
+<p><code>foo(.x = 5, .y = 8, .z = 2)</code> - using <code>=</code> as the keyword binding feels more
+  natural. Parameter names must be legal identifiers, which means the leading
+  dot is unambiguous. This syntax is not legal anywhere right now (the dot
+  always has a leading expression). The dot is a “namespace” symbol already.</p>
+</li>
+</ul>
+<p>To support this, the class file format will need to record the names of
+parameters, not just their order. This is a breaking change, and generated
+names will need to be chosen for existing class files. (This may be derivable
+from debug information, where present.)</p>
+<h2 id="edge-cases">Edge Cases</h2>
+<ul>
+<li>Mixed positional and keyword arguments.<ul>
+<li>Collisions (same argument passed by both) are, I think, detectable at
+  compile time. This should be an error.</li>
+</ul>
+</li>
+<li>Inheritance. It is legal for a superclass to define <code>foo(a, b)</code> and for
+  subclasses to override it as <code>foo(x, y)</code>. Which argument names do you use
+  when?</li>
+<li>Varargs.</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/java/kwargs.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/java/kwargs.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

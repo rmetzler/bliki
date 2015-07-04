@@ -1,0 +1,66 @@
+==================================================================
+https://keybase.io/ojacobson
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://grimoire.ca
+  * I am ojacobson (https://keybase.io/ojacobson) on keybase.
+  * I have a public key with fingerprint 77BD C4F1 6EFD 607E 85AA  B639 5023 2991 F10D FFD0
+
+To claim this, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "fingerprint": "77bdc4f16efd607e85aab63950232991f10dffd0",
+            "host": "keybase.io",
+            "key_id": "50232991f10dffd0",
+            "kid": "0101597743f43180f2b27fcb7ed12c4145ab3350112c272fab57aa76bab79f14582b0a",
+            "uid": "f9fa4735de81873b3b1e1caca57e8100",
+            "username": "ojacobson"
+        },
+        "service": {
+            "hostname": "grimoire.ca",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1421787424,
+    "expire_in": 157680000,
+    "prev": "3cefe86470406fa550e9d7fcbddd243f760151c6a849a0e4cb203091e05904d7",
+    "seqno": 4,
+    "tag": "signature"
+}
+
+with the aforementioned key, yielding the PGP signature:
+
+-----BEGIN PGP MESSAGE-----
+Comment: GPGTools - https://gpgtools.org
+
+owFtkl1IVEEUx3fVijalIFKhfOhaWSk2c7/m3i1LooI+tBQrgnSbuXdGb+redfdq
+qRk+RB8afRgVRh8QiH1oRUFLkOU+hG1iWOFLLxUpYYIUFBhpNVfqrXkZ5pz/+Z05
+f86ZlESPz7sjc8XZrym/B739o8RT8iS2rFEgtlkv+BuFSjp9MStYTsOhsBV0BL+A
+EDENmUGVMlMFiGoKxkSVdAWIkqjrkEFgMmYCIUeosCNuBccQHKG5ls1j/BGwTB79
+j75yOgEggIqOkCwxWYIaYCIRETMIoiYUDRnKCiaSpADIXyISGSYKwhipBBOkM57W
+RAIwx9VO45jOsIwkxaQa1JBEJAIpNLCBFf53CNy+tREaDuJqytX2fmzYJGIHhaYc
+gYfrLIO6Hrij/JWUh61q2wrTXMNtEgrbjm3YVTxR4Tghv1vn1Idc4QFKAn8RAWIF
+TW4jL6ij4YjF+X7IlYZjuUwoixBpSBblHIEeDHF4wHIVClI1wI/bhtZxpGRQRjVV
+RkAGKsOKAqhuuuaYpilyw5DKvYOGijVZx4DKBhGBBHRIgaID2USCO1RN0Bb8vJOD
+yzkyYpUHsVMbpkKT13fCuyjJ4/V5Zs5IcFfB45s9799+VJyc9WvxvsCh1fKM1wPx
+kefp0Tu9p9Yf/fnj4zU2vyzBO3mlpfaNP3+wteEs3b3uenF0+6M1yd+L5nnfiqnx
+853p8bXi5zlZ73fmtvUIiXld1z41e+5tGjNuiBl5Wy6v7Ou4uHzL0gVDD/ZXNMQL
+h458WH2i4FNv88o9U7Grx4TTrZXZleuHk+m3hNKbaRvuC6tedE+Mlh593Z853neu
+J3RhIHb8bWPW4omXYM+F5S3Rjrlb7/Tkdxe+q8psiidOVQ3tWpLR3tgz5rt7bNuu
+ga6WhzVLvA3O5jL0LDoZq2fj+DBIjV16KHa2pmXvbcdP1Yz+pIUFw8XRibQ2VvK4
+aOOZkduvbjV9+QM=
+=WPnb
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/ojacobson
+
+==================================================================

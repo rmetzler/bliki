@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Notes Towards Detached Signatures in Git
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">git</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						detached-sigs
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="notes-towards-detached-signatures-in-git">Notes Towards Detached Signatures in Git</h1>
+<p>Git supports a limited form of object authentication: specific object
+categories in Git's internal model can have <a href="../gpg/terrible">GPG</a> signatures
+embedded in them, allowing the authorship of the objects to be verified using
+<a href="../gpg/cool">GPG</a>'s underlying trust model. Tag signatures can be used to
+verify the authenticity and integrity of the <em>snapshot associated with a
+tag</em>, and the authenticity of the tag itself, filling a niche broadly similar
+to code signing in binary distribution systems. Commit signatures can be used
+to verify the authenticity of the <em>snapshot associated with the commit</em>, and
+the authorship of the commit itself. (Conventionally, commit signatures are
+assumed to also authenticate either the entire line of history leading to a
+commit, or the diff between the commit and its first parent, or both.)</p>
+<p>Git's existing system has some tradeoffs.</p>
+<ul>
+<li>
+<p>Signatures are embedded within the objects they sign. The signature is part
+  of the object's identity; since Git is content-addressed, this means that
+  an object can neither be retroactively signed nor retroactively stripped of
+  its signature without modifying the object's identity. Git's distributed
+  model means that these sorts of identity changes are both complicated and
+  easily detected.</p>
+</li>
+<li>
+<p>Commit signatures are second-class citizens. They're a relatively recent
+  addition to the Git suite, and both the implementation and the social
+  conventions around them continue to evolve.</p>
+</li>
+<li>
+<p>Only some objects can be signed. While Git has relatively weak rules about
+  workflow, the signature system assumes you're using one of Git's more
+  widespread workflows by limiting your options to at most one signature, and
+  by restricting signatures to tags and commits (leaving out blobs, trees,
+  and refs).</p>
+</li>
+</ul>
+<p>I believe it would be useful from an authentication standpoint to add
+"detached" signatures to Git, to allow users to make these tradeoffs
+differently if desired. These signatures would be stored as separate (blob)
+objects in a dedicated <code>refs</code> namespace, supporting retroactive signatures,
+multiple signatures for a given object, "policy" signatures, and
+authentication of arbitrary objects.</p>
+<p>The following notes are partially guided by Git's one existing "detached
+metadata" facility, <code>git notes</code>. Similarities are intentional; divergences
+will be noted where appropriate. Detached signatures are meant to
+interoperate with existing Git workflow as much as possible: in particular,
+they can be fetched and pushed like any other bit of Git metadata.</p>
+<p>A detached signature cryptographically binds three facts together into an
+assertion whose authenticity can be checked by anyone with access to the
+signatory's keys:</p>
+<ol>
+<li>An object (in the Git sense; a commit, tag, tree, or blob),</li>
+<li>A policy label, and</li>
+<li>A signatory (a person or agent making the assertion).</li>
+</ol>
+<p>These assertions can be published separately from or in tandem with the
+objects they apply to.</p>
+<h2 id="policies">Policies</h2>
+<p>Taking a hint from Monotone, every signature includes a "policy" identifying
+how the signature is meant to be interpreted. Policies are arbitrary strings;
+their meaning is entirely defined by tooling and convention, not by this
+draft.</p>
+<p>This draft uses a single policy, <code>author</code>, for its examples. A signature
+under the <code>author</code> policy implies that the signatory had a hand in the
+authorship of the designated object. (This is compatible with existing
+interpretations of signed tags and commits.) (Authorship under this model is
+strictly self-attested: you can claim authorship of anything, and you cannot
+assert anyone else's authorship.)</p>
+<p>The Monotone documentation suggests a number of other useful policies related
+to testing and release status, automated build results, and numerous other
+factors. Use your imagination.</p>
+<h2 id="whats-in-a-signature">What's In A Signature</h2>
+<p>Detached signatures cover the disk representation of an object, as given by</p>
+<pre><code>git cat-file &lt;TYPE&gt; &lt;SHA1&gt;
+</code></pre>
+<p>For most of Git's object types, this means that the signed content is plain
+text. For <code>tree</code> objects, the signed content is the awful binary
+representation of the tree, <em>not</em> the pretty representation given by <code>git
+ls-tree</code> or <code>git show</code>.</p>
+<p>Detached signatures include the "policy" identifier in the signed content, to
+prevent others from tampering with policy choices via <code>refs</code> hackery. (This
+will make more sense momentarily.) The policy identifier is prepended to the
+signed content, terminated by a zero byte (as with Git's own type
+identifiers, but without a length field as length checks are performed by
+signing and again when the signature is stored in Git).</p>
+<p>To generate the <em>complete</em> signable version of an object, use something
+equivalent to the following shell snippet:</p>
+<pre><code># generate-signable POLICY TYPE SHA1
+function generate-signable() {
+    echo -n "$1"
+    SOMETHING OUTPUTTING A NUL HERE
+    git cat-file "$2" "$3"
+}
+</code></pre>
+<p>(In the process of writing this, I discovered how hard it is to get Unix's
+C-derived shell tools to emit a zero byte.)</p>
+<h2 id="signature-storage-and-naming">Signature Storage and Naming</h2>
+<p>We assume that a userid will sign an object at most once.</p>
+<p>Each signature is stored in an independent blob object in the repository it
+applies to. The signature object (described above) is stored in Git, and its
+hash recorded in <code>refs/signatures/&lt;POLICY&gt;/&lt;SUBJECT SHA1&gt;/&lt;SIGNER KEY
+FINGERPRINT&gt;</code>.</p>
+<pre><code># sign POLICY TYPE SHA1 FINGERPRINT
+function sign() {
+    local SIG_HASH=$(
+        generate-signable "$@" |
+        gpg --batch --no-tty --sign -u "$4" |
+        git hash-object --stdin -w -t blob
+    )
+    git update-ref "refs/signatures/$1/$3/$4"
+}
+</code></pre>
+<p>Stored signatures always use the complete fingerprint to identify keys, to
+minimize the risk of colliding key IDs while avoiding the need to store full
+keys in the <code>refs</code> naming hierarchy.</p>
+<p>The policy name can be reliably extracted from the ref, as the trailing part
+has a fixed length (in both path segments and bytes) and each ref begins with
+a fixed, constant prefix <code>refs/signatures/</code>.</p>
+<h2 id="signature-verification">Signature Verification</h2>
+<p>Given a signature ref as described above, we can verify and authenticate the
+signature and bind it to the associated object and policy by performing the
+following check:</p>
+<ol>
+<li>Pick apart the ref into policy, SHA1, and key fingerprint parts.</li>
+<li>Reconstruct the signed body as above, using the policy name extracted from
+   the ref.</li>
+<li>Retrieve the signature from the ref and combine it with the object itself.</li>
+<li>Verify that the policy in the stored signature matches the policy in the
+   ref.</li>
+<li>
+<p>Verify the signature with GPG:</p>
+<pre><code># verify-gpg POLICY TYPE SHA1 FINGERPRINT
+verify-gpg() {
+    {
+        git cat-file "$2" "$3"
+        git cat-file "refs/signatures/$1/$3/$4"
+    } | gpg --batch --no-tty --verify
+}
+</code></pre>
+</li>
+<li>
+<p>Verify the key fingerprint of the signing key matches the key fingerprint
+   in the ref itself.</p>
+</li>
+</ol>
+<p>The specific rules for verifying the signature in GPG are left up to the user
+to define; for example, some sites may want to auto-retrieve keys and use a
+web of trust from some known roots to determine which keys are trusted, while
+others may wish to maintain a specific, known keyring containing all signing
+keys for each policy, and skip the web of trust entirely. This can be
+accomplished via <code>git-config</code>, given some work, and via <code>gpg.conf</code>.</p>
+<h2 id="distributing-signatures">Distributing Signatures</h2>
+<p>Since each signature is stored in a separate ref, and since signatures are
+<em>not</em> expected to be amended once published, the following refspec can be
+used with <code>git fetch</code> and <code>git push</code> to distribute signatures:</p>
+<pre><code>refs/signatures/*:refs/signatures/*
+</code></pre>
+<p>Note the lack of a <code>+</code> decoration; we explicitly do not want to auto-replace
+modified signatures, normally; explicit user action should be required.</p>
+<h2 id="workflow-notes">Workflow Notes</h2>
+<p>There are two verification workflows for signatures: "static" verification,
+where the repository itself already contains all the refs and objects needed
+for signature verification, and "pre-receive" verification, where an object
+and its associated signature may be being uploaded at the same time.</p>
+<p><em>It is impractical to verify signatures on the fly from an <code>update</code> hook</em>.
+Only <code>pre-receive</code> hooks can usefully accept or reject ref changes depending
+on whether the push contains a signature for the pushed objects. (Git does
+not provide a good mechanism for ensuring that signature objects are pushed
+before their subjects.) Correctly verifying object signatures during
+<code>pre-receive</code> regardless of ref order is far too complicated to summarize
+here.</p>
+<h2 id="attacks">Attacks</h2>
+<h3 id="lies-of-omission">Lies of Omission</h3>
+<p>It's trivial to hide signatures by deleting the signature refs. Similarly,
+anyone with access to a repository can delete any or all detached signatures
+from it without otherwise invalidating the signed objects.</p>
+<p>Since signatures are mostly static, sites following the recommended no-force
+policy for signature publication should only be affected if relatively recent
+signatures are deleted. Older signatures should be available in one or more
+of the repository users' loca repositories; once created, a signature can be
+legitimately obtained from anywhere, not only from the original signatory.</p>
+<p>The signature naming protocol is designed to resist most other forms of
+assertion tampering, but straight-up omission is hard to prevent.</p>
+<h3 id="unwarranted-certification">Unwarranted Certification</h3>
+<p>The <code>policy</code> system allows any signatory to assert any policy. While
+centralized signature distribution points such as "release" repositories can
+make meaningful decisions about which signatures they choose to accept,
+publish, and propagate, there's no way to determine after the fact whether a
+policy assertion was obtained from a legitimate source or a malicious one
+with no grounds for asserting the policy.</p>
+<p>For example, I could, right now, sign an <code>all-tests-pass</code> policy assertion
+for the Linux kernel. While there's no chance on Earth that the LKML team
+would propagate that assertion, if I can convince you to fetch signatures
+from my repository, you will fetch my bogus assertion. If <code>all-tests-pass</code> is
+a meaningful policy assertion for the Linux kernel, then you will have very
+few options besides believing that I assert that all tests have passed.</p>
+<h3 id="ambigiuous-policy">Ambigiuous Policy</h3>
+<p>This is an ongoing problem with crypto policy systems and user interfaces
+generally, but this design does <em>nothing</em> to ensure that policies are
+interpreted uniformly by all participants in a repository. In particular,
+there's no mechanism described for distributing either prose or programmatic
+policy definitions and checks. All policy information is out of band.</p>
+<p>Git already has ambiguity problems around commit signing: there are multiple
+ways to interpret a signature on a commit:</p>
+<ol>
+<li>
+<p>I assert that this snapshot and commit message were authored as described
+   in this commit's metadata. (In this interpretation, the signature's
+   authenticity guarantees do <em>not</em> transitively apply to parents.)</p>
+</li>
+<li>
+<p>I assert that this snapshot and commit message were authored as described
+   in this commit's metadata, based on exactly the parent commits described.
+   (In this interpretation, the signature's authenticity guarantees <em>do</em>
+   transitively apply to parents. This is the interpretation favoured by XXX
+   LINK HERE XXX.)</p>
+</li>
+<li>
+<p>I assert that this <em>diff</em> and commit message was authored as described in
+   this commit's metadata. (No assertions about the <em>snapshot</em> are made
+   whatsoever, and assertions about parentage are barely sensical at all.
+   This meshes with widespread, diff-oriented policies.)</p>
+</li>
+</ol>
+<h3 id="grafts-and-replacements">Grafts and Replacements</h3>
+<p>Git permits post-hoc replacement of arbitrary objects via both the grafts
+system (via an untracked, non-distributed file in <code>.git</code>, though some
+repositories distribute graft lists for end-users to manually apply) and the
+replacements system (via <code>refs/replace/&lt;SHA1&gt;</code>, which can optionally be
+fetched or pushed). The interaction between these two systems and signature
+verification needs to be <em>very</em> closely considered; I've not yet done so.</p>
+<p>Cases of note:</p>
+<ul>
+<li>Neither signature nor subject replaced - the "normal" case</li>
+<li>Signature not replaced, subject replaced (by graft, by replacement, by both)</li>
+<li>Signature replaced, subject not replaced</li>
+<li>Both signature and subject replaced</li>
+</ul>
+<p>It's tempting to outright disable <code>git replace</code> during signing and
+verification, but this will have surprising effects when signing a ref-ish
+instead of a bare hash. Since this is the <em>normal</em> case, I think this merits
+more thought. (I'm also not aware of a way to disable grafts without
+modifying <code>.git</code>, and having the two replacement mechanisms treated
+differently may be dangerous.)</p>
+<h3 id="no-signed-refs">No Signed Refs</h3>
+<p>I mentioned early in this draft that Git's existing signing system doesn't
+support signing refs themselves; since refs are an important piece of Git's
+workflow ecosystem, this may be a major omission. Unfortunately, this
+proposal doesn't address that.</p>
+<h2 id="possible-refinements">Possible Refinements</h2>
+<ul>
+<li>Monotone's certificate system is key+value based, rather than label-based.
+  This might be useful; while small pools of related values can be asserted
+  using mutually exclusive policy labels (whose mutual exclusion is a matter
+  of local interpretation), larger pools of related values rapidly become
+  impractical under the proposed system.</li>
+</ul>
+<p>For example, this proposal would be inappropriate for directly asserting
+  third-party authorship; the asserted author would have to appear in the
+  policy name itself, exposing the user to a potentially very large number of
+  similar policy labels.</p>
+<ul>
+<li>
+<p>Ref signing via a manifest (a tree constellation whose paths are ref names
+  and whose blobs sign the refs' values). Consider cribbing DNSSEC here for
+  things like lightweight absence assertions, too.</p>
+</li>
+<li>
+<p>Describe how this should interact with commit-duplicating and
+  commit-rewriting workflows.</p>
+</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/git/detached-sigs.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/git/detached-sigs.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

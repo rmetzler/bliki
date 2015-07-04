@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		LinkedIn Intro is Unethical Software
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">ethics</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						linkedin-intro
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="linkedin-intro-is-unethical-software">LinkedIn Intro is Unethical Software</h1>
+<p><a href="https://intro.linkedin.com">LinkedIn Intro</a> is a mail filtering service
+provided by LinkedIn that inserts LinkedIn relationship data into the user's
+incoming and outgoing mail. This allows, for example, LinkedIn to decorate
+incoming mail with a toolbar linking to the sender's LinkedIn account, and
+automatically injects a short “signature” of your LinkedIn profile into
+outgoing mail.</p>
+<p>These are useful features, and the resulting interaction is quite smooth.
+However, the implementation has deep, unsolvable ethical problems.</p>
+<p>LinkedIn Intro reconfigures the user's mobile device, replacing their mail
+accounts with proxy mail accounts that use LinkedIn's incoming and outgoing
+mail servers. All of LinkedIn's user-facing features are implemented using
+HTML and JavaScript injected directly into the email message.</p>
+<h2 id="password-concerns">Password Concerns</h2>
+<p>LinkedIn Intro's proxy mail server must be able to log into the user's real
+incoming mail server to retrieve mail, and often must log into the user's real
+outgoing mail server to deliver mail with correct SPF or DKIM validation. This
+implies that LinkedIn Intro must know the user's email credentials, which it
+acquires from their mobile device. Since this is a “use” of a password, not
+merely a “validation” of an incoming password, the password must be available
+<em>to LinkedIn</em> as plain text. There are two serious problems with this that
+are directly LinkedIn's responsibilty, and a third that's indirect but
+important. (Some email providers - notably Google - support non-password,
+revokable authentication mechanisms for exactly this sort of use. It's not
+clear whether LinkedIn Intro uses these safer mechanisms, but it doesn't
+materially change my point.)</p>
+<p>LinkedIn has a somewhat unhappy security history. In 2012, they had a
+<a href="http://www.nytimes.com/2012/06/11/technology/linkedin-breach-exposes-light-security-even-at-data-companies.html">security
+breach</a>
+that exposed part of their authentication database to the internet. While they
+have very likely tightened up safeguards in response, it's unclear whether
+those include a cultural change towards more secure practices. Certainly, it
+will take longer than the year that's passed for them to build better trust
+from the technical community.</p>
+<p>Worse, the breach revealed that LinkedIn was actively disregarding known
+problems with password storage for authentication. <a href="http://cm.bell-labs.com/cm/cs/who/dmr/passwd.ps">Since at least the late
+70's</a>, the security community
+has been broadly aware of weaknesses of unsalted hash-based password
+obfuscation. More recently, <a href="http://www.win.tue.nl/cccc/sha-1-challenge.html">it's become
+clear</a> that CPU-optimized
+hash algorithms (including MD5 and both SHA-1 and SHA-2) are weak protection
+against massively parallel password cracking — cracking that's quite cheap
+using modern GPUs. Algorithms like
+<a href="http://codahale.com/how-to-safely-store-a-password/">bcrypt</a> which address
+this specific weakness have been available since the late 90's. LinkedIn's
+leaked password database was stored using unsalted SHA-1 digests, suggesting
+either a lack of research or a lack of understanding of the security
+implications of their password system.</p>
+<p>Rebuilding trust after this kind of public shaming should have involved a
+major, visible shift in the company's culture. There's easy marketing among
+techies — a major portion of LinkedIn's audience, even now — to be done by
+showing how on the ball you can be about protecting their data; none of this
+marketing has appeared. The impact of raising the priority of security issues
+throughout product development should be visible from the outside, as risky
+features get pushed aside to address more fundamental security issues; no such
+shift in priorities has been visible. It is reasonable, observing LinkedIn's
+behaviour in the last year, to conclude that LinkedIn, as a company, still
+treats data security as an easy problem to be solved with as little effort as
+possible. This is not a good basis on which to ask users to hand over their
+email passwords.</p>
+<p>While the security community has been making real efforts to educate users to
+use a unique password for each service they use, the sad reality is that most
+users still use the same password for everything. As LinkedIn Intro must
+necessarily store <em>plain text</em> passwords, it will be a very attractive target
+for future break-ins, for employee malfeasance, and for United States court
+orders.</p>
+<h2 id="what-gets-seen">What Gets Seen</h2>
+<p>LinkedIn Intro is not selective. Every email that passes through an
+Intro-enabled email account is visible, entirely, to LinkedIn. The fact that
+the email occurred is fodder for their recommendation engine and for any other
+analysis they care to run. The contents may be retained indefinitely, outside
+of either the sender's or the recipients' control. LinkedIn is in a position
+to claim that Intro users have given it <em>permission</em> to be intrusive into
+their email in this way.</p>
+<p>Very few people use a dedicated email account for “corporate networking” and
+recruiting activities. A CEO (LinkedIn's own example) recieves mail pertaining
+to many sensitive aspects of a corporation's running: lawsuit notices, gossip
+among the exec team, planning emails discussing the future of the company,
+financials, email related to external partnerships at the C*O level, and many,
+many other things. LinkedIn's real userbase, recruiters and work-seeking
+people, often use the same email account for LinkedIn and for unrelated
+private activities. LinkedIn <em>has no business</em> reading these emails or even
+knowing of their existence, but Intro provides no way to restrict what
+LinkedIn sees.</p>
+<p>Users in heavily-regulated industries, such as health care or finance, may be
+exposing their whole organization to government interventions by using Intro,
+as LinkedIn is not known to be HIPAA, SOX, or PCI compliant.</p>
+<p>The resulting “who mailed what to whom” database is hugely valuable. I expect
+LinkedIn to be banking on this; such a corpus of conversational data would
+greatly help them develop new features targetting specific groups of users,
+and could improve the overall effectiveness of their recommendation engine.
+However, it's also valuable to others; as above, this information would be a
+gold mine for marketers, a target for break-ins, and, worryingly, <em>immensely</em>
+useful to the United States' intelligence apparatus (who can obtain court
+orders preventing LinkedIn from discussing their requests, to boot).</p>
+<p>(LinkedIn's recommendation engine also has issues; it's notorious for
+<a href="http://community.linkedin.com/questions/31650/linkedin-sent-an-ex-girlfriend-a-request-to-someon.html">recommending people to their own
+ex-partners</a>
+and to people actively suing one another. Giving it more data to work with
+makes this more likely, especially when the data is largely unrelated to
+professional concerns..)</p>
+<p>LinkedIn Intro's injected HTML is also suspect by default. Tracking email open
+rates is standard practice for email marketing, but Intro allows <em>LinkedIn</em> to
+track the open rate of emails <em>you send</em> and of emails <em>you recieve</em>,
+regardless of whether those emails pertain to LinkedIn's primary business or
+not.</p>
+<h2 id="user-education">User Education</h2>
+<p>All of the risks outlined above are manageable. With proper information, the
+end user can make an informed decision as to whether</p>
+<ul>
+<li>to ignore Intro at all, or</li>
+<li>to use Intro with a dedicated “LinkedIn Only” email account, or</li>
+<li>to use Intro with everything</li>
+</ul>
+<p>LinkedIn's own marketing materials outline <em>absolutely none</em> of these risks.
+They're designed, as most app landing materials are, to make the path to
+downloading and configuring Intro as smooth and unthreatening as possible: the
+option to install the application is presented before the page describes what
+the app <em>does</em>, and it never describes how the app <em>works</em> — that information
+is never stated outright, not even in Intro's own
+<a href="https://intro.linkedin.com/micro/faq">FAQ</a>. Witholding the risks from users
+vastly increases the chances of a user making a decision they aren't
+comfortable with, or that increases their own risk of social or legal problems
+down the road.</p>
+<h2 id="linkedins-response">LinkedIn's Response</h2>
+<p>Shortly after Intro's first round of public mockery, a LinkedIn employee
+<a href="http://blog.linkedin.com/2013/10/26/the-facts-about-linkedin-intro/">posted a
+response</a>
+to some of the security concerns. The post is interesting, and I recommend you
+read it.</p>
+<p>The key point about the response is that it underscores how secure Intro is
+<em>for LinkedIn</em>. It does absolutely nothing to discuss how LinkedIn is curating
+its users' security needs. In particular:</p>
+<blockquote>
+<p>We isolated Intro in a separate network segment and implemented a
+tight security perimeter across trust boundaries.</p>
+</blockquote>
+<p>A breach in LinkedIn proper may not imply a breach in LinkedIn Intro, and vice
+versa, but there must be at least some data passing back and forth for Intro
+to operate. The nature and structure of the security mechanisms that permit
+the “right” kind of data are not elaborated on; it's impossible to decide how
+well they actually insulate Intro from LinkedIn. Furthermore, a breach in
+LinkedIn Intro is still incredibly damaging even if it doesn't span LinkedIn
+itself.</p>
+<blockquote>
+<p>Our internal team of experienced testers also penetration-tested the
+final implementation, and we worked closely with the Intro team to
+make sure identified vulnerabilities were addressed.</p>
+</blockquote>
+<p>This doesn't address the serious concerns with LinkedIn Intro's <em>intended</em>
+use; it also doesn't do much to help users understand how thorough the testing
+was or to understand who vetted the results.</p>
+<h2 id="the-bottom-line">The Bottom Line</h2>
+<p><em>If</em> LinkedIn Intro works as built, and <em>if</em> their security safeguards are as
+effective as they claim and hope, then Intro exposes its users to much greater
+risk of password compromise and helps them expose themselves to surveillence,
+both government and private. If either of those conditions does not hold, it's
+worse.</p>
+<p>The software industry is young, and immature, and wealthy. There is no ethics
+body to complain to; had the developers of Intro said “no,” they would very
+likely have been replaced by another round of developers who would help
+LinkedIn violate their users' privacy. That does not excuse LinkedIn; their
+product is vile, and must not be tolerated in the market.</p>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/ethics/linkedin-intro.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/ethics/linkedin-intro.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

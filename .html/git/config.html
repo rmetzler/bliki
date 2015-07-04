@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		git-config Settings You Want
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">git</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						config
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="git-config-settings-you-want">git-config Settings You Want</h1>
+<p>Git comes with some fairly <a href="http://www.tux.org/lkml/">lkml</a>-specific
+configuration defaults. You should fix this. All of the items below can be set
+either for your entire login account (<code>git config --global</code>) or for a specific
+repository (<code>git config</code>).</p>
+<p>Full documentation is under <code>git help config</code>, unless otherwise stated.</p>
+<ul>
+<li>
+<p><code>git config user.name 'Your Full Name'</code> and <code>git config user.email
+  'your-email@example.com'</code>, obviously.</p>
+</li>
+<li>
+<p><code>git config push.default simple</code> - the default behaviour (called <code>matching</code>)
+  of an unqualified <code>git push</code> is to identify pairs of branches by name and
+  push all matches from your local repository to the remote. Given that
+  branches have explicit “upstream” configuration identifying which, if any,
+  branch in which, if any, remote they're associated with, this is dumb. The
+  <code>simple</code> mode pushes the current branch to its upstream remote, if and only
+  if the local branch name and the remote branch name match <em>and</em> the local
+  branch tracks the remote branch. Requires Git 1.8 or later; will be the
+  default in Git 2.0. (For older versions of Git, use <code>upstream</code> instead,
+  which does not require that branch names match.)</p>
+</li>
+<li>
+<p><code>git config merge.defaultToUpstream true</code> - causes an unqualified <code>git
+  merge</code> to merge the current branch's configured upstream branch, rather than
+  being an error. (<code>git rebase</code> always has this behaviour. Consistent!) You
+  should still merge thoughtfully.</p>
+</li>
+<li>
+<p><code>git config rebase.autosquash true</code> - causes <code>git rebase -i</code> to parse magic
+  comments created by <code>git commit --squash=some-hash</code> and <code>git commit
+  --fixup=some-hash</code> and reorder the commit list before presenting it for
+  further editing. See the descriptions of “squash” and “fixup” in <code>git help
+  rebase</code> for details; autosquash makes amending commits other than the most
+  recent easier and less error-prone.</p>
+</li>
+<li>
+<p><code>git config branch.autosetupmerge always</code> - newly-created branches whose
+  start point is a branch (<code>git checkout master -b some-feature</code>, <code>git branch
+  some-feature origin/develop</code>, and so on) will be configured to have the
+  start point branch as their upstream. By default (with <code>true</code> rather than
+  <code>always</code>) this only happens when the start point is a remote-tracking
+  branch.</p>
+</li>
+<li>
+<p><code>git config rerere.enabled true</code> - enable “reuse recorded resolution.” The
+  <code>git help rerere</code> docs explain it pretty well, but the short version is that
+  git can record how you resolve conflicts during a “test” merge and reuse the
+  same approach when resolving the same conflict later, in a “real” merge.</p>
+</li>
+</ul>
+<h2 id="for-advanced-users">For advanced users</h2>
+<p>A few things are nice when you're getting started, but become annoying when
+you no longer need them.</p>
+<ul>
+<li><code>git config advice.detachedHead</code> - if you already understand the difference
+  between having a branch checked out and having a commit checked out, and
+  already understand what “detatched head” means, the warning on every <code>git
+  checkout ...some detatched thing...</code> isn't helping anyone. This is also
+  useful repositories used for deployment, where specific commits (from tags,
+  for example) are regularly checked out.</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/git/config.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/git/config.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

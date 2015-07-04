@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Bugs, Tasks, and Tickets from First Principles
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">dev</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						trackers-from-first-principles
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="bugs-tasks-and-tickets-from-first-principles">Bugs, Tasks, and Tickets from First Principles</h1>
+<p>Why do we track tasks?</p>
+<ul>
+<li>To communicate about what should, will, has, and will not be done.<ul>
+<li>Consequently, to either build consensus on what to do next or to dictate
+  it.</li>
+</ul>
+</li>
+<li>To measure and communicate progress.</li>
+<li>To preserve information for future use.<ul>
+<li>Otherwise we'd just remember it in our heads.</li>
+<li>Wishlist tasks are not a bad thing!</li>
+</ul>
+</li>
+</ul>
+<p>Bugs/defects are a kind of task but not the only kind. Most teams have a “bug
+tracker” that contains a lot more than bugs. Let's not let bugs dictate the
+system.</p>
+<ul>
+<li>Therefore, “steps to reproduce” should not be a required datum.</li>
+</ul>
+<p>Bugs are an <em>important</em> kind of task.</p>
+<p>Tasks can be related to software development artifacts: commits, versions,
+builds, releases.</p>
+<ul>
+<li>A task may only be complete as of certain commits/releases/builds.</li>
+<li>A task may only be valid after (or before) certain commits/releases/builds.</li>
+</ul>
+<p>Communication loosely implies publishing. Tracking doesn't, but may rely on
+the publishing of other facts.</p>
+<h2 id="core-data">Core Data</h2>
+<p>Tasks are only useful if they're actionable. To be actionable, they must be
+understood. Understanding requires communication and documentation.</p>
+<ul>
+<li>A protocol-agnostic <em>name</em>, for easily identifying a task in related
+  conversations.<ul>
+<li>These names need to be <em>short</em> since they're used conversationally. Long
+  issue names will be shortened by convention whether the tracker supports
+  it or not.</li>
+</ul>
+</li>
+<li>An actionable <em>description</em> of the task.<ul>
+<li>Frequently, a short <em>summary</em> of the task, to ease bulk task
+  manipulation. Think of the difference between an email subject and an
+  email body.</li>
+</ul>
+</li>
+<li>A <em>discussion</em>, consisting of <em>remarks</em> or <em>comments</em>, to track the evolving
+  understanding alongside the task.</li>
+</ul>
+<p>See <a href="#speciation">speciation</a>, below.</p>
+<h2 id="responsibility-and-ownership">Responsibility and Ownership</h2>
+<p>Regardless of whether your team operates with a top-down, command-oriented
+management structure or with a more self-directed and anarchistic process, for
+every task, there is notionally one person currently responsible for ensuring
+that the task is completed.</p>
+<p>That relationship can change over time; how it does so is probably
+team-specific.</p>
+<p>There may be other people <em>involved</em> in a task that are not <em>responsible</em> for
+a task, in a number of roles. Just because I developed the code for a feature
+does not mean I am necessarily responsible for the feature any more, but it
+might be useful to have a “developed by” list for the feature's task.</p>
+<p>Ways of identifying people:</p>
+<ul>
+<li>Natural-language names (“Gianna Grady”)</li>
+<li>Email addresses</li>
+<li>Login names</li>
+<li>Distinguished names in some directory</li>
+<li>URLs</li>
+</ul>
+<p>Task responsibility relationships reflect real-world responsibility, and help
+communicate it, but do not normally define it.</p>
+<h2 id="workflow">Workflow</h2>
+<p>“Workflow” describes both the implications of the states a task can be in and
+the implications of the transitions between states. Most task trackers are, at
+their core, workflow engines of varying sophistication.</p>
+<p>Why:</p>
+<ul>
+<li>Improve shared understanding of how tracked tasks are performed.</li>
+<li>Provide clear hand-off points when responsibility shifts.</li>
+<li>Provide insight into which tasks need what kinds of attention.</li>
+<li>Integration points for other behaviour.</li>
+</ul>
+<p>States are implicitly time-bounded, and joined to their predecessor and
+successor states by transitions.</p>
+<p>Task state is decoupled from the real world: the task in a tracker is not the
+work it describes.</p>
+<p>Elemental states:</p>
+<ul>
+<li>“Open”: in this state, the task has not yet been completed. Work may or may
+  not be ongoing.</li>
+<li>“Completed”: in this state, all work on a task has been completed.</li>
+<li>“Abandoned”: in this state, no further work on a task will be performed, but
+  the task has not been completed.</li>
+</ul>
+<p>Most real-world workflows introduce some intermediate states that tie into
+process-related handoffs.</p>
+<p>For software, I see these divisions, in various combinations, frequently:</p>
+<ul>
+<li>“Open”:<ul>
+<li>“Unverified”: further work needs to be done to decide whether the task
+  should be completed.</li>
+<li>“In Development”: someone is working on the code and asset changes
+  necessary to complete the task. This occasionally subsumes preliminary
+  work, too.</li>
+<li>“In Testing”: code and asset changes are ostensibly complete,
+  but need testing to validate that the task has been completed
+  satisfactorially.</li>
+</ul>
+</li>
+<li>“Completed”:<ul>
+<li>“Development Completed”: work (and possibly testing) has been completed
+  but the task's results are not yet available to external users.</li>
+<li>“Released”: work has been completed, and external users can see and use
+  the results.</li>
+</ul>
+</li>
+<li>“Abandoned”:<ul>
+<li>“Cannot Reproduce”: common in bug/defect tasks, to indicate that the
+  task doesn't contain enough information to render the bug fixable.</li>
+<li>“Won't Complete”: the task is well-understood and theoretically
+  completable, but will not be completed.</li>
+<li>“Duplicate”: the task is identical to, or closely related to, some other
+  task, such that completing either would be equivalent to completing
+  both.</li>
+<li>“Invalid”: the task isn't relevant, is incompletely described, doesn't
+  make sense, or is otherwise not appropriate work for the team using the
+  tracker.</li>
+</ul>
+</li>
+</ul>
+<p>None of these are universal.</p>
+<p>Transitions show how a task moves from state to state.</p>
+<ul>
+<li>Driven by external factors (dev work leads to tasks being marked completed)<ul>
+<li>Explicit transitions: “mark this task as completed”</li>
+<li>Implicit transitions: “This commit also completes these tasks”</li>
+</ul>
+</li>
+<li>Drive external factors (tasks marked completed are emailed to testers)</li>
+</ul>
+<p>States implicitly describe a <em>belief</em> or a <em>desire</em> about the future of the
+task, which is a human artifact and may be wrong or overly hopeful. Tasks can
+transition to “Completed” or “Abandoned” states when the work hasn't actually
+been completed or abandoned, or from “Completed” or “Abandoned” to an “Open”
+state to note that the work isn't as done as we thought it was. <em>This is a
+feature</em> and trackers that assume every transition is definitely true and
+final encourage ugly workarounds like duplicating tickets to reopen them.</p>
+<h2 id="speciation">Speciation</h2>
+<p>I mentioned above that bugs are a kind of task. The ways in which bugs are
+“different” is interesting:</p>
+<ul>
+<li>Good bugs have a well-defined reproduction case - steps you can follow to
+  demonstrate and test them.</li>
+<li>Good bugs have a well-described expected behaviour.</li>
+<li>Good bugs have a well-described actual behaviour.</li>
+</ul>
+<p>Being able to support this kind of highly detailed speciation of task types
+without either bloating the tracker with extension points (JIRA) or
+shoehorning all features into every task type (Redmine) is hard, but
+necessary.</p>
+<p>Supporting structure helps if it leads to more interesting or efficient ways
+of using tasks to drive and understand work.</p>
+<p>Bugs are not the only “special” kind of task:</p>
+<ul>
+<li>“Feature” tasks show up frequently, and speciate on having room for
+  describing specs and scope.</li>
+<li>“Support ticket” tasks show up in a few trackers, and speciate dramatically
+  as they tend to be tasks describing the work of a single incident rather
+  than tasks describing the work on some shared aspect, so they tend to pick
+  up fields for relating tickets to the involved parties. (Arguably, incident
+  tickets have needs so drastically different that you should use a dedicated
+  incident-management tool, not a task/bug tracker.)</li>
+</ul>
+<p>Other kinds are possible, and you've probably seen them in the wild.</p>
+<p>Ideally, speciation happens to support <em>widespread</em> specialized needs. Bug
+repro is a good example; every task whose goal is to fix a defect should
+include a clear understanding of the defect, both to allow it to be fixed and
+to allow it to be tested. Adding specialized data for bugs supports that by
+encouraging clearer, more structured descriptions of the defect (with implicit
+“fix this” as the task).</p>
+<h2 id="implementation-notes">Implementation notes</h2>
+<p>If we reduce task tracking to “record changes to fields and record discussion
+comments, on a per task basis,” we can describe the current state of a ticket
+using the “most recent” values of each field and the aggregate of all recorded
+comments. This can be done ~2 ways:</p>
+<ol>
+<li>“Centralized” tracking, where each task has a single, total order of
+    changes. Changes are mediated through a centralized service.</li>
+<li>“Decentralized” tracking, where each task has only a partial order over the
+    history of changes. Changes are mediated by sharing sets of changes, and by
+    appending “reconciliation” changes to resolve cases where two incomparable
+    changes modify the same field/s. The most obvious partial order is a
+    digraph.</li>
+</ol>
+<p>Centralized tracking is a well-solved problem. Decentralized tracking so far
+seems to rely heavily on DSCM tools (Git, Mercurial, Fossil) for resolving
+conflicts.</p>
+<p>The “work offline” aspect of a distributed tracker is less interesting in as
+much as task tracking is a communications tool. Certain kinds of changes
+should be published and communicated as early as possible so as to avoid
+misunderstandings or duplicated work.</p>
+<p>Being able to separate the mechanism of how changes to tasks are recorded from
+the policy of which library of tasks is “canonical” is potentially useful as
+an editorial tool and for progressive publication to wider audiences as work
+progresses.</p>
+<p>Issue tracking is considerably more amenable to append-only implementations
+than SCM is, even if you dislike history-editing SCM workflows. This suggests
+that Git is a poor choice of issue-tracking storage backends...</p>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/dev/trackers-from-first-principles.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/dev/trackers-from-first-principles.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Installing Java on Ubuntu
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="../">java</a>
+					
+				</li>
+			
+				<li class="crumb-2 not-last">
+					
+						<a href="./">install</a>
+					
+				</li>
+			
+				<li class="crumb-3 last">
+					
+						ubuntu
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="installing-java-on-ubuntu">Installing Java on Ubuntu</h1>
+<p>Accurate as of: Java 7, Ubuntu 12.04. The instructions below assume an amd64
+(64-bit) installation. If you're still using a 32-bit OS, work out the
+differences yourself.</p>
+<h2 id="via-package-management-apt">Via Package Management (Apt)</h2>
+<p>OpenJDK 7 is available via apt by default.</p>
+<p>To install the JDK:</p>
+<pre><code>sudo aptitude update
+sudo aptitude install openjdk-7-jdk
+</code></pre>
+<p>To install the JRE only (without the JDK):</p>
+<pre><code>sudo aptitude update
+sudo aptitude install openjdk-7-jre
+</code></pre>
+<p>To install the JRE without GUI support (appropriate for headless servers):</p>
+<pre><code>sudo aptitude update
+sudo aptitude install openjdk-7-jre-headless
+</code></pre>
+<p>(You can also use <code>apt-get</code> instead of <code>aptitude</code>.)</p>
+<p>These packages interact with <a href="http://manpages.ubuntu.com/manpages/hardy/man8/update-alternatives.8.html">the <code>alternatives</code>
+system</a>,
+and have <a href="http://manpages.ubuntu.com/manpages/hardy/man8/update-java-alternatives.8.html">a dedicated <code>alternatives</code> manager
+script</a>.
+The <code>alternatives</code> system affects <code>/usr/bin/java</code>, <code>/usr/bin/javac</code>, and
+browser plugins for applets and Java Web Start applications for browsers
+installed via package management. It also affects the symlinks under
+<code>/etc/alternatives</code> related to Java.</p>
+<p>To list Java versions available, with at least one Java version installed via
+Apt:</p>
+<pre><code>update-java-alternatives --list
+</code></pre>
+<p>To switch to <code>java-1.7.0-openjdk-amd64</code> for all Java invocations:</p>
+<pre><code>update-java-alternatives --set java-1.7.0-openjdk-amd64
+</code></pre>
+<p>The value should be taken from the first column of the <code>--list</code> output.</p>
+<h3 id="tool-support">Tool support</h3>
+<p>Most modern Java tools will pick up the installed JDK via <code>$PATH</code> and do not
+need the <code>JAVA_HOME</code> environment variable set explicitly. For applications old
+enough not to be able to detect the JDK, you can set <code>JAVA_HOME</code> to
+<code>/usr/lib/jvm/java-1.7.0-openjdk-amd64</code>.</p>
+<h2 id="by-hand">By Hand</h2>
+<p>The <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">Java SE Development Kit
+7</a>
+tarballs can be installed by hand. Download the “Linux x64” <code>.tar.gz</code> version,
+then unpack it in <code>/opt</code>:</p>
+<pre><code>cd /opt
+tar xzf ~/jdk-7u45-linux-x64.tar.gz
+</code></pre>
+<p>This will create a directory named <code>/opt/jdk1.7.0_45</code> (actual version number
+may vary) containing a ready-to-use Java dev kit.</p>
+<p>You will need to add the JDK's <code>bin</code> directory to <code>PATH</code> if you want commands
+like <code>javac</code> and <code>java</code> to work without fully-qualifying the directory:</p>
+<pre><code>cat &gt; /etc/profile.d/oracle_jdk &lt;&lt;'ORACLE_JDK'
+PATH="${PATH}:/opt/jdk1.7.0_45/bin"
+export PATH
+ORACLE_JDK
+</code></pre>
+<p>(This will not affect non-interactive use; setting PATH for non-interactive
+programs like build servers is beyond the scope of this document. Learn to use
+your OS.)</p>
+<p>Installation this way does <em>not</em> interact with the alternatives system (but
+you can set that up by hand if you need to).</p>
+<p>For tools that cannot autodetect the JDK via <code>PATH</code>, you may need to set
+<code>JAVA_HOME</code> to <code>/opt/jdk1.7.0_45</code>.</p>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/java/install/ubuntu.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/java/install/ubuntu.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

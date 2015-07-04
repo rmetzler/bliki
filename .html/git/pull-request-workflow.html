@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Life With Pull Requests
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">git</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						pull-request-workflow
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="life-with-pull-requests">Life With Pull Requests</h1>
+<p>I've been party to a number of discussions with folks contributing to
+pull-request-based projects on Github (and other hosts, but mostly Github).
+Because of Git's innate flexibility, there are lots of ways to work with pull
+requests. Here's mine.</p>
+<p>I use a couple of naming conventions here that are not stock <code>git</code>:</p>
+<dl>
+<dt>origin</dt>
+<dd>The repository to which you <em>publish</em> proposed changes</dd>
+<dt>upstream</dt>
+<dd>The repository from which you receive ongoing development, and which will
+receive your changes.</dd>
+</dl>
+<h2 id="one-time-setup">One-time setup</h2>
+<p>Do these things once, when starting out on a project. Keep the results around
+for later.</p>
+<p>I'll be referring to the original project repository as <code>upstream</code> and
+pretending its push URL is <code>UPSTREAM-URL</code> below. In real life, the URL will
+often be something like <code>git@github.com:someguy/project.git</code>.</p>
+<h3 id="fork-the-project">Fork the project</h3>
+<p>Use the repo manager's forking tool to create a copy of the project in your
+own namespace. This generally creates your copy with a bunch of useless tat;
+feel free to ignore all of this, as the only purpose of this copy is to
+provide somewhere for <em>you</em> to publish <em>your</em> changes.</p>
+<p>We'll be calling this repository <code>origin</code> later. Assume it has a URL, which
+I'll abbreviate <code>ORIGIN-URL</code>, for <code>git push</code> to use.</p>
+<p>(You can leave this step for later, but if you know you're going to do it, why
+not get it out of the way?)</p>
+<h3 id="clone-the-project-and-configure-it">Clone the project and configure it</h3>
+<p>You'll need a clone locally to do work in. Create one from <code>origin</code>:</p>
+<pre><code>git clone ORIGIN-URL some-local-name
+</code></pre>
+<p>While you're here, <code>cd</code> into it and add the original project as a remote:</p>
+<pre><code>cd some-local-name
+git remote add upstream UPSTREAM-URL
+</code></pre>
+<h2 id="feature-process">Feature process</h2>
+<p>Do these things for each feature you work on. To switch features, just use
+<code>git checkout my-feature</code>.</p>
+<h3 id="create-a-new-feature-branch-locally">Create a new feature branch locally</h3>
+<p>We use <code>upstream</code>'s <code>master</code> branch here, so that your feature includes all of
+<code>upstream</code>'s state initially. We also need to make sure our local cache of
+<code>upstream</code>'s state is correct:</p>
+<pre><code>git fetch upstream
+git checkout upstream/master -b my-feature
+</code></pre>
+<h3 id="do-work">Do work</h3>
+<p>If you need my help here, stop now.</p>
+<h3 id="integrate-upstream-changes">Integrate upstream changes</h3>
+<p>If you find yourself needing something that's been added upstream, use
+<em>rebase</em> to integrate it to avoid littering your feature branch with
+“meaningless” merge commits.</p>
+<pre><code>git checkout my-feature
+git fetch upstream
+git rebase upstream/master
+</code></pre>
+<h3 id="publish-your-branch">Publish your branch</h3>
+<p>When you're “done,” publish your branch to your personal repository:</p>
+<pre><code>git push origin my-feature
+</code></pre>
+<p>Then visit your copy in your repo manager's web UI and create a pull request
+for <code>my-feature</code>.</p>
+<h3 id="integrating-feedback">Integrating feedback</h3>
+<p>Very likely, your proposed changes will need work. If you use history-editing
+to integrate feedback, you will need to use <code>--force</code> when updating the
+branch:</p>
+<pre><code>git push --force origin my-feature
+</code></pre>
+<p>This is safe provided two things are true:</p>
+<ol>
+<li><strong>The branch has not yet been merged to the upstream repo.</strong></li>
+<li>You are only force-pushing to your fork, not to the upstream repo.</li>
+</ol>
+<p>Generally, no other users will have work based on your pull request, so
+force-pushing history won't cause problems.</p>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/git/pull-request-workflow.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/git/pull-request-workflow.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>

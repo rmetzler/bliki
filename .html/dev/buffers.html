@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Observations on Buffering
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">dev</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						buffers
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="observations-on-buffering">Observations on Buffering</h1>
+<p>None of the following is particularly novel, but the reminder has been useful:</p>
+<ul>
+<li>
+<p>All buffers exist in one of two states: full (writes outpace reads), or empty
+    (reads outpace writes). There are no other stable configurations.</p>
+</li>
+<li>
+<p>Throughput on an empty buffer is dominated by the write rate. Throughput on a
+    full buffer is dominated by the read rate.</p>
+</li>
+<li>
+<p>A full buffer imposes a latency penalty equal to its size in bits, divided by
+    the read rate in bits per second. An empty buffer imposes (approximately) no
+    latency penalty.</p>
+</li>
+</ul>
+<p>The previous three points suggest that <strong>traffic buffers should be measured in
+seconds, not in bytes</strong>, and managed accordingly. Less obviously, buffer
+management needs to be considerably more sophisticated than the usual "grow
+buffer when full, up to some predefined maximum size."</p>
+<p>Point one also implies a rule that I see honoured more in ignorance than in
+awareness: <strong>you can't make a full buffer less full by making it bigger</strong>. Size
+is not a factor in buffer fullness, only in buffer latency, so adjusting the
+size in response to capacity pressure is worse than useless.</p>
+<p>There are only three ways to make a full buffer less full:</p>
+<ol>
+<li>
+<p>Increase the rate at which data exits the buffer.</p>
+</li>
+<li>
+<p>Slow the rate at which data enters the buffer.</p>
+</li>
+<li>
+<p>Evict some data from the buffer.</p>
+</li>
+</ol>
+<p>In actual practice, most full buffers are upstream of some process that's
+already going as fast as it can, either because of other design limits or
+because of physics. A buffer ahead of disk writing can't drain faster than the
+disk can accept data, for example. That leaves options two and three.</p>
+<p>Slowing the rate of arrival usually implies some variety of <em>back-pressure</em> on
+the source of the data, to allow upstream processes to match rates with
+downstream processes. Over-large buffers delay this process by hiding
+back-pressure, and buffer growth will make this problem worse. Often,
+back-pressure can happen automatically: failing to read from a socket, for
+example, will cause the underlying TCP stack to apply back-pressure to the peer
+writing to the socket by delaying TCP-level message acknowledgement. Too often,
+I've seen code attempt to suppress these natural forms of back-pressure without
+replacing them with anything, leading to systems that fail by surprise when
+some other resource – usually memory – runs out.</p>
+<p>Eviction relies on the surrounding environment, and must be part of the
+protocol design. Surprisingly, most modern application protocols get very
+unhappy when you throw their data away: the network age has not, sadly, brought
+about protocols and formats particularly well-designed for distribution.</p>
+<p>If neither back-pressure nor eviction are available, the remaining option is to
+fail: either to start dropping data unpredictably, or to cease processing data
+entirely as a result of some resource or another running out, or to induce so
+much latency that the data is useless by the time it arrives.</p>
+<hr>
+<p>Some uncategorized thoughts:</p>
+<ul>
+<li>
+<p>Some buffers exist to trade latency against the overhead of coordination. A
+    small buffer in this role will impose more coordination overhead; a large
+    buffer will impose more latency.</p>
+<ul>
+<li>
+<p>These buffers appear where data transits between heterogenous system: for
+    example, buffering reads from the network for writes to disk.</p>
+</li>
+<li>
+<p>Mismanaged buffers in this role will tend to cause the system to spend
+    an inordinate proportion of latency and throughput negotiating buffer
+    sizes and message readiness.</p>
+</li>
+<li>
+<p>A coordination buffer is most useful when <em>empty</em>; in the ideal case, the
+    buffer is large enough to absorb one message's worth of data from the
+    source, then pass it along to the sink as quickly as possible.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Some buffers exist to trade latency against jitter. A small buffer in this
+    role will expose more jitter to the upstream process. A large buffer in this
+    role will impose more latency.</p>
+<ul>
+<li>
+<p>These tend to appear in <em>homogenous</em> systems with differing throughputs,
+    or as a consequence of some other design choice. Store-and-forward
+    switching in networks, for example, implies that switches must buffer at
+    least one full frame of network data.</p>
+</li>
+<li>
+<p>Mis-managed buffers in this role will <em>amplify</em> rather than smoothing out
+    jitter. Apparent throughput will be high until the buffer fills, then
+    change abruptly when full. Upstream processes are likely to throttle
+    down, causing them to under-deliver if the buffer drains, pushing the
+    system back to a high-throughput mode. <a href="http://www.bufferbloat.net">This problem gets worse the
+    more buffers are present in a system</a>.</p>
+</li>
+<li>
+<p>An anti-jitter buffer is most useful when <em>full</em>; in exchange for a 
+    latency penalty, sudden changes in throughput will be absorbed by data
+    in the buffer rather than propagating through to the source or sink.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Multimedia people understand this stuff at a deep level. Listen to them when
+    designing buffers for other applications.</p>
+</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/dev/buffers.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/dev/buffers.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>
