@@ -37,7 +37,7 @@ person—“creativity,” “morality,” “curiosity,” and so on.
 Extensible. Understood. In the middle tier: Simple. Fast. Unit tests. Part of
 the project. Environment independent. At the top: Metrics. Parallel builds.
 Acceptance tests. Product caching. IDE
-integration.](/media/dev/builds/buildifesto-pyramid)
+integration.](/media/dev/builds/buildifesto-pyramid.png)
 
 Builds, and software engineering as a whole, can be described the same way: at
 the top of the hierarchy is a working system that solves a problem, and at the

@@ -3,7 +3,7 @@
 ![An email appears! Aww, man. Will I think differently after reading it? If
 yes, then read immediately. If no, then will I act differently after reading
 it? If yes, then read immediately. If no, then is it from someone funny? If
-yes, then read immediately. If no, UNREAD FOREVER.](/media/email/flowchart)
+yes, then read immediately. If no, UNREAD FOREVER.](/media/email/flowchart.png)
 
 I get a lot of email, often while I'm in [the middle of something
 thought-intensive](http://blog.ninlabs.com/2013/01/programmer-interrupted/).

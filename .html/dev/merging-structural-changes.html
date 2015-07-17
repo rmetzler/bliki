@@ -63,7 +63,7 @@ sadly, performed dismally: none of the merge scenarios tested retained content
 changes when merging structural changes to the same files.</p>
 <h2 id="the-preferred-outcome">The Preferred Outcome</h2>
 <p><img alt="Both changes survive the
-merge." src="/media/dev/merging-structural-changes/ideal-merge-results"></p>
+merge." src="/media/dev/merging-structural-changes/ideal-merge-results.png"></p>
 <p>The diagram above shows a very simple source tree with one directory, <code>dir-a</code>,
 containing one file with two lines in it. On one branch, the file is modified
 to have a third line; on another branch, the directory is renamed to <code>dir-b</code>.
@@ -73,7 +73,7 @@ changes: the file has three lines, and the directory has a new name.</p>
 merging.</p>
 <h2 id="subversion">Subversion</h2>
 <p><img alt="Subversion loses the content
-change." src="/media/dev/merging-structural-changes/subversion-merge-results"></p>
+change." src="/media/dev/merging-structural-changes/subversion-merge-results.png"></p>
 <p>There are two merge scenarios in this diagram, with almost the same outcome.
 On the left, a working copy of the branch where the file's content changed is
 checked out, then the changes from the branch where the structure changed are
@@ -105,7 +105,7 @@ which is not as good as automatically merging it but far better than silently
 ignoring changes.</p>
 <h2 id="mercurial">Mercurial</h2>
 <p><img alt="Mercurial preserves the content
-change." src="/media/dev/merging-structural-changes/mercurial-merge-results"></p>
+change." src="/media/dev/merging-structural-changes/mercurial-merge-results.png"></p>
 <p>Interestingly, there are tools which get this merge scenario right: the
 diagram above shows how <a href="http://www.selenic.com/mercurial/">Mercurial</a> handles
 the same two tests. Since its changeset language does include an “object

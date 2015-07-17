@@ -17,7 +17,7 @@ changes when merging structural changes to the same files.
 ## The Preferred Outcome
 
 ![Both changes survive the
-merge.](/media/dev/merging-structural-changes/ideal-merge-results)
+merge.](/media/dev/merging-structural-changes/ideal-merge-results.png)
 
 The diagram above shows a very simple source tree with one directory, `dir-a`,
 containing one file with two lines in it. On one branch, the file is modified
@@ -31,7 +31,7 @@ merging.
 ## Subversion
 
 ![Subversion loses the content
-change.](/media/dev/merging-structural-changes/subversion-merge-results)
+change.](/media/dev/merging-structural-changes/subversion-merge-results.png)
 
 There are two merge scenarios in this diagram, with almost the same outcome.
 On the left, a working copy of the branch where the file's content changed is
@@ -69,7 +69,7 @@ ignoring changes.
 ## Mercurial
 
 ![Mercurial preserves the content
-change.](/media/dev/merging-structural-changes/mercurial-merge-results)
+change.](/media/dev/merging-structural-changes/mercurial-merge-results.png)
 
 Interestingly, there are tools which get this merge scenario right: the
 diagram above shows how [Mercurial](http://www.selenic.com/mercurial/) handles
