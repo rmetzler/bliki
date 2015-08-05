@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Notes Towards A Public Compensation Database
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">people</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						public-compensation
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="notes-towards-a-public-compensation-database">Notes Towards A Public Compensation Database</h1>
+<p>There's a large body of evidence that silence about compensation is not in the interest of those being paid.
+Let's do something about that: let's build a system for analyzing and reporting over salary info.</p>
+<h2 id="design-goals">Design Goals</h2>
+<ol>
+<li>
+<p>Respect the safety and consent of the participants.</p>
+</li>
+<li>
+<p>Promote a long-term, public conversation about compensation and salary, both in tech and in other fields.</p>
+</li>
+</ol>
+<h2 id="concerns">Concerns</h2>
+<ul>
+<li>
+<p>Compensation data is historically contentious.
+    For a cautionary tale, see <a href="https://storify.com/_danilo/ericajoy-s-salary-transparency-experiment-at-googl">@EricaJoy's Storify</a> about salary transparency at Google.
+    Protecting participants from reprisal requires both effective transparency about how data will be collected and used and a deep, pervasive respect for consent.</p>
+</li>
+<li>
+<p>Naive implementations of anonymity will encourage abusive submissions: defamatory posts, fictional people, attempts to skew the data in a variety of ways.
+    If this tool succeeds, abuses will discredit it and may damage the larger conversation.
+    Abuses may also prevent the tool from succeeding.</p>
+</li>
+<li>
+<p><em>Actual laws</em> around salary discussion are not uniform.
+    Tools should not make it easy for people to harm themselves by mistake.</p>
+</li>
+<li>
+<p>Voluntary disclosure is an inherently unequal process.</p>
+</li>
+</ul>
+<h2 id="design">Design</h2>
+<p>The tool stores <em>observations</em> of compensation as of a given date, consisting of one or more of the following compensation types:</p>
+<ul>
+<li>Salary</li>
+<li>Hourly wage</li>
+<li>Bonus packages</li>
+<li>Equity (at approximate or negotiated value, eg. stock options or grants)</li>
+<li>“Other Compensation” of Yearly, Quarterly, Monthly, or One-Time periodicity</li>
+</ul>
+<p>From these, the tool will derive a “total compensation” for the observation, used as a basis for reporting.</p>
+<p>Each observation can carry <em>zero or more</em> structured labels:</p>
+<ul>
+<li>Employer<ul>
+<li>Employer's city, district, and country</li>
+</ul>
+</li>
+<li>Employee's name<ul>
+<li>Employee's city, district, and country</li>
+</ul>
+</li>
+<li>Job Title</li>
+<li>Years In Role (senority)</li>
+<li>Years In Field (experience)</li>
+<li>Sex</li>
+<li>Gender</li>
+<li>Ethnicity</li>
+<li>Age</li>
+<li>Family Status</li>
+<li>Disabilities</li>
+</ul>
+<p>All labels are <em>strictly</em> voluntary and will be signposted clearly in the submission process.
+Every label consists of freeform text or numeric fields.
+Text fields will suggest autocompletions using values from existing verified observations, to encourage submitters to enter data consistently.</p>
+<p>There are two core workflows:</p>
+<ul>
+<li>Submitting an observation</li>
+<li>Reporting on observed compensation</li>
+</ul>
+<p>The submission workflow opens a UI which requests a date (defaulting to the date of submission) and a compensation package.
+The UI also contains expandable sections to allow the user to choose which labels to add to the submission.
+Finally, the UI contains an email address field used to validate the submission.
+The validation process will be described later in this document, and serves to both deter abuse and to enable post-facto moderation of a user's submissions.</p>
+<p>The report workflow will allow users to select a set of labels and see the distribution of total compensation within those labels, and how it breaks down.
+For example, a user may report on compensation for jobs in Toronto, ON, Canada with three years' experience and see the distribution of compensation, and then break that down further by gender and ethnicity.</p>
+<p>The report workflow will also users to enter a tentative observation and review how that compares to other compensation packages for similar jobs.
+For example, a user may enter a tentative observation for Research In Motion, for Software Team Lead jobs, with a compensation of CAD 80,000/yr, and see the percentile their compensation falls in, and the distribution of compensation observations for the same job.</p>
+<h2 id="verification">Verification</h2>
+<p>To allow moderation of observations, users must include an email address when submitting observations.
+This email address <em>must not be stored</em>, since storing it would allow submissions to be traced to specific people.
+Instead, the tool digests the email address with a preconfigured salt, and associates the digest with the unverified observation.
+The tool then emails the given address with a verification message, and discards the address.</p>
+<p>The verification message contains the following:</p>
+<ul>
+<li>Prose outlining the verification process.</li>
+<li>A brief summary of the observation, containing the date of the observation and the total compensation observed.</li>
+<li>A link to the unverified observation, where the user can verify or destroy the observation.</li>
+</ul>
+<p>The verification system serves three purposes:</p>
+<ol>
+<li>It discourages people from submitting spurious observations by increasing the time investment needed to get an observation into the data set.</li>
+<li>It complicates automated attempts to skew the data.</li>
+<li>It allows observations from the same person to be correlated with one another without necessarily identifying the submitter.</li>
+</ol>
+<p>The correlation provided by the verification system also allows observations to be moderated retroactively: observations shown to be abusive can be used to prevent the author from submitting further observations, and to remove all of that author's submissions (at least, under that address) to be removed from the data set.</p>
+<p>Correlations may also allow amending or superceding observations safely. Needs fleshing out.</p>
+<h2 id="similar-efforts">Similar Efforts</h2>
+<ul>
+<li>Piper Miriam's <a href="https://github.com/pipermerriam/am-i-underpaid">Am I Underpaid</a>, which attempts to address the question of compensation equality in a local way.</li>
+<li>As mentioned above, <a href="https://storify.com/_danilo/ericajoy-s-salary-transparency-experiment-at-googl">@EricaJoy's Storify</a> covers doing this with Google Docs.</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/people/public-compensation.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/people/public-compensation.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>
