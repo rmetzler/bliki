@@ -17,7 +17,7 @@ The GNU Public License presents a simple, legally enforceable offer: in return
 for granting the right to distribute the licensed work and its derivatives, the
 GPL demands that derivative works also be released under the GPL. The _intent_,
 as derived from
-[Stallman's commentaries](http://www.gnu.org/philosophy/open-source-misses-the-point.en.html)
+[Stallman‘s commentaries](http://www.gnu.org/philosophy/open-source-misses-the-point.en.html)
 on the GPL and on the social systems around software, is that people who _use_
 information systems should, morally and legally, be entitled to the tools to
 understand what the system will do and why, and to make changes to those tools
@@ -25,27 +25,27 @@ as they see fit.
 
 This is a form of _collective action_, as implemented by someone who thinks of
 unions and organized labour as something that software could do better. The
-usual lens for critique of the GPL is that GPL'd software cannot be used in
+usual lens for critique of the GPL is that GPL‘d software cannot be used in
 non-GPL systems (which is increasingly true, as the Free Software Foundation
-catches up with the "as a Service" model of software deliver) _by developers_,
-but I think there's a more interesting angle on it as an attempt to apply the
+catches up with the “as a Service” model of software deliver) _by developers_,
+but I think there‘s a more interesting angle on it as an attempt to apply the
 collective bargaining power of programmers as a class to extracting a
 concession from managerial -- business and government -- interests, instead. In
 that reading, the GPL demands that managerial interests in software avoid
-behaviours that would be bad for programmers (framed as "users", as above) as a
+behaviours that would be bad for programmers (framed as “users”, as above) as a
 condition of benefitting from the labour of those programmers.
 
-Sadly, Stallman is not a labour historian or a union organizer. He's a public
+Sadly, Stallman is not a labour historian or a union organizer. He‘s a public
 speaker and a programmer. By attempting to reinvent collective action from
 first principles, and by treating collective action as a special case of
 software development, the GPL acts to divide programmers from non-programming
 computer users, and to weaken the collective position of programmers vis-à-vis
-managerial interests. The rise of "merit"-based open source licenses, such as
+managerial interests. The rise of “merit”-based open source licenses, such as
 the MIT license (which I use heavily, but advisedly), and the increasing
 pervasiveness of the Github Resume, are both simple consequences of this
 mistake.
 
-I'm pro-union. The only thing worse than having two competing powerful
-interests in the room is having only one powerful interest in the room. The GPL
-should be part of any historical case study for the unionization of
-programmers, since it captures so much of what we do wrong.
+I‘m pro-organized-labour, and largely pro-union. The only thing worse than
+having two competing powerful interests in the room is having only one powerful
+interest in the room. The GPL should be part of any historical case study for
+the unionization of programmers, since it captures so much of what we do wrong.
