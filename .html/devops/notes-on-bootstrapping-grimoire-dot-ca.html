@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		The Codex » 
+		Notes on Bootstrapping This Host
+	</title>
+
+	<link
+		rel='stylesheet'
+		type='text/css'
+		href='http://fonts.googleapis.com/css?family=Buenard:400,700&amp;subset=latin,latin-ext'>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/reset.css">
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="../media/css/grimoire.css">
+</head>
+<body>
+
+<div id="shell">
+	
+		<ol id="breadcrumbs">
+			
+				<li class="crumb-0 not-last">
+					
+						<a href="../">index</a>
+					
+				</li>
+			
+				<li class="crumb-1 not-last">
+					
+						<a href="./">devops</a>
+					
+				</li>
+			
+				<li class="crumb-2 last">
+					
+						notes-on-bootstrapping-grimoire-dot-ca
+					
+				</li>
+			
+		</ol>
+	
+
+	
+	<div id="article">
+		<h1 id="notes-on-bootstrapping-this-host">Notes on Bootstrapping This Host</h1>
+<p>Presented without comment:</p>
+<ul>
+<li>
+<p>Package updates:</p>
+<pre><code>apt-get update
+apt-get upgrade
+</code></pre>
+</li>
+<li>
+<p>Install Git:</p>
+<pre><code>apt-get install git
+</code></pre>
+</li>
+<li>
+<p>Set hostname:</p>
+<pre><code>echo 'grimoire' &gt; /etc/hostname
+sed -i -e $'s,ubuntu,grimoire.ca\tgrimoire,' /etc/hosts
+poweroff
+</code></pre>
+<p>To verify:</p>
+<pre><code>hostname -f # =&gt; grimoire.ca
+hostname    # =&gt; grimoire
+</code></pre>
+</li>
+<li>
+<p>Add <code>owen</code> user:</p>
+<pre><code>adduser owen
+adduser owen sudo
+</code></pre>
+<p>To verify:</p>
+<pre><code>id owen # =&gt; uid=1000(owen) gid=1000(owen) groups=1000(owen),27(sudo)
+</code></pre>
+</li>
+<li>
+<p>Install Puppetlabs Repos:</p>
+<pre><code>wget https://apt.puppetlabs.com/puppetlabs-release-pc1-trusty.deb
+dpkg -i puppetlabs-release-pc1-trusty.deb
+apt-get update
+</code></pre>
+</li>
+<li>
+<p>Install Puppet server:</p>
+<pre><code>apt-get install puppetserver
+sed -i \
+    -e '/^JAVA_ARGS=/ s,2g,512m,g' \
+    -e '/^JAVA_ARGS=/ s, -XX:MaxPermSize=256m,,' \
+    /etc/default/puppetserver
+service puppetserver start
+</code></pre>
+</li>
+<li>
+<p>Test Puppet agent:</p>
+<pre><code>/opt/puppetlabs/bin/puppet agent --test --server grimoire.ca
+</code></pre>
+<p>This should output the following:</p>
+<pre><code>Info: Retrieving pluginfacts
+Info: Retrieving plugin
+Info: Caching catalog for grimoire.ca
+Info: Applying configuration version '1446415926'
+Info: Creating state file /opt/puppetlabs/puppet/cache/state/state.yaml
+Notice: Applied catalog in 0.01 seconds
+</code></pre>
+</li>
+<li>
+<p>Install environment:</p>
+<pre><code>git init --bare /root/puppet.git
+# From workstation, `git push root@grimoire.ca:puppet.git master` to populate the repo
+rm -rf /etc/puppetlabs/code/environments/production
+git clone /root/puppet.git /etc/puppetlabs/code/environments/production
+</code></pre>
+</li>
+<li>
+<p>Bootstrap puppet:</p>
+<pre><code>/opt/puppetlabs/bin/puppet agent --test --server grimoire.ca
+</code></pre>
+</li>
+</ul>
+	</div>
+
+
+	
+<div id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'grimoire'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+
+	
+	<div id="footer">
+		<p>
+			
+				The Codex —
+			
+			Powered by <a href="http://markdoc.org/">Markdoc</a>.
+			
+<a href="https://bitbucket.org/ojacobson/grimoire.ca/src/master/wiki/devops/notes-on-bootstrapping-grimoire-dot-ca.md">See this page on Bitbucket</a> (<a href="https://bitbucket.org/ojacobson/grimoire.ca/history-node/master/wiki/devops/notes-on-bootstrapping-grimoire-dot-ca.md">history</a>).
+
+		</p>
+	</div>
+	
+</div>
+</body>
+</html>
