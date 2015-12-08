@@ -96,8 +96,7 @@ equivalent to the following shell snippet:
 
     # generate-signable POLICY TYPE SHA1
     function generate-signable() {
-        echo -n "$1"
-        SOMETHING OUTPUTTING A NUL HERE
+        printf '%s\0' "$1"
         git cat-file "$2" "$3"
     }
 
