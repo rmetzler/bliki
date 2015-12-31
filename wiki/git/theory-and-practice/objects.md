@@ -52,12 +52,12 @@ Blobs and trees are sufficient to store arbitrary directory trees in Git, and
 you could use them that way, but Git is mostly used as a revision-tracking
 system. Revisions and their history are represented by `commit` objects, which contain:
 
-    * The SHA-1 hash of the root `tree` object of the commit,
-    * Zero or more SHA-1 hashes for parent commits,
-    * The name and email address of the commit's “author,”
-    * The name and email address of the commit's “committer,”
-    * Timestamps representing when the commit was authored and committed, and
-    * A commit message.
+* The SHA-1 hash of the root `tree` object of the commit,
+* Zero or more SHA-1 hashes for parent commits,
+* The name and email address of the commit's “author,”
+* The name and email address of the commit's “committer,”
+* Timestamps representing when the commit was authored and committed, and
+* A commit message.
 
 Commit objects' parent references form a directed acyclic graph; the subgraph
 reachable from a specific commit is that commit's _history_.
@@ -72,10 +72,10 @@ specific configurations. It also, uniquely, supports a concept called an
 “annotated tag,” represented by the `tag` object type. These annotated tag
 objects contain
 
-    * The type and SHA-1 hash of another object,
-    * The name and email address of the person who created the tag,
-    * A timestamp representing the moment the tag was created, and
-    * A tag message.
+* The type and SHA-1 hash of another object,
+* The name and email address of the person who created the tag,
+* A timestamp representing the moment the tag was created, and
+* A tag message.
 
 ## Anonymity
 
