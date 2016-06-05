@@ -6,7 +6,7 @@ browser apps/single page apps this year. I have some thoughts on configuration.
 ## Why Bother
 
 * Centralize environment-dependent facts to simplify management & testing
-* Make it easy to manage app secrets
+* Make it easy to manage app secrets. (“Secrets”? What this means in a browser app is a bit different.)
 * Keep config data & secrets out of app's source control
 * Integration point for external config sources (Aerobatic, Heroku, etc)
 * The forces described in [12 Factor App:
@@ -48,7 +48,7 @@ There are a few ways to get configuration into the app.
 
             var config = `<script>window.appConfig = ${JSON.stringify(appConfig)};</script>`;
 
-        Good luck proving it.
+      Good luck proving it.
 
 ### Data Attributes and Link Elements
 
