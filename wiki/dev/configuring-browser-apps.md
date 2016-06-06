@@ -6,8 +6,15 @@ browser apps/single page apps this year. I have some thoughts on configuration.
 ## Why Bother
 
 * Centralize environment-dependent facts to simplify management & testing
-* Make it easy to manage app secrets. (“Secrets”? What this means in a browser app is a bit different.)
-* Keep config data & secrets out of app's source control
+* Make it easy to manage app secrets.
+
+    [@wlonk](https://twitter.com/wlonk) adds:
+
+    > “Secrets”? What this means in a browser app is a bit different.
+
+    Which is unpleasantly true. In a freestanding browser app, a “secret” is only as secret as your users and their network connections choose to make it, i.e., not very secret at all. Maybe that should read “make it easy to manage app _tokens_ and _identities_,” instead.
+
+* Keep config data & API tokens out of app's source control
 * Integration point for external config sources (Aerobatic, Heroku, etc)
 * The forces described in [12 Factor App:
   Dependencies](http://12factor.net/dependencies) and, to a lesser extent, [12
@@ -42,13 +49,30 @@ There are a few ways to get configuration into the app.
 * Easy to consume: it's just globals, so `window.appConfig.foo` will read them.
     * This requires some discipline to use well.
 * Have to generate a script to set them.
-    * This can be a `<script>window.appConfig = {some json}</script>` tag or a standalone config script loaded with `<script src="/config.js">`
-    * Generating config scripts sets a minimum level of complexity for the deployment process: you either need a server to generate the script at request time, or a preprocessing step at deployment time.
-    * It's code generation, which is easy to do badly. This is probably safe:
+    * This can be a `<script>window.appConfig = {some json}</script>` tag or a
+      standalone config script loaded with `<script src="/config.js">`
+    * Generating config scripts sets a minimum level of complexity for the
+      deployment process: you either need a server to generate the script at
+      request time, or a preprocessing step at deployment time.
 
-            var config = `<script>window.appConfig = ${JSON.stringify(appConfig)};</script>`;
+    * It's code generation, which is easy to do badly. I had originally
+      proposed using `JSON.stringify` to generate a Javascript object literal,
+      but this fails for any config values with `</script>` in them. That may
+      be an unlikely edge case, but that only makes it a nastier trap for
+      administrators.
 
-      Good luck proving it.
+      [There are more edge 
+      cases](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
+      I strongly suspect that a hazard-free implementation requires a
+      full-blown JS source generator. I had a look at building something out of
+      [escodegen](https://github.com/estools/escodegen) and
+      [estemplate](https://github.com/estools/estemplate), but
+
+    1. `escodegen`'s node version [doesn't generate browser-safe
+      code](https://github.com/estools/escodegen/issues/298), so string literals
+      with `</script>` or `</head>` in them still break the page, and
+    2. converting javascript values into parse trees to feed to `estemplate`
+      is some seriously tedious code.
 
 ### Data Attributes and Link Elements
 
