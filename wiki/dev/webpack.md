@@ -98,7 +98,7 @@ A lot of this bundle structure is motivated by the gargantuan size of the librar
 
 Some project layout:
 
-* `PROJECT/src`: Input files for Webpack compilation. We'll
+* `PROJECT/src`: Input files for Webpack compilation.
 
 All inputs go into a single directory, to simplify Webpack file lookups. Separating inputs by type (`js`, `jsx`, `less`, etc) would be consistent with other tools, but makes operating Webpack much more complicated.
 
