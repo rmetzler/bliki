@@ -56,48 +56,51 @@ To give a sense of what using Webpack is like, here's my current `webpack.config
 
 This setup allows me to run `webpack` on the CLI to compile my sources into a working app, or `webpack --watch` to leave Webpack running to recompile my app for me as I make changes to the sources. The application is written using the React framework, and uses both React's JSX syntax for components and many ES2105 language features that are unavailable in the browser. It also uses some APIs that are available in some browsers but not in others, and includes polyfills for those interfaces.
 
-You can see the un-annotated file [on Github](https://github.com/unreasonent/distant-shore-html5-client/blob/a273deb87823f4bea0d1407b9752cea5bf632730/webpack.config.js).
+You can see the un-annotated file [on Github](https://github.com/ojacobson/webpack-starter/blob/9722f2c873a956ad527947db49bbbe8ecdb4606c/webpack.config.js).
 
-    'use strict';
+    'use strict'
 
-    var path = require('path');
-    var keys = require('lodash.keys');
+    var path = require('path')
+    var keys = require('lodash.keys')
 
-I want to call this `require` out - I've used a similar pattern in the actual app code. Lodash, specifically, has capability bundles that are much smaller than the full Lodash codebase, and using them is exactly how I kept the 500kb library down to a reasonable size in my app.
+I want to call this `require` out - I've used a similar pattern in my actual app code. Lodash, specifically, has capability bundles that are much smaller than the full Lodash codebase. Using `var _ = require('lodash')` grows the bundle by 500kb or so, while this only adds about 30kb.
 
-    var webpack = require('webpack');
-    var HtmlWebpackPlugin = require('html-webpack-plugin');
+    var webpack = require('webpack')
+    var HtmlWebpackPlugin = require('html-webpack-plugin')
+    var ExtractTextPlugin = require("extract-text-webpack-plugin")
 
-    var thisPackage = require('./package.json');
+    var thisPackage = require('./package.json')
 
 We'll see where all of these requires get used later on.
 
     module.exports = {
       entry: {
-        app: ['babel-polyfill', 'whatwg-fetch', "app.js"],
+        app: ['app.less', 'app'],
         vendor: keys(thisPackage.dependencies),
       },
 
 Make two bundles:
 
-* One for application code (linked with various polyfills to provide ES6 features as if the app were running in a native ES6 environment).
+* One for application code and stylesheets.
 
-* One for “vendor” code, computed from `package.json`, so that app changes don't _always_ force every client to re-download all of React + Lodash + yada yada. In `package.json`, the `dependencies` key holds only dependencies that should appear in the vendor bundle. All other deps (including polyfill dependencies for the `app` entry point) appear in `devDependencies`, instead. Subverting the dependency conventions like this lets me specify the vendor bundle exactly once, rather than having to duplicate part of the dependency list here in `webpack.config.js`.
+* One for “vendor” code, computed from `package.json`, so that app changes don't _always_ force every client to re-download all of React + Lodash + yada yada. In `package.json`, the `dependencies` key holds only dependencies that should appear in the vendor bundle. All other deps appear in `devDependencies`, instead. Subverting the dependency conventions like this lets me specify the vendor bundle exactly once, rather than having to duplicate part of the dependency list here in `webpack.config.js`.
 
-We actually invent a third bundle, below. I'll talk about that when I get there.
+    Because the dependencies are listed as entry point scripts, they will always be run when Webpack loads `vendor.[hash].js`. This makes the vendor bundle an appropriate place both for `require()`able modules and for polyfills that operate through side effects on `window` or other global objects.
 
-A lot of this is motivated by the gargantuan size of the libraries I'm using. The vendor bundle is approximately two megabytes, so reusing the vendor bundle between versions helps cut down on the number of times users have to download all of that code. I need to address this, but being conscious of browser caching behaviours helps for now.
+This config also invents a third bundle, below. I'll talk about that when I get there.
+
+A lot of this bundle structure is motivated by the gargantuan size of the libraries I'm using. The vendor bundle is approximately two megabytes in my real app, and includes not just React but a number of supporting libraries. Reusing the vendor bundle between versions helps cut down on the number of times users have to download all of that code. I need to address this, but being conscious of browser caching behaviours helps for now.
 
       resolve: {
         root: [
-          path.resolve("js"),
+          path.resolve("src"),
         ],
 
 Some project layout:
 
-* `PROJECT/js`: Javascript and Javascript-like source code.
+* `PROJECT/src`: Input files for Webpack compilation. We'll
 
-I kept it flat. A `src` or `src/main` prefix could be useful, but the value is limited and we're not tied to pre-existing practices, here.
+All inputs go into a single directory, to simplify Webpack file lookups. Separating inputs by type (`js`, `jsx`, `less`, etc) would be consistent with other tools, but makes operating Webpack much more complicated.
 
         // Automatically resolve JSX modules, like JS modules.
         extensions: ["", ".webpack.js", ".web.js", ".js", ".jsx"],
@@ -108,20 +111,20 @@ This is a React app, so I've added `.jsx` to the list of default suffixes. This 
 I could also have addressed this by treating all `.js` files as JSX sources. This felt like a worse option; the JSX preprocessing step _looks_ safe on pure-JS sources, but why worry about it when you can be explicit about which parser to use?
 
       output: {
-        path: path.resolve("dist/js"),
-        publicPath: "/js/",
+        path: path.resolve("dist/bundle"),
+        publicPath: "/bundle/",
 
 More project layout:
 
-* `PROJECT/dist`: the content root of the web app. Files in `/dist` are expected to be served by the web server or placed in a CDN, at the root path.
+* `PROJECT/dist`: the content root of the web app. Files in `/dist` are expected to be served by a web server or placed in a content delivery network, at the root path of the host.
 
-    * `PROJECT/dist/js`: Browser Javascript files for the app. A separate directory makes it easier to set JS-specific rules in web servers, which we exploit in a moment.
+    * `PROJECT/dist/bundle`: Bundled Webpack outputs for the app. A separate directory makes it easier to set Webpack-specific rules in web servers, which we exploit later in this configuration.
 
-I've set `publicPath` so that dynamically-loaded chunks end up with the right URLs, too.
+I've set `publicPath` so that dynamically-loaded chunks (if you use `require.ensure`, for example) end up with the right URLs.
 
         filename: "[name].[chunkhash].js",
 
-Include a stable version hash in the name of each output file, so that we can safely set `Cache-Control` headers to have browsers store JS for a long time without fucking up the ability to redeploy the app. Setting a long cache expiry for these means that the user only pays the transfer cost (power, bandwidth) for the script files on the first pageview after a deployment, or after their browser cache forgets the site.
+Include a stable version hash in the name of each output file, so that we can safely set `Cache-Control` headers to have browsers store JS and stylesheets for a long time, while maintaining the ability to redeploy the app and see our changes in a timely fashion. Setting a long cache expiry for these means that the user only pays the transfer costs (power, bandwidth) for the bundles on the first pageview after each deployment, or after their browser cache forgets the site.
 
 For each bundle, so long as the contents of that bundle don't change, neither will the hash. Since we split vendor code into its own chunk, _often_ the vendor bundle will end up with the same hash even in different versions of the app, further cutting down the number of times the user has to download the (again, massive) dependencies.
 
@@ -141,7 +144,7 @@ For each bundle, so long as the contents of that bundle don't change, neither wi
 
 You don't need this if you don't want it, but I've found ES2015 to be a fairly reasonable improvement over Javascript. Using an exclude, we treat _local_ JS files as ES2015 files, translating them with Babel before including them in the bundle; I leave modules included from third-party dependencies alone, because I have no idea whether I should trust Babel to do the right thing with someone else's code, or whether it already did the right thing.
 
-I've added `transform-object-rest-spread` because the app I'm working on makes extensive use of `return {...state, modified: field}` constructs and that syntax is way easier to work with than the equivalent `return Object.assign({}, state, {modified: field})`.
+I've added `transform-object-rest-spread` because the app I'm working on makes extensive use of `return {...state, modified: field}` constructs, and that syntax is way easier to work with than the equivalent `return Object.assign({}, state, {modified: field})`.
 
           {
             test: /\.jsx$/,
@@ -156,30 +159,14 @@ I've added `transform-object-rest-spread` because the app I'm working on makes e
 Do the same for _local_ `.jsx` files, but additionally parse them using Babel's React driver, to translate `<SomeComponent />` into approprate React calls. Once again, leave the parsing of third-party code alone.
 
           {
-            test: /\.yaml$/,
+            test: /\.less$/,
             exclude: /node_modules/,
-            loader: "json!yaml",
+            loader: ExtractTextPlugin.extract("css?sourceMap!less?sourceMap"),
           },
 
-I have some static data files, which are YAML. This allows me to load them at build time using `var data = require('some-data.yaml')`; the chained loaders first convert YAML to JSON, then return the resulting JSON object directly from `require`.
+Compile `.less` files using `less-loader` and `css-loader`, preserving source maps. Then feed them to a plugin whose job is to generate a separate `.css` file, so that they can be loaded by a `<link>` tag in the HTML document. The other alternative, `style-loader`, relies on DOM manipulation at runtime to load stylesheets, which both prevents it from parallelizing with script loading and causes some additional DOM churn.
 
-          {
-            test: /node_modules[\\\/]auth0-lock[\\\/].*\.js$/,
-            loaders: [
-              'transform-loader/cacheable?brfs',
-              'transform-loader/cacheable?packageify',
-            ],
-          },
-          {
-            test: /node_modules[\\\/]auth0-lock[\\\/].*\.ejs$/,
-            loader: 'transform-loader/cacheable?ejsify',
-          },
-          {
-            test: /\.json$/,
-            loader: 'json',
-          },
-
-These loaders are specific to [Auth0](https://github.com/auth0/lock#webpack)'s Javascript libraries. I've done this so that all of the app's code is delivered from a single origin (either the web server directly, or via a content delivery network), rather than being gathered from various CDNs and third-party sites.
+We'll see where `ExtractTextPlugin` actually puts the compiled stylesheets later on.
 
         ],
       },
@@ -215,20 +202,20 @@ This code effectively moves the Webpack runtime to its own bundle, which loads q
 
 Unfortunately, code changes in the app bundle _can_ cause the vendor bundle's constituent modules to be reordered or renumbered, so it's not perfect: sometimes the `vendor` bundle's hash changes between versions even though it contains an identical module list with different identifiers. So it goes: the right fix here is probably to shrink the bundle and to re-merge it into the `app` bundle.
 
+        new ExtractTextPlugin("[name].[contenthash].css"),
+
+Emit collected stylesheets into a separate bundle, named after the entry point. Since the only entry point with stylesheets is the `app` entry point, this creates `app.[hash].css` in the `dist/bundle` directory, right next to `app.[hash].js`.
+
         new HtmlWebpackPlugin({
-          title: "Distant Shore",
-          // escape the js/ subdir
+          // put index.html outside the bundle/ subdir
           filename: '../index.html',
-          template: 'html/index.html',
-          inject: 'head',
+          template: 'src/index.html',
           chunksSortMode: 'dependency',
         }),
 
-Generate the entry point page from a template (`PROJECT/html/index.html`), rather than writing it entirely by hand.
+Generate the entry point page from a template (`PROJECT/src/index.html`), rather than writing it entirely by hand.
 
-You may have noticed that _all three_ of the bundles include generated chunk hashes in their filenames. This plugin generates the correct `<script>` tags to load those bundles and places them in `dist/index.html`, so that I don't have to manually correct the index page every time I rebuild the app.
-
-One thing to note: I've moved the script tags from the generator's default of “immediately before `</body>`” back to “immediately before `</head>`.” This is a matter of personal preference; the app bundle contains some logic (not shown here) to run the app only after the DOM has fully loaded.
+You may have noticed that _all four_ of the bundles generated by this build have filenames that include generated chunk hashes. This plugin generates the correct `<script>` tags and `<link>` tags to load those bundles and places them in `dist/index.html`, so that I don't have to manually correct the index page every time I rebuild the app.
 
       ],
 
@@ -238,13 +225,12 @@ Make it possible to run browser debuggers against the bundled code as if it were
 
 The source maps contain the original, unmodified code, so that the browser doesn't need to have access to a source tree to make sense of them. I don't care if someone sees my sources, since the same someone can already see the code inside the webpack bundles.
 
-    };
+    }
 
 Things yet to do:
 
-* Figure out how to have webpack build a stylesheet bundle, too. The `ExtractTextPlugin` is supposed to make it pretty feasible, but I have some Bootstrap-related roadblocks to solve.
-
-    * Then I can apply the same caching dynamics to stylesheets that I do to Javascript. Since I'm using Bootstrap, the stylesheet is gargantuan.
-
 * Webpack 2's “Tree Shaking” mode exploits the static nature of ES2015 `import` statements to fully eliminate unused symbols from ES2105-style modules. This could potentially cut out a lot of the code in the `vendor` bundle.
 
+* Unit tests! I've actually got a config for this, which I need to integrate into my starter project and document.
+
+* A quick primer on React server-side rendering. I know this is a Webpack primer, and not a React primer, but React-in-the-wild often relies on Webpack.
