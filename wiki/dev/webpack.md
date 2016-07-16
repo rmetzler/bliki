@@ -231,6 +231,6 @@ Things yet to do:
 
 * Webpack 2's “Tree Shaking” mode exploits the static nature of ES2015 `import` statements to fully eliminate unused symbols from ES2105-style modules. This could potentially cut out a lot of the code in the `vendor` bundle.
 
-* Unit tests! I've actually got a config for this, which I need to integrate into my starter project and document.
+* [Sean Larkin](https://twitter.com/TheLarkInn) suggests setting `recordsPath` at the top level of the Webpack config object to pin chunk IDs between runs. This works! Unfortunately, some plugins cause the records file to grow every time you run `webpack`, regardless of any changes to the output. This is, obviously, not great.
 
 * A quick primer on React server-side rendering. I know this is a Webpack primer, and not a React primer, but React-in-the-wild often relies on Webpack.
