@@ -120,6 +120,7 @@ A proposal is scored by taking the proposal number, adding nine to it, multiplyi
 
 A rule-change is adopted if and only if the vote in favour is unanimous among the eligible voters.
 If this rule is not amended before each player has had two turns, it automatically changes to require only a simple majority.
+
 If and when rule-changes can only be adopted unanimously, the voting may be ended as soon as an opposing vote is counted.
 If and when rule-changes can be adopted by simple majority, the voting may be ended as soon as a simple majority in favour or a simple majority against is counted.
 
