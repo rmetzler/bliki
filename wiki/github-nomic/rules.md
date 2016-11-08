@@ -110,9 +110,7 @@ One turn consists of two parts in this order:
 
 1. proposing one rule-change and having it voted on, and
 
-2. scoring the propsal, and
-
-3. adding the proposal's score to the player's score.
+2. scoring the propsal and adding that score to the proposing player's score.
 
 A proposal is scored by taking the proposal number, adding nine to it, multiplying the result by the fraction of favourable votes the proposal received, and rounding that result to the nearest integer.
 
