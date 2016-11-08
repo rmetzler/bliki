@@ -1,6 +1,6 @@
 # Notes towards initial rules for a Github Nomic
 
-This document is not part of the rules of a Nomic, and is present solely as a guide to the design of [this](rules) initial ruleset, for play on Github.
+This document is not part of the rules of a Nomic, and is present solely as a guide to the design of [this initial ruleset](rules), for play on Github.
 It should be removed before the game starts, and at no time should it be consulted to guide gameplay directly.
 
 Peter Suber's [Nomic](http://legacy.earlham.edu/~peters/writing/nomic.htm) is a game of rule-making for one or more players.
