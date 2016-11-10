@@ -50,9 +50,11 @@ In spite of my temptation to remove it, I have even left the notion of “winnin
 The intent of this Nomic is to explore the suitability of Github's suite of tools for proposing, reviewing, and accepting changes to a corpus of text are suitable for self-governed rulemaking processes, as modelled by Nomic.
 Note that this is a test of Github, not of Git: it is appropriate and intended that the players rely on non-Git elements of Github's workflow (issues, wiki pages, Github Pages, and so on), and similarly it is appropriate and intended that the authentic copy of the game in play is the Github project hosting it, not the Git repo the project contains, and certainly not forks of the project or other clones of the repository.
 
-To support this intention, I have re-labelled the initial rules with Roman numerals, rather than digits, so that proposals can be numbered starting from 1, rather than Suber's original 301, and so that they can be numbered by their Pull Requests and Github issue numbers.
+To support this intention, I have re-labelled the initial rules with ngative numbers, rather than digits, so that proposals can be numbered starting from 1 without colliding with existing rules, and so that they can be numbered by their Pull Requests and Github issue numbers.
+(A previous version of these rules used Roman numerals for the initial rules.
+However, correctly accounting for the priority of new rules over initial rules, following Suber, required more changes than I was comfortable making to Suber's ruleset.)
 I have made it explicit in these initial rules that Github, not the players, assigns numbers to proposals.
-(This is the only rule which mentions Github by name.)
+This is the only rule which mentions Github by name.
 I have not explicitly specified that the proposals should be implemented through pull requests; this is an intentional opportunity for player creativity.
 
 ## Projects & Ideas
