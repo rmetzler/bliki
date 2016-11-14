@@ -10,7 +10,7 @@ The Initial Set consists of rules -216 through -201 (immutable) and rules -112 t
 
 ### Rule -215.
 
-Initially rules -216 through -201 are immutable and rules xvii through -112 through -101.
+Initially, rules -216 through -201 are immutable, and rules -112 through -101 are mutable.
 Rules subsequently enacted or transmuted (that is, changed from immutable to mutable or vice versa) may be immutable or mutable regardless of their numbers, and rules in the Initial Set may be transmuted regardless of their numbers.
 
 ### Rule -214.
@@ -110,7 +110,7 @@ One turn consists of two parts in this order:
 
 1. proposing one rule-change and having it voted on, and
 
-2. scoring the propsal and adding that score to the proposing player's score.
+2. scoring the proposal and adding that score to the proposing player's score.
 
 A proposal is scored by taking the proposal number, adding nine to it, multiplying the result by the fraction of favourable votes the proposal received, and rounding that result to the nearest integer.
 
