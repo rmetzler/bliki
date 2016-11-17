@@ -41,3 +41,17 @@ The following is from a Slack session and needs work into an actual writeup.
 > Alex: Huh. That’s… very contemporary.
 >
 > Owen: okay I think that might be what i got but I think Dark Souls is a rad piece of game art
+
+-----
+
+> Owen: ugh no it’s weirder than that, “everything is dying” is a tautological element of the game world. right from the start the game explains the coming fall in terms of a fire dying out
+>
+> it’s almost the anti-fascism: “everything was once grand, and has fallen” but instead of “and here’s who to blame and how to take it back” it’s “and this is the natural order of things"
+>
+> (one of the endings riffs on that by allowing you to throw your cursed self into the flames to keep them alight for a while longer; another has you extinguish the sacred flame yourself, and that’s the _good_ ending)
+>
+> I mean, the player-character dies as a person either way, either as a martyr or as a promethean figure of legend
+>
+> it’s also strongly implied that the once-grand kingdoms whose rotting corpses you’re rolling around in were, by and large, gloriously shitty places to actually live
+>
+> as places ruled by feuding god-kings tend to be
