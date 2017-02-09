@@ -62,7 +62,7 @@ familiar with other SQL implementations).
       remotely like Perl).
 * Conversion behaviour depends on a per-connection configuration value
   (`sql_mode`) that has [a large constellation of possible
-  states](http://dev.mysql.com/doc/refman/5.5/en/server-sql-mode.html), making
+  states](https://dev.mysql.com/doc/refman/5.5/en/sql-mode.html), making
   it harder to carry expectations from manual testing over to code or from
   tool to tool.
 * MySQL recommends UTF-8 as a character-set, but still defaults to Latin-1.
@@ -105,7 +105,7 @@ familiar with other SQL implementations).
 ### Preserving Data
 
 ... against unexpected changes: like most disk-backed storage systems, MySQL
-is as reliable as the disks and filesystems its data lives on. MySQL provides 
+is as reliable as the disks and filesystems its data lives on. MySQL provides
 no additional functionality in terms of mirroring or hardware failure tolerance
 (such as [Oracle ASM](http://en.wikipedia.org/wiki/Automatic_Storage_Management)).
 However this is a limitation shared with many, _many_ other systems.
@@ -556,18 +556,18 @@ MySQL's procedural dialect -- an implementation of the
             DECLARE done INT DEFAULT 0;
             DECLARE CONTINUE HANDLER FOR NOT FOUND
                 SET done = 1;
-            
+
             DECLARE c_foo INTEGER;
             DECLARE c_bar INTEGER;
             DECLARE c_baz INTEGER;
-            
+
             OPEN c;
             process_some_table: LOOP
                 FETCH c INTO c_foo, c_bar, c_baz;
                 IF done THEN
                     LEAVE process_some_table;
                 END IF;
-                
+
                 -- do something with c_foo, c_bar, c_baz
             END LOOP;
         END;
