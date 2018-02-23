@@ -40,7 +40,7 @@ I can't speak for Go's genesis within Google, but outside of Google, this undera
 
 `go get` is a disappointing abdication of responsibility. Packaging boundaries are communications boundaries, and the Go team's response of "vendor everything" amounts to refusing to help developers communicate with one another about their code.
 
-I can repsect the position the Go team has taken, which is that it's not their problem, but that puts them at odds with every other major language. Considering the disasterous history of attempts at package management for C libraries and the existence of Autotools as an example of how this can go very wrong over a long-enough time scale, it's very surprising to see a language team in this century washing their hands of the situation.
+I can respect the position the Go team has taken, which is that it's not their problem, but that puts them at odds with every other major language. Considering the disastrous history of attempts at package management for C libraries and the existence of Autotools as an example of how this can go very wrong over a long-enough time scale, it's very surprising to see a language team in this century washing their hands of the situation.
 
 ## GOPATH
 
