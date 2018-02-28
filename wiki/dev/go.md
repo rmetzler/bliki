@@ -71,7 +71,7 @@ It is not possible, in Go, to compose fallible operations in any way less verbos
 In other languages, this can variously be expressed as
 
     a = fallibleOperationA()
-    b = fallibleOperationB(b)
+    b = fallibleOperationB(a)
     return b
 
 in languages with exceptions, or as
