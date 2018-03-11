@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+BLIKI_BASE="$(dirname "$(dirname "$0")")"
+HTML="$BLIKI_BASE/.html"
+
+BUCKET="$1"
+
+find "$HTML" -type f | while read SOURCE; do
+  HTML_PATH="${SOURCE#$HTML/}"
+  case "$HTML_PATH" in
+  index.html)
+    KEY="$HTML_PATH"
+    CONTENT_TYPE="text/html; charset=UTF-8"
+    ;;
+  */index.html)
+    KEY="$HTML_PATH"
+    CONTENT_TYPE="text/html; charset=UTF-8"
+    ;;
+  *.html)
+    KEY="${HTML_PATH%.html}"
+    CONTENT_TYPE="text/html; charset=UTF-8"
+    ;;
+  *.css)
+    KEY="${HTML_PATH}"
+    CONTENT_TYPE="text/css"
+    ;;
+  *)
+    KEY="$HTML_PATH"
+    CONTENT_TYPE="$(file --mime-type -b "${SOURCE}")"
+    ;;
+  esac
+
+  aws s3 cp --content-type "$CONTENT_TYPE" "$SOURCE" "s3://$BUCKET/$KEY"
+done
