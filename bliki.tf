@@ -12,6 +12,24 @@ provider "aws" {
   region = "ca-central-1"
 }
 
+# CloudFront needs certificates in us-east-1.
+provider "aws" {
+  version = "~> 1.11"
+
+  alias  = "cloudfront"
+  region = "us-east-1"
+}
+
+data "terraform_remote_state" "dns" {
+  backend = "s3"
+
+  config {
+    bucket = "terraform.grimoire"
+    key    = "dns.tfstate"
+    region = "ca-central-1"
+  }
+}
+
 resource "aws_s3_bucket" "bliki" {
   bucket = "grimoire.ca"
 
@@ -37,7 +55,30 @@ resource "aws_s3_bucket_policy" "bliki" {
 POLICY
 }
 
+resource "aws_acm_certificate" "bliki" {
+  provider = "aws.cloudfront"
+
+  # There's a circular dependency between the zone, the distribution, and the
+  # cert here. Rather than trying to figure out how to make Terraform solve it,
+  # hard-code the domain name.
+  domain_name = "grimoire.ca"
+
+  validation_method = "DNS"
+}
+
+resource "aws_route53_record" "bliki_validation" {
+  zone_id = "${data.terraform_remote_state.dns.zone_id}"
+  ttl     = 60
+  name    = "${aws_acm_certificate.bliki.domain_validation_options.0.resource_record_name}"
+  type    = "${aws_acm_certificate.bliki.domain_validation_options.0.resource_record_type}"
+  records = [
+    "${aws_acm_certificate.bliki.domain_validation_options.0.resource_record_value}"
+  ]
+}
+
 resource "aws_cloudfront_distribution" "bliki" {
+  provider = "aws.cloudfront"
+
   enabled             = true
   is_ipv6_enabled     = true
 
@@ -93,6 +134,22 @@ resource "aws_cloudfront_distribution" "bliki" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = "${aws_acm_certificate.bliki.arn}"
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1"
   }
 }
+
+resource "aws_route53_record" "bliki" {
+  zone_id = "${data.terraform_remote_state.dns.zone_id}"
+  name    = ""
+  type    = "A"
+
+  alias {
+    name    = "${aws_cloudfront_distribution.bliki.domain_name}"
+    zone_id = "${aws_cloudfront_distribution.bliki.hosted_zone_id}"
+
+    evaluate_target_health = false
+  }
+}
+
