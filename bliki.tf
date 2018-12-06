@@ -141,7 +141,7 @@ resource "aws_cloudfront_distribution" "bliki" {
 }
 
 resource "aws_route53_record" "bliki" {
-  zone_id = "${data.terraform_remote_state.dns.zone_id}"
+  zone_id = "${data.terraform_remote_state.dns.grimoire_ca_zone_id}"
   name    = ""
   type    = "A"
 
