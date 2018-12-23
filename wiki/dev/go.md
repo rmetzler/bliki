@@ -55,7 +55,7 @@ The standard Go approach to operations which may fail involves returning multipl
 Because this is a convention, it is not representable in Go's type system. There is no generalized type representing the result of a fallible operation, over which one can write useful combining functions. Furthermore, it's not rigidly adhered to: nothing other than good sense stops a programmer from returning an `error` in some other position, such as in the middle of a sequence of return values, or at the start - so code generation approaches to handling errors are also fraught with problems.
 
 It is not possible, in Go, to compose fallible operations in any way less verbose than some variation on
-
+```go
     a, err := fallibleOperationA()
     if err != nil {
         return nil, err
@@ -67,23 +67,29 @@ It is not possible, in Go, to compose fallible operations in any way less verbos
     }
 
     return b, nil
+```
 
 In other languages, this can variously be expressed as
 
+```java
     a = fallibleOperationA()
     b = fallibleOperationB(a)
     return b
+```
 
 in languages with exceptions, or as
 
+```javascript
     return fallibleOperationA()
         .then(a => fallibleOperationB(a))
         .result()
+```
 
 in languages with abstractions that can operate over values with cases.
 
 This has real impact: code which performs long sequences of fallible operations expends a substantial amount of typing effort to write (even with editor support generating the branches), and a substantial amount of cognitive effort to read. Style guides help, but mixing styles makes it worse. Consider:
 
+```go
     a, err := fallibleOperationA()
     if err != nil {
         return nil, err
@@ -101,5 +107,6 @@ This has real impact: code which performs long sequences of fallible operations 
     fallibleOperationD(a, c)
 
     return fallibleOperationE()
+```
 
 God help you if you nest them, or want to do something more interesting than passing an error back up the stack.
